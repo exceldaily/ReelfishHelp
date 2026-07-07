@@ -17,6 +17,7 @@ import { auth } from "@/auth";
 import { getDb, species } from "@/db";
 import { eq } from "drizzle-orm";
 import { resolveManyImages } from "@/lib/wiki-images";
+import { fishIdEnabled } from "@/lib/flags";
 import { Logo } from "@/components/logo";
 import { FishImage } from "@/components/fish-image";
 import { WaterBadge, Badge } from "@/components/ui";
@@ -35,6 +36,7 @@ const FEATURED_SLUGS = [
 export default async function LandingPage() {
   const session = await auth();
   if (session?.user) redirect("/home");
+  const fishId = fishIdEnabled();
 
   const db = await getDb();
   const all = await db.query.species.findMany({ where: eq(species.active, true) });
@@ -94,9 +96,9 @@ export default async function LandingPage() {
               <span className="text-tide-300">Catch the fish.</span>
             </h1>
             <p className="mt-5 text-lg text-tide-100/90 max-w-xl">
-              Live local conditions and tides, photo fish identification, and practical catch
-              guides for 40+ American fresh and saltwater species — plus your own trip plans,
-              catch log, gear locker, and spots.
+              Live local conditions and tides{fishId ? ", photo fish identification," : ""} and
+              practical catch guides for 40+ American fresh and saltwater species — plus your own
+              trip plans, catch log, gear locker, and spots.
             </p>
 
             {/* species search */}
@@ -116,13 +118,15 @@ export default async function LandingPage() {
             </form>
 
             <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Link
-                href="/identify"
-                className="inline-flex items-center gap-2 rounded-xl border-2 border-tide-400/60 bg-tide-900/50 hover:bg-tide-800 px-5 py-3 font-bold text-white"
-              >
-                <Camera className="size-5 text-bait-400" />
-                Identify a Fish from a Photo
-              </Link>
+              {fishId && (
+                <Link
+                  href="/identify"
+                  className="inline-flex items-center gap-2 rounded-xl border-2 border-tide-400/60 bg-tide-900/50 hover:bg-tide-800 px-5 py-3 font-bold text-white"
+                >
+                  <Camera className="size-5 text-bait-400" />
+                  Identify a Fish from a Photo
+                </Link>
+              )}
               <Link
                 href="/conditions"
                 className="inline-flex items-center gap-2 rounded-xl px-4 py-3 font-semibold text-tide-200 hover:text-white"
@@ -164,7 +168,7 @@ export default async function LandingPage() {
             {
               icon: Fish,
               title: "Pick your fish",
-              body: "Filter 40+ species by water, region, season, structure, and skill level — or upload a photo and let the app identify your fish.",
+              body: "Filter 40+ species by water, region, season, structure, and skill level to find exactly what's biting near you.",
             },
             {
               icon: BookOpenText,
@@ -309,7 +313,7 @@ export default async function LandingPage() {
           <Logo />
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             <Link href="/fish" className="hover:text-ink-900">Find Fish</Link>
-            <Link href="/identify" className="hover:text-ink-900">Identify</Link>
+            {fishId && <Link href="/identify" className="hover:text-ink-900">Identify</Link>}
             <Link href="/conditions" className="hover:text-ink-900">Conditions</Link>
             <Link href="/community" className="hover:text-ink-900">Community</Link>
           </div>

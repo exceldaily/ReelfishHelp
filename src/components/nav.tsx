@@ -30,10 +30,10 @@ export type NavUser = {
   avatarUrl: string | null;
 } | null;
 
-const primary = [
+const primary = (fishId: boolean) => [
   { href: "/home", label: "Home", icon: Home },
   { href: "/fish", label: "Find Fish", icon: Fish },
-  { href: "/identify", label: "Identify", icon: Camera },
+  ...(fishId ? [{ href: "/identify", label: "Identify", icon: Camera }] : []),
   { href: "/conditions", label: "Conditions", icon: CloudSun },
   { href: "/trips", label: "Trips", icon: CalendarDays },
   { href: "/community", label: "Community", icon: Users },
@@ -50,7 +50,7 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export function TopNav({ user }: { user: NavUser }) {
+export function TopNav({ user, fishId = false }: { user: NavUser; fishId?: boolean }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -70,7 +70,7 @@ export function TopNav({ user }: { user: NavUser }) {
       <div className="mx-auto max-w-6xl px-4 h-16 flex items-center gap-4">
         <Logo dark />
         <nav className="hidden md:flex items-center gap-1 ml-4">
-          {primary.map(({ href, label, icon: Icon }) => (
+          {primary(fishId).map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
@@ -159,12 +159,14 @@ export function TopNav({ user }: { user: NavUser }) {
   );
 }
 
-export function MobileTabs({ user }: { user: NavUser }) {
+export function MobileTabs({ user, fishId = false }: { user: NavUser; fishId?: boolean }) {
   const pathname = usePathname();
   const tabs = [
     { href: "/home", label: "Home", icon: Home },
     { href: "/fish", label: "Find Fish", icon: Fish },
-    { href: "/identify", label: "Identify", icon: Camera },
+    fishId
+      ? { href: "/identify", label: "Identify", icon: Camera }
+      : { href: "/catches", label: "Catches", icon: Trophy },
     { href: "/conditions", label: "Conditions", icon: CloudSun },
     user?.username
       ? { href: `/u/${user.username}`, label: "Profile", icon: UserCircle2 }

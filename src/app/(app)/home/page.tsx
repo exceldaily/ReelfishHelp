@@ -25,13 +25,16 @@ import {
 } from "@/db";
 import { requireUser, getProfile } from "@/lib/auth-helpers";
 import { getConditions, type ConditionsBundle } from "@/lib/conditions";
+import { fishIdEnabled } from "@/lib/flags";
 import { Card, Badge, ButtonLink, SectionTitle, WaterBadge } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
 
 export const metadata = { title: "Home" };
 
-const quickActions = [
-  { href: "/identify", label: "Identify Fish", icon: Camera },
+const quickActions = (fishId: boolean) => [
+  ...(fishId
+    ? [{ href: "/identify", label: "Identify Fish", icon: Camera }]
+    : [{ href: "/spots", label: "My Spots", icon: MapPin }]),
   { href: "/fish", label: "Find Fish", icon: Fish },
   { href: "/catches/new", label: "Log Catch", icon: Trophy },
   { href: "/gear", label: "Add Gear", icon: Backpack },
@@ -113,7 +116,7 @@ export default async function HomePage() {
       </div>
 
       <div className="grid grid-cols-5 gap-2 sm:gap-3 mb-7">
-        {quickActions.map(({ href, label, icon: Icon }) => (
+        {quickActions(fishIdEnabled()).map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
