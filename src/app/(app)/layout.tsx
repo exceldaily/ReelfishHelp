@@ -1,0 +1,33 @@
+import { auth } from "@/auth";
+import { getProfile } from "@/lib/auth-helpers";
+import { TopNav, MobileTabs, type NavUser } from "@/components/nav";
+import { dbMode } from "@/db";
+
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+  let user: NavUser = null;
+  if (session?.user) {
+    const profile = await getProfile(session.user.id);
+    user = {
+      id: session.user.id,
+      name: profile?.displayName ?? session.user.name ?? "Angler",
+      username: profile?.username ?? session.user.username,
+      role: session.user.role,
+      avatarUrl: profile?.avatarUrl ?? null,
+    };
+  }
+  const localDb = dbMode() === "pglite" || !!process.env.DATABASE_URL === false;
+
+  return (
+    <div className="min-h-dvh flex flex-col bg-sand-50">
+      <TopNav user={user} />
+      {localDb && (
+        <div className="bg-bait-100 text-bait-700 text-center text-xs font-semibold py-1.5 px-4">
+          Local development database (PGlite) — set DATABASE_URL to connect Neon Postgres for production.
+        </div>
+      )}
+      <main className="flex-1 w-full mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-10">{children}</main>
+      <MobileTabs user={user} />
+    </div>
+  );
+}

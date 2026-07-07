@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  /* Deep water blues */
+  --color-tide-50: #eef7f9;
+  --color-tide-100: #d8edf2;
+  --color-tide-200: #abd9e4;
+  --color-tide-300: #74bfd1;
+  --color-tide-400: #3f9fb8;
+  --color-tide-500: #22829b;
+  --color-tide-600: #1b687e;
+  --color-tide-700: #175468;
+  --color-tide-800: #164556;
+  --color-tide-900: #123847;
+  --color-tide-950: #0a2430;
+
+  /* Natural greens */
+  --color-moss-100: #e8efe3;
+  --color-moss-300: #a9c299;
+  --color-moss-500: #5f8050;
+  --color-moss-600: #4c6a40;
+  --color-moss-700: #3d5634;
+  --color-moss-800: #2f4228;
+
+  /* Sand + weathered neutrals */
+  --color-sand-50: #faf8f2;
+  --color-sand-100: #f4f0e5;
+  --color-sand-200: #e8e1cf;
+  --color-sand-300: #d5cab0;
+  --color-sand-400: #b3a684;
+  --color-sand-500: #93865f;
+
+  /* Bait orange — action color */
+  --color-bait-100: #fdeada;
+  --color-bait-400: #e89144;
+  --color-bait-500: #d97a26;
+  --color-bait-600: #bc621a;
+  --color-bait-700: #9a4e15;
+
+  /* Ink */
+  --color-ink-900: #101d24;
+  --color-ink-700: #2b3d47;
+  --color-ink-500: #51656f;
+  --color-ink-300: #8ba0aa;
+
+  --font-display: var(--font-display-var), ui-serif, Georgia, serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: 0 1px 2px rgb(16 29 36 / 0.06), 0 4px 16px -4px rgb(16 29 36 / 0.1);
+  --shadow-lift: 0 2px 4px rgb(16 29 36 / 0.08), 0 12px 32px -8px rgb(16 29 36 / 0.18);
+
+  --radius-card: 0.9rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-sand-50);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-tide-200);
+}
+
+/* leaflet map container */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-card);
+  z-index: 0;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.5s ease both;
+}
+
+/* subtle water shimmer for hero */
+@keyframes drift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.water-gradient {
+  background: linear-gradient(130deg, #0a2430 0%, #123847 30%, #175468 60%, #14586e 80%, #0f3345 100%);
+  background-size: 220% 220%;
+  animation: drift 18s ease-in-out infinite;
+}
+
+/* topo-line texture overlay */
+.topo-lines {
+  background-image: repeating-radial-gradient(
+    circle at 20% 120%,
+    transparent 0,
+    transparent 38px,
+    rgb(255 255 255 / 0.035) 39px,
+    transparent 40px
+  );
+}
+
+input[type="date"],
+input[type="time"] {
+  min-height: 2.5rem;
+}

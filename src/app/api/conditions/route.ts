@@ -1,0 +1,25 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getConditions } from "@/lib/conditions";
+
+export async function GET(req: NextRequest) {
+  const lat = parseFloat(req.nextUrl.searchParams.get("lat") ?? "");
+  const lng = parseFloat(req.nextUrl.searchParams.get("lng") ?? "");
+  const atParam = req.nextUrl.searchParams.get("at");
+  if (Number.isNaN(lat) || Number.isNaN(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+    return NextResponse.json({ error: "Valid lat and lng are required" }, { status: 400 });
+  }
+  const at = atParam ? new Date(atParam) : undefined;
+  if (at && Number.isNaN(at.getTime())) {
+    return NextResponse.json({ error: "Invalid 'at' timestamp" }, { status: 400 });
+  }
+  try {
+    const bundle = await getConditions(lat, lng, at);
+    return NextResponse.json(bundle);
+  } catch (err) {
+    console.error("[conditions]", err);
+    return NextResponse.json(
+      { error: "Live conditions are temporarily unavailable. Try again shortly." },
+      { status: 502 }
+    );
+  }
+}
