@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   },
   description:
     "Location-based fishing intelligence for US anglers: live conditions and tides, species catch guides, photo fish ID, trip planning, and catch logging.",
+  other: {
+    "impact-site-verification": "072a5cba-8378-4ade-b12e-a6cd53870c20",
+  },
 };
 
 export const viewport: Viewport = {
@@ -33,7 +36,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${display.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* Impact uses a nonstandard value= attribute; React hoists this into <head> */}
+        <meta
+          name="impact-site-verification"
+          {...{ value: "072a5cba-8378-4ade-b12e-a6cd53870c20" }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

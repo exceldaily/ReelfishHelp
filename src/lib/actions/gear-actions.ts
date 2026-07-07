@@ -9,8 +9,10 @@ import { GEAR_CATEGORIES } from "@/lib/constants";
 
 export type GearFormResult = { error?: string; ok?: boolean } | undefined;
 
-export async function createGear(_prev: GearFormResult, formData: FormData): Promise<GearFormResult> {
+/** Creates a gear item, or updates one when the form carries an `id`. */
+export async function saveGear(_prev: GearFormResult, formData: FormData): Promise<GearFormResult> {
   const user = await requireUser();
+  const id = String(formData.get("id") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return { error: "Give it a name." };
   const category = String(formData.get("category") ?? "other");
@@ -25,15 +27,12 @@ export async function createGear(_prev: GearFormResult, formData: FormData): Pro
     }
   }
 
-  const db = await getDb();
-  await db.insert(gearItems).values({
-    userId: user.id,
+  const values = {
     category: (GEAR_CATEGORIES as readonly string[]).includes(category) ? category : "other",
     name: name.slice(0, 120),
     brand: String(formData.get("brand") ?? "").slice(0, 80) || null,
     model: String(formData.get("model") ?? "").slice(0, 120) || null,
     notes: String(formData.get("notes") ?? "").slice(0, 2000) || null,
-    photoUrl,
     purchaseDate: String(formData.get("purchaseDate") ?? "") || null,
     condition: (["new", "good", "worn", "needs repair"].includes(String(formData.get("condition")))
       ? String(formData.get("condition"))
@@ -41,7 +40,21 @@ export async function createGear(_prev: GearFormResult, formData: FormData): Pro
     favorite: formData.get("favorite") === "on",
     wishlist: formData.get("wishlist") === "on",
     isPublic: formData.get("isPublic") === "on",
-  });
+  };
+
+  const db = await getDb();
+  if (id) {
+    const existing = await db.query.gearItems.findFirst({
+      where: and(eq(gearItems.id, id), eq(gearItems.userId, user.id)),
+    });
+    if (!existing) return { error: "Gear item not found." };
+    await db
+      .update(gearItems)
+      .set({ ...values, ...(photoUrl ? { photoUrl } : {}) }) // keep old photo unless replaced
+      .where(and(eq(gearItems.id, id), eq(gearItems.userId, user.id)));
+  } else {
+    await db.insert(gearItems).values({ userId: user.id, photoUrl, ...values });
+  }
   revalidatePath("/gear");
   return { ok: true };
 }
