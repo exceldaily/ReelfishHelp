@@ -3,6 +3,7 @@ import { freshwaterBassPanfishCats } from "./freshwater-1";
 import { freshwaterTroutWalleyeOthers } from "./freshwater-2";
 import { saltwaterInshore } from "./saltwater-1";
 import { saltwaterNearshoreOffshore } from "./saltwater-2";
+import { speciesImages } from "./images";
 
 /** Species seed entries use their slug as a stable primary key. */
 export type SpeciesSeed = NewSpecies & { id: string; slug: string };
@@ -12,7 +13,11 @@ export const allSpecies: SpeciesSeed[] = [
   ...freshwaterTroutWalleyeOthers,
   ...saltwaterInshore,
   ...saltwaterNearshoreOffshore,
-];
+].map((s) => ({
+  ...s,
+  imageUrl: speciesImages[s.slug]?.url ?? s.imageUrl ?? null,
+  imageCredit: speciesImages[s.slug]?.credit ?? s.imageCredit ?? null,
+}));
 
 export const US_REGIONS = [
   "Northeast",

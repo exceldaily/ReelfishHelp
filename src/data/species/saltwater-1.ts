@@ -524,7 +524,7 @@ export const saltwaterInshore: SpeciesSeed[] = [
     category: "Porgy",
     difficulty: 3,
     beginnerFriendly: true,
-    wikiTitle: "Sheepshead (fish)",
+    wikiTitle: "Archosargus probatocephalus",
     description:
       "The convict fish — black-and-white bars, human-looking teeth, and a maddening talent for stealing bait off any hook. Structure-bound crustacean crushers that taste better than they fight (and they fight well).",
     avgSize: "1–4 lb",

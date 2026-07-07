@@ -21,10 +21,15 @@ export async function resolveSpeciesImage(speciesId: string): Promise<string | n
     );
     if (!res.ok) return null;
     const data = (await res.json()) as {
-      originalimage?: { source: string };
+      originalimage?: { source: string; width: number };
       thumbnail?: { source: string };
     };
-    const url = data.originalimage?.source ?? data.thumbnail?.source ?? null;
+    // prefer a ~1280px thumbnail — full originals can be 10MB+ and choke the optimizer
+    let url = data.originalimage?.source ?? data.thumbnail?.source ?? null;
+    const origWidth = data.originalimage?.width ?? 0;
+    if (url && origWidth > 1280 && data.thumbnail?.source?.includes("/thumb/")) {
+      url = data.thumbnail.source.replace(/\/\d+px-/, "/1280px-");
+    }
     if (url) {
       await db
         .update(species)
@@ -40,6 +45,12 @@ export async function resolveSpeciesImage(speciesId: string): Promise<string | n
 /** Resolve images for many species, tolerating failures. Used by list pages. */
 export async function resolveManyImages(rows: { id: string; imageUrl: string | null }[]) {
   const missing = rows.filter((r) => !r.imageUrl);
-  if (missing.length === 0) return;
-  await Promise.allSettled(missing.map((r) => resolveSpeciesImage(r.id)));
+  // sequential — parallel bursts trip Wikipedia's rate limiter (HTTP 429)
+  for (const r of missing.slice(0, 10)) {
+    try {
+      await resolveSpeciesImage(r.id);
+    } catch {
+      /* resolved on a later request */
+    }
+  }
 }
