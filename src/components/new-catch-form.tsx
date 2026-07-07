@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { MapPin, Camera } from "lucide-react";
 import { createCatch, type CatchFormResult } from "@/lib/actions/catch-actions";
 import { Button, Card, Input, Label, Select, Textarea, FieldError } from "@/components/ui";
+import { ImageInput } from "@/components/image-input";
 import { WATER_TYPES, CATCH_METHODS } from "@/lib/constants";
 
 export function NewCatchForm({
@@ -74,8 +75,9 @@ export function NewCatchForm({
           <label className="flex items-center gap-3 rounded-xl border-2 border-dashed border-sand-300 hover:border-tide-400 px-4 py-4 cursor-pointer transition-colors">
             <Camera className="size-5 text-tide-600" />
             <span className="text-sm font-semibold text-ink-700">Add photos</span>
-            <input id="photos" name="photos" type="file" accept="image/*" multiple className="text-sm" />
+            <ImageInput id="photos" name="photos" multiple className="text-sm" />
           </label>
+          <p className="mt-1 text-xs text-ink-300">Photos are resized on your phone before upload — big camera shots are fine.</p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">

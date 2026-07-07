@@ -49,6 +49,16 @@ export default function SignupPage() {
             placeholder="8+ characters"
           />
         </div>
+        <label className="flex items-start gap-2.5 text-sm text-ink-700">
+          <input type="checkbox" name="acceptTerms" className="mt-0.5 size-4 accent-bait-500" />
+          <span>
+            I agree to the{" "}
+            <Link href="/terms" target="_blank" className="font-bold text-tide-700 hover:underline">
+              Community Rules &amp; Terms
+            </Link>{" "}
+            — including no hate, harassment, or illegal fishing.
+          </span>
+        </label>
         <FieldError>{state?.error}</FieldError>
         <Button size="lg" className="w-full" disabled={pending}>
           {pending ? "Creating account…" : "Create account"}

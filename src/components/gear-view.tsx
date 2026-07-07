@@ -6,6 +6,7 @@ import { Backpack, Plus, Star, Trash2, Eye, EyeOff, ShoppingCart, X, Pencil } fr
 import { saveGear, deleteGear, toggleGearFlag, type GearFormResult } from "@/lib/actions/gear-actions";
 import { GEAR_CATEGORIES } from "@/lib/constants";
 import { Button, Card, Input, Label, Select, Textarea, FieldError, Badge, EmptyState } from "@/components/ui";
+import { ImageInput } from "@/components/image-input";
 import type { GearItem } from "@/db/schema";
 
 export function GearView({ items }: { items: GearItem[] }) {
@@ -106,7 +107,7 @@ export function GearView({ items }: { items: GearItem[] }) {
             </div>
             <div>
               <Label htmlFor="g-photo">Photo{editing?.photoUrl ? " (upload to replace)" : ""}</Label>
-              <input id="g-photo" name="photo" type="file" accept="image/*" className="text-sm" />
+              <ImageInput id="g-photo" name="photo" className="text-sm" />
               {editing?.photoUrl && (
                 <div className="relative size-14 rounded-lg overflow-hidden bg-sand-100 mt-1.5">
                   <Image src={editing.photoUrl} alt="" fill sizes="56px" className="object-cover" unoptimized={editing.photoUrl.startsWith("/api/")} />

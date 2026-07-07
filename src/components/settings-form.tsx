@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { UserCircle2, MapPin, Check } from "lucide-react";
 import { updateProfile, saveLocation } from "@/lib/actions/profile-actions";
 import { Button, Card, Input, Label, Select, Textarea, FieldError } from "@/components/ui";
+import { ImageInput } from "@/components/image-input";
 import { US_STATES } from "@/data/regulations";
 
 const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"];
@@ -84,7 +85,7 @@ export function SettingsForm({
           )}
           <div>
             <Label htmlFor="avatar">Profile photo</Label>
-            <input id="avatar" name="avatar" type="file" accept="image/*" className="text-sm" />
+            <ImageInput id="avatar" name="avatar" className="text-sm" />
           </div>
         </div>
 

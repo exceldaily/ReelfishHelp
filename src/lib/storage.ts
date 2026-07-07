@@ -2,12 +2,13 @@ import path from "path";
 import fs from "fs/promises";
 import crypto from "crypto";
 
-const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8 MB
+const MAX_UPLOAD_BYTES = 12 * 1024 * 1024; // 12 MB (photos are compressed client-side first)
 const ALLOWED_TYPES: Record<string, string> = {
   "image/jpeg": ".jpg",
   "image/png": ".png",
   "image/webp": ".webp",
   "image/heic": ".heic",
+  "image/heif": ".heic",
 };
 
 export function storageMode(): "blob" | "local" {

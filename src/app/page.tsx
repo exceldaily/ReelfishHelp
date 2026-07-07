@@ -316,6 +316,7 @@ export default async function LandingPage() {
             {fishId && <Link href="/identify" className="hover:text-ink-900">Identify</Link>}
             <Link href="/conditions" className="hover:text-ink-900">Conditions</Link>
             <Link href="/community" className="hover:text-ink-900">Community</Link>
+            <Link href="/terms" className="hover:text-ink-900">Rules &amp; Terms</Link>
           </div>
           <p>Always check current state regulations before keeping fish.</p>
         </div>

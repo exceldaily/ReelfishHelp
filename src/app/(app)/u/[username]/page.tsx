@@ -7,6 +7,8 @@ import { auth } from "@/auth";
 import { Card, Badge, WaterBadge, EmptyState, ButtonLink } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
 import { FollowButton } from "@/components/follow-button";
+import { MessageButton } from "@/components/message-button";
+import { ReportButton } from "@/components/report-button";
 
 function badges(stats: { catches: number; species: number; released: number; trips: number }) {
   const out: { label: string; emoji: string }[] = [];
@@ -82,6 +84,10 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   };
   const earned = badges(stats);
 
+  // friends = mutual follows (each follows the other)
+  const followerIds = new Set(followerRows.map((f) => f.followerId));
+  const friendsCount = followingRows.filter((f) => followerIds.has(f.followingId)).length;
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* header */}
@@ -111,19 +117,24 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
             </div>
             {profile.bio && <p className="mt-3 text-sm text-ink-700 leading-relaxed max-w-xl">{profile.bio}</p>}
           </div>
-          <div className="flex flex-col items-end gap-3">
+          <div className="flex flex-col items-end gap-2.5">
             {!isOwner && (
-              <FollowButton targetUserId={profile.userId} initialFollowing={isFollowing} signedIn={!!viewerId} />
+              <>
+                <FollowButton targetUserId={profile.userId} initialFollowing={isFollowing} signedIn={!!viewerId} />
+                <MessageButton targetUserId={profile.userId} signedIn={!!viewerId} />
+                <ReportButton targetType="profile" targetId={profile.userId} signedIn={!!viewerId} />
+              </>
             )}
             {isOwner && <ButtonLink href="/settings" variant="outline" size="sm">Edit profile</ButtonLink>}
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-3 sm:grid-cols-5 gap-3 text-center">
+        <div className="mt-6 grid grid-cols-3 sm:grid-cols-6 gap-3 text-center">
           {[
             [stats.catches, "Catches"],
             [stats.species, "Species"],
             [stats.released, "Released"],
+            [friendsCount, "Friends"],
             [followerRows.length, "Followers"],
             [followingRows.length, "Following"],
           ].map(([n, label]) => (

@@ -31,6 +31,9 @@ export async function register(_prev: AuthResult, formData: FormData): Promise<A
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
   }
+  if (formData.get("acceptTerms") !== "on") {
+    return { error: "Please agree to the Community Rules & Terms to create an account." };
+  }
   const { email, password, username, displayName } = parsed.data;
   const db = await getDb();
 
@@ -61,6 +64,7 @@ export async function register(_prev: AuthResult, formData: FormData): Promise<A
     userId: user.id,
     username: username.toLowerCase(),
     displayName,
+    acceptedTermsAt: new Date(),
   });
 
   await signIn("credentials", { email, password, redirect: false });

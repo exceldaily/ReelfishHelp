@@ -56,6 +56,7 @@ export const profiles = pgTable("profiles", {
   lastLng: real("last_lng"),
   lastLocationLabel: text("last_location_label"),
   onboarded: boolean("onboarded").notNull().default(false),
+  acceptedTermsAt: timestamp("accepted_terms_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -383,7 +384,9 @@ export const reports = pgTable("reports", {
   reporterId: text("reporter_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  targetType: text("target_type", { enum: ["catch", "comment", "profile", "spot"] }).notNull(),
+  targetType: text("target_type", {
+    enum: ["catch", "comment", "profile", "spot", "message"],
+  }).notNull(),
   targetId: text("target_id").notNull(),
   reason: text("reason").notNull(),
   details: text("details"),
@@ -405,6 +408,53 @@ export const identifications = pgTable("identifications", {
   feedback: text("feedback", { enum: ["correct", "incorrect"] }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/* ------------------------------- messaging ---------------------------------- */
+
+/**
+ * One row per pair of users. `userAId` < `userBId` (lexicographic) so a pair
+ * maps to exactly one conversation regardless of who opened it.
+ */
+export const conversations = pgTable(
+  "conversations",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    userAId: text("user_a_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    userBId: text("user_b_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    lastMessageAt: timestamp("last_message_at", { withTimezone: true }).notNull().defaultNow(),
+    lastMessagePreview: text("last_message_preview"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("conversations_pair_idx").on(t.userAId, t.userBId)]
+);
+
+export const messages = pgTable(
+  "messages",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    conversationId: text("conversation_id")
+      .notNull()
+      .references(() => conversations.id, { onDelete: "cascade" }),
+    senderId: text("sender_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("messages_conversation_idx").on(t.conversationId)]
+);
+
+export type Conversation = typeof conversations.$inferSelect;
+export type Message = typeof messages.$inferSelect;
 
 /* ------------------------------ regulation links ----------------------------- */
 
@@ -465,6 +515,17 @@ export const tripsRelations = relations(trips, ({ one }) => ({
 
 export const spotsRelations = relations(spots, ({ one }) => ({
   user: one(users, { fields: [spots.userId], references: [users.id] }),
+}));
+
+export const conversationsRelations = relations(conversations, ({ one, many }) => ({
+  userA: one(users, { fields: [conversations.userAId], references: [users.id], relationName: "convoA" }),
+  userB: one(users, { fields: [conversations.userBId], references: [users.id], relationName: "convoB" }),
+  messages: many(messages),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  conversation: one(conversations, { fields: [messages.conversationId], references: [conversations.id] }),
+  sender: one(users, { fields: [messages.senderId], references: [users.id] }),
 }));
 
 export const gearItemsRelations = relations(gearItems, ({ one }) => ({

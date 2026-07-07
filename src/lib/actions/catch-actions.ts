@@ -163,7 +163,7 @@ export async function deleteComment(commentId: string, catchId: string) {
 }
 
 export async function reportContent(input: {
-  targetType: "catch" | "comment" | "profile" | "spot";
+  targetType: "catch" | "comment" | "profile" | "spot" | "message";
   targetId: string;
   reason: string;
   details?: string;

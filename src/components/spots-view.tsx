@@ -6,6 +6,7 @@ import Image from "next/image";
 import { MapPin, Plus, Star, Trash2, X, Lock, Users, Globe, Navigation } from "lucide-react";
 import { createSpot, deleteSpot, toggleSpotFavorite, type SpotFormResult } from "@/lib/actions/spot-actions";
 import { Button, Card, Input, Label, Select, Textarea, FieldError, Badge, EmptyState } from "@/components/ui";
+import { ImageInput } from "@/components/image-input";
 import type { Spot } from "@/db/schema";
 
 const SpotMap = dynamic(() => import("./spot-map").then((m) => m.SpotMap), {
@@ -156,7 +157,7 @@ export function SpotsView({ spots }: { spots: Spot[] }) {
             </div>
             <div>
               <Label htmlFor="s-photo">Photo</Label>
-              <input id="s-photo" name="photo" type="file" accept="image/*" className="text-sm" />
+              <ImageInput id="s-photo" name="photo" className="text-sm" />
             </div>
             <FieldError>{state?.error}</FieldError>
             {state?.ok && <p className="text-sm font-semibold text-moss-600">Spot saved ✓</p>}

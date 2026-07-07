@@ -11,8 +11,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <main className="relative flex-1 flex items-start sm:items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">{children}</div>
       </main>
-      <footer className="relative py-6 text-center text-sm text-tide-300">
+      <footer className="relative py-6 text-center text-sm text-tide-300 flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
         <Link href="/" className="hover:text-white">← Back to ReelFishHelp</Link>
+        <Link href="/terms" className="hover:text-white">Community Rules &amp; Terms</Link>
       </footer>
     </div>
   );

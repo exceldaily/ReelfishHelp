@@ -18,6 +18,8 @@ import {
   LogOut,
   UserCircle2,
   Menu,
+  Search,
+  MessageCircle,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { signOutAction } from "@/lib/actions/signout";
@@ -40,6 +42,8 @@ const primary = (fishId: boolean) => [
 ];
 
 const personal = [
+  { href: "/messages", label: "Messages", icon: MessageCircle },
+  { href: "/search", label: "Find Anglers", icon: Search },
   { href: "/gear", label: "My Gear", icon: Backpack },
   { href: "/catches", label: "My Catches", icon: Trophy },
   { href: "/spots", label: "Saved Spots", icon: MapPin },
@@ -50,7 +54,15 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export function TopNav({ user, fishId = false }: { user: NavUser; fishId?: boolean }) {
+export function TopNav({
+  user,
+  fishId = false,
+  unread = 0,
+}: {
+  user: NavUser;
+  fishId?: boolean;
+  unread?: number;
+}) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -86,6 +98,33 @@ export function TopNav({ user, fishId = false }: { user: NavUser; fishId?: boole
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
+          {user && (
+            <>
+              <Link
+                href="/search"
+                aria-label="Find anglers"
+                className={`hidden sm:grid place-items-center size-10 rounded-full transition-colors ${
+                  isActive(pathname, "/search") ? "bg-tide-800 text-white" : "text-tide-200 hover:text-white hover:bg-tide-900"
+                }`}
+              >
+                <Search className="size-5" />
+              </Link>
+              <Link
+                href="/messages"
+                aria-label="Messages"
+                className={`relative grid place-items-center size-10 rounded-full transition-colors ${
+                  isActive(pathname, "/messages") ? "bg-tide-800 text-white" : "text-tide-200 hover:text-white hover:bg-tide-900"
+                }`}
+              >
+                <MessageCircle className="size-5" />
+                {unread > 0 && (
+                  <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-bait-500 text-white text-[10px] font-bold grid place-items-center">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </Link>
+            </>
+          )}
           {user ? (
             <div className="relative" ref={menuRef}>
               <button
