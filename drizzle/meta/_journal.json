@@ -36,6 +36,13 @@
       "when": 1783506453905,
       "tag": "0004_glossy_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1783506725666,
+      "tag": "0005_crazy_network",
+      "breakpoints": true
     }
   ]
 }

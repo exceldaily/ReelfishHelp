@@ -358,6 +358,70 @@ export const comments = pgTable(
   (t) => [index("comments_catch_idx").on(t.catchId)]
 );
 
+export const forumQuestions = pgTable(
+  "forum_questions",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    boardId: text("board_id").references(() => biteBoards.id, { onDelete: "set null" }),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    status: text("status", { enum: ["open", "resolved"] }).notNull().default("open"),
+    answerCount: integer("answer_count").notNull().default(0),
+    helpfulCount: integer("helpful_count").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("forum_questions_user_idx").on(t.userId),
+    index("forum_questions_board_idx").on(t.boardId),
+    index("forum_questions_created_idx").on(t.createdAt),
+    index("forum_questions_status_idx").on(t.status),
+  ]
+);
+
+export const forumAnswers = pgTable(
+  "forum_answers",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    questionId: text("question_id")
+      .notNull()
+      .references(() => forumQuestions.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    helpfulCount: integer("helpful_count").notNull().default(0),
+    accepted: boolean("accepted").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("forum_answers_question_idx").on(t.questionId),
+    index("forum_answers_user_idx").on(t.userId),
+  ]
+);
+
+export const forumAnswerVotes = pgTable(
+  "forum_answer_votes",
+  {
+    answerId: text("answer_id")
+      .notNull()
+      .references(() => forumAnswers.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.answerId, t.userId] })]
+);
+
 export const savedPosts = pgTable(
   "saved_posts",
   {
@@ -675,6 +739,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   catches: many(catches),
   biteReports: many(biteReports),
+  forumQuestions: many(forumQuestions),
+  forumAnswers: many(forumAnswers),
   gear: many(gearItems),
   spots: many(spots),
   trips: many(trips),
@@ -704,6 +770,23 @@ export const likesRelations = relations(likes, ({ one }) => ({
 export const commentsRelations = relations(comments, ({ one }) => ({
   catch: one(catches, { fields: [comments.catchId], references: [catches.id] }),
   user: one(users, { fields: [comments.userId], references: [users.id] }),
+}));
+
+export const forumQuestionsRelations = relations(forumQuestions, ({ one, many }) => ({
+  user: one(users, { fields: [forumQuestions.userId], references: [users.id] }),
+  board: one(biteBoards, { fields: [forumQuestions.boardId], references: [biteBoards.id] }),
+  answers: many(forumAnswers),
+}));
+
+export const forumAnswersRelations = relations(forumAnswers, ({ one, many }) => ({
+  question: one(forumQuestions, { fields: [forumAnswers.questionId], references: [forumQuestions.id] }),
+  user: one(users, { fields: [forumAnswers.userId], references: [users.id] }),
+  votes: many(forumAnswerVotes),
+}));
+
+export const forumAnswerVotesRelations = relations(forumAnswerVotes, ({ one }) => ({
+  answer: one(forumAnswers, { fields: [forumAnswerVotes.answerId], references: [forumAnswers.id] }),
+  user: one(users, { fields: [forumAnswerVotes.userId], references: [users.id] }),
 }));
 
 export const tripsRelations = relations(trips, ({ one }) => ({
@@ -747,6 +830,7 @@ export const biteBoardsRelations = relations(biteBoards, ({ one, many }) => ({
   coverMedia: one(mediaAssets, { fields: [biteBoards.coverMediaId], references: [mediaAssets.id] }),
   members: many(biteBoardMembers),
   reports: many(biteReports),
+  questions: many(forumQuestions),
 }));
 
 export const biteBoardMembersRelations = relations(biteBoardMembers, ({ one }) => ({
@@ -772,6 +856,8 @@ export type Species = typeof species.$inferSelect;
 export type NewSpecies = typeof species.$inferInsert;
 export type Catch = typeof catches.$inferSelect;
 export type CatchPhoto = typeof catchPhotos.$inferSelect;
+export type ForumQuestion = typeof forumQuestions.$inferSelect;
+export type ForumAnswer = typeof forumAnswers.$inferSelect;
 export type GearItem = typeof gearItems.$inferSelect;
 export type Spot = typeof spots.$inferSelect;
 export type Trip = typeof trips.$inferSelect;

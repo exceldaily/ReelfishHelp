@@ -39,6 +39,7 @@ const primary = (fishId: boolean) => [
   { href: "/conditions", label: "Conditions", icon: CloudSun },
   { href: "/trips", label: "Trips", icon: CalendarDays },
   { href: "/boards", label: "Bite Boards", icon: Users },
+  { href: "/forum", label: "Forum", icon: MessageCircle },
 ];
 
 const personal = [
