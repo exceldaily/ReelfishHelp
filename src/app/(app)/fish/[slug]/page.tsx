@@ -172,7 +172,7 @@ export default async function CatchGuidePage({
       </div>
 
       {/* actions + toc */}
-      <div className="sticky top-16 z-30 -mx-4 px-4 py-3 bg-sand-50/95 backdrop-blur border-b border-sand-200 mt-4 mb-6">
+      <div className="sticky top-20 z-30 -mx-4 px-4 py-3 bg-[#e7f7fb]/95 backdrop-blur border-b border-sand-200 mt-4 mb-6">
         <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none]">
           <ButtonLink href={`/catches/new?species=${s.slug}`} size="sm">
             <Trophy className="size-4" /> Log a catch

@@ -57,7 +57,7 @@ html {
 }
 
 body {
-  background: var(--color-sand-50);
+  background: #e7f7fb;
   color: var(--color-ink-900);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

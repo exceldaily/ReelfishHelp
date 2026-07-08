@@ -54,34 +54,36 @@ export default async function LandingPage() {
       {/* ───────────────────────────── hero ───────────────────────────── */}
       <div className="water-gradient text-white relative">
         <div className="topo-lines absolute inset-0" aria-hidden />
-        <header className="relative mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
-          <Logo dark />
-          <nav className="flex items-center gap-2">
-            <Link
-              href="/fish"
-              className="hidden sm:block rounded-lg px-3 py-2 text-sm font-semibold text-tide-200 hover:text-white"
-            >
-              Find Fish
-            </Link>
-            <Link
-              href="/conditions"
-              className="hidden sm:block rounded-lg px-3 py-2 text-sm font-semibold text-tide-200 hover:text-white"
-            >
-              Conditions
-            </Link>
-            <Link
-              href="/login"
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-tide-200 hover:text-white"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-xl bg-bait-500 hover:bg-bait-600 px-4 py-2 text-sm font-bold text-white"
-            >
-              Sign up free
-            </Link>
-          </nav>
+        <header className="relative bg-black border-b border-neutral-800">
+          <div className="mx-auto max-w-6xl px-4 h-20 flex items-center justify-between">
+            <Logo dark />
+            <nav className="flex items-center gap-2">
+              <Link
+                href="/fish"
+                className="hidden sm:block rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 hover:text-white hover:bg-neutral-900"
+              >
+                Find Fish
+              </Link>
+              <Link
+                href="/conditions"
+                className="hidden sm:block rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 hover:text-white hover:bg-neutral-900"
+              >
+                Conditions
+              </Link>
+              <Link
+                href="/login"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 hover:text-white hover:bg-neutral-900"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-xl bg-bait-500 hover:bg-bait-600 px-4 py-2 text-sm font-bold text-white"
+              >
+                Sign up free
+              </Link>
+            </nav>
+          </div>
         </header>
 
         <div className="relative mx-auto max-w-6xl px-4 pt-14 pb-20 sm:pt-20 sm:pb-28">

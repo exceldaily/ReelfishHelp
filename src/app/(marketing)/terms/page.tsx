@@ -40,11 +40,11 @@ const rules = [
 
 export default function TermsPage() {
   return (
-    <div className="min-h-dvh bg-sand-50 flex flex-col">
-      <header className="border-b border-sand-200 bg-white">
-        <div className="mx-auto max-w-3xl px-4 h-16 flex items-center justify-between">
-          <Logo />
-          <Link href="/" className="text-sm font-semibold text-tide-700 hover:underline">
+    <div className="min-h-dvh bg-[#e7f7fb] flex flex-col">
+      <header className="border-b border-neutral-800 bg-black">
+        <div className="mx-auto max-w-3xl px-4 h-20 flex items-center justify-between">
+          <Logo dark />
+          <Link href="/" className="text-sm font-semibold text-slate-200 hover:text-white">
             ← Home
           </Link>
         </div>

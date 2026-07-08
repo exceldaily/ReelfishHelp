@@ -79,8 +79,8 @@ export function TopNav({
   useEffect(() => setMenuOpen(false), [pathname]);
 
   return (
-    <header className="sticky top-0 z-40 bg-tide-950/95 backdrop-blur border-b border-tide-800">
-      <div className="mx-auto max-w-6xl px-4 h-16 flex items-center gap-4">
+    <header className="sticky top-0 z-40 bg-black border-b border-neutral-800">
+      <div className="mx-auto max-w-6xl px-4 h-20 flex items-center gap-4">
         <Logo dark />
         <nav className="hidden md:flex items-center gap-1 ml-4">
           {primary(fishId).map(({ href, label, icon: Icon }) => (
@@ -89,8 +89,8 @@ export function TopNav({
               href={href}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
                 isActive(pathname, href)
-                  ? "bg-tide-800 text-white"
-                  : "text-tide-200 hover:text-white hover:bg-tide-900"
+                  ? "bg-blue-900 text-white"
+                  : "text-slate-200 hover:text-white hover:bg-neutral-900"
               }`}
             >
               <Icon className="size-4" />
@@ -105,7 +105,7 @@ export function TopNav({
                 href="/search"
                 aria-label="Find anglers"
                 className={`hidden sm:grid place-items-center size-10 rounded-full transition-colors ${
-                  isActive(pathname, "/search") ? "bg-tide-800 text-white" : "text-tide-200 hover:text-white hover:bg-tide-900"
+                  isActive(pathname, "/search") ? "bg-blue-900 text-white" : "text-slate-200 hover:text-white hover:bg-neutral-900"
                 }`}
               >
                 <Search className="size-5" />
@@ -114,7 +114,7 @@ export function TopNav({
                 href="/messages"
                 aria-label="Messages"
                 className={`relative grid place-items-center size-10 rounded-full transition-colors ${
-                  isActive(pathname, "/messages") ? "bg-tide-800 text-white" : "text-tide-200 hover:text-white hover:bg-tide-900"
+                  isActive(pathname, "/messages") ? "bg-blue-900 text-white" : "text-slate-200 hover:text-white hover:bg-neutral-900"
                 }`}
               >
                 <MessageCircle className="size-5" />
@@ -130,17 +130,17 @@ export function TopNav({
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex items-center gap-2 rounded-full border border-tide-700 bg-tide-900 pl-1.5 pr-3 py-1.5 text-sm font-semibold text-white hover:bg-tide-800"
+                className="flex items-center gap-2 rounded-full border border-neutral-700 bg-neutral-950 pl-1.5 pr-3 py-1.5 text-sm font-semibold text-white hover:bg-neutral-900"
                 aria-expanded={menuOpen}
               >
                 {user.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={user.avatarUrl} alt="" className="size-7 rounded-full object-cover" />
                 ) : (
-                  <UserCircle2 className="size-7 text-tide-300" />
+                  <UserCircle2 className="size-7 text-slate-300" />
                 )}
                 <span className="hidden sm:inline max-w-28 truncate">{user.name}</span>
-                <Menu className="size-4 text-tide-300 sm:hidden" />
+                <Menu className="size-4 text-slate-300 sm:hidden" />
               </button>
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-60 rounded-xl bg-white shadow-lift border border-sand-200 py-2 animate-fade-up">
@@ -181,7 +181,7 @@ export function TopNav({
             <>
               <Link
                 href="/login"
-                className="rounded-lg px-3 py-2 text-sm font-semibold text-tide-200 hover:text-white"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 hover:text-white"
               >
                 Log in
               </Link>
@@ -213,7 +213,7 @@ export function MobileTabs({ user, fishId = false }: { user: NavUser; fishId?: b
       : { href: "/login", label: "Profile", icon: UserCircle2 },
   ];
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-tide-950/97 backdrop-blur border-t border-tide-800 pb-[env(safe-area-inset-bottom)]">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-black border-t border-neutral-800 pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-5">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
@@ -222,7 +222,7 @@ export function MobileTabs({ user, fishId = false }: { user: NavUser; fishId?: b
               key={label}
               href={href}
               className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold ${
-                active ? "text-bait-400" : "text-tide-300"
+                active ? "text-blue-300" : "text-slate-300"
               }`}
             >
               <Icon className="size-5" />
