@@ -28,7 +28,7 @@ export function FishImage({
     );
   }
   return (
-    <div className={`relative overflow-hidden bg-tide-950 ${className}`}>
+    <div className={`relative overflow-hidden ${fit === "contain" ? "bg-white" : "bg-tide-950"} ${className}`}>
       <Image
         src={src}
         alt={alt}
