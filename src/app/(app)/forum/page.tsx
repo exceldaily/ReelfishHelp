@@ -17,20 +17,28 @@ function shortDate(value: Date) {
 export default async function ForumPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; topic?: string }>;
+  searchParams: Promise<{ error?: string; topic?: string; board?: string }>;
 }) {
-  const [{ error, topic }, session, db] = await Promise.all([searchParams, auth(), getDb()]);
+  const [{ error, topic, board }, session, db] = await Promise.all([searchParams, auth(), getDb()]);
   const activeTopic = isForumTopic(topic) ? topic! : null;
+  const activeBoardId = typeof board === "string" && board.length > 0 ? board : null;
+
+  const filters = [
+    activeTopic ? eq(forumQuestions.topic, activeTopic) : null,
+    activeBoardId ? eq(forumQuestions.boardId, activeBoardId) : null,
+  ].filter(Boolean) as ReturnType<typeof eq>[];
 
   const [boards, questions] = await Promise.all([
     db.query.biteBoards.findMany({ where: eq(biteBoards.active, true), orderBy: [biteBoards.name] }),
     db.query.forumQuestions.findMany({
-      where: activeTopic ? eq(forumQuestions.topic, activeTopic) : undefined,
+      where: filters.length === 0 ? undefined : filters.length === 1 ? filters[0] : and(...filters),
       orderBy: [desc(forumQuestions.updatedAt)],
       limit: 40,
       with: { board: true, user: { with: { profile: true } } },
     }),
   ]);
+  const activeBoard = activeBoardId ? boards.find((b) => b.id === activeBoardId) ?? null : null;
+  const boardQS = activeBoardId ? `&board=${activeBoardId}` : "";
 
   return (
     <div>
@@ -42,7 +50,7 @@ export default async function ForumPage({
       {/* topic sections */}
       <nav className="mb-5 flex flex-wrap gap-2">
         <Link
-          href="/forum"
+          href={activeBoardId ? `/forum?board=${activeBoardId}` : "/forum"}
           className={`rounded-full px-3.5 py-1.5 text-sm font-bold transition-colors ${
             activeTopic ? "bg-sand-100 text-ink-600 hover:bg-sand-200" : "bg-tide-700 text-white"
           }`}
@@ -52,7 +60,7 @@ export default async function ForumPage({
         {FORUM_TOPICS.map((t) => (
           <Link
             key={t.slug}
-            href={`/forum?topic=${t.slug}`}
+            href={`/forum?topic=${t.slug}${boardQS}`}
             title={t.blurb}
             className={`rounded-full px-3.5 py-1.5 text-sm font-bold transition-colors ${
               activeTopic === t.slug ? "bg-tide-700 text-white" : "bg-sand-100 text-ink-600 hover:bg-sand-200"
@@ -65,16 +73,26 @@ export default async function ForumPage({
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <section className="space-y-3">
-          {activeTopic && (
+          {(activeTopic || activeBoard) && (
             <p className="text-sm font-semibold text-ink-500">
-              Showing <span className="text-ink-800">{forumTopicLabel(activeTopic)}</span> ·{" "}
+              Showing{" "}
+              {activeTopic && <span className="text-ink-800">{forumTopicLabel(activeTopic)}</span>}
+              {activeTopic && activeBoard && " in "}
+              {activeBoard && <span className="text-ink-800">{activeBoard.name}</span>}
+              {" · "}
               <Link href="/forum" className="text-tide-700 hover:text-tide-900">clear</Link>
             </p>
           )}
           {questions.length === 0 ? (
             <EmptyState
               icon={<MessageCircle />}
-              title={activeTopic ? `No ${forumTopicLabel(activeTopic)} questions yet` : "No questions yet"}
+              title={
+                activeTopic
+                  ? `No ${forumTopicLabel(activeTopic)} questions${activeBoard ? ` in ${activeBoard.name}` : ""} yet`
+                  : activeBoard
+                    ? `No questions in ${activeBoard.name} yet`
+                    : "No questions yet"
+              }
               body="Start the first discussion."
             />
           ) : (
@@ -133,7 +151,7 @@ export default async function ForumPage({
                 </div>
                 <div>
                   <Label htmlFor="boardId">State board</Label>
-                  <Select id="boardId" name="boardId" defaultValue="">
+                  <Select id="boardId" name="boardId" defaultValue={activeBoardId ?? ""}>
                     <option value="">No board</option>
                     {boards.map((board) => (
                       <option key={board.id} value={board.id}>

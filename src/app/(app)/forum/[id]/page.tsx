@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { desc, eq } from "drizzle-orm";
 import { CheckCircle2, MessageCircle, ThumbsUp } from "lucide-react";
@@ -5,6 +6,7 @@ import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { forumAnswers, forumQuestions } from "@/db/schema";
 import { acceptForumAnswer, createForumAnswer, toggleAnswerHelpful } from "@/lib/actions/forum-actions";
+import { forumTopicLabel } from "@/data/forum-topics";
 import { Badge, Button, ButtonLink, Card, EmptyState, Label, PageHeader, Textarea } from "@/components/ui";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -46,7 +48,14 @@ export default async function ForumQuestionPage({
         title={question.title}
         subtitle={
           <span className="inline-flex flex-wrap items-center gap-2">
-            {question.board && <Badge variant="neutral">{question.board.regionLabel}</Badge>}
+            <Link href={`/forum?topic=${question.topic}`}>
+              <Badge variant="salt">{forumTopicLabel(question.topic)}</Badge>
+            </Link>
+            {question.board && (
+              <Link href={`/forum?board=${question.board.id}`}>
+                <Badge variant="neutral">{question.board.regionLabel}</Badge>
+              </Link>
+            )}
             <Badge variant={question.status === "resolved" ? "fresh" : "outline"}>{question.status}</Badge>
             <span>Asked by {question.user.profile?.displayName ?? "Angler"} on {stamp(question.createdAt)}</span>
           </span>

@@ -1,11 +1,13 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, desc, eq, inArray, or, isNull, lte } from "drizzle-orm";
-import { CalendarDays, Fish, PlusCircle, TrendingUp } from "lucide-react";
+import { CalendarDays, Fish, MessageCircle, PlusCircle, TrendingUp } from "lucide-react";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { biteBoards, biteReports, catches, userBlocks } from "@/db/schema";
 import { BiteReportCard } from "@/components/bite-report-card";
 import { CatchCard } from "@/components/catch-card";
+import { FORUM_TOPICS } from "@/data/forum-topics";
 import { Badge, ButtonLink, Card, EmptyState, PageHeader } from "@/components/ui";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -208,6 +210,28 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
                 <dd className="font-bold text-ink-900 text-right">{board.regionLabel}</dd>
               </div>
             </dl>
+          </Card>
+
+          <Card className="p-5">
+            <h2 className="flex items-center gap-2 font-display font-bold text-ink-900">
+              <MessageCircle className="size-5 text-tide-700" />
+              Ask {board.name.replace(/ Bite Board$/, "")} anglers
+            </h2>
+            <p className="mt-1 text-sm text-ink-500">Forum questions for this state, by topic.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {FORUM_TOPICS.map((t) => (
+                <Link
+                  key={t.slug}
+                  href={`/forum?board=${board.id}&topic=${t.slug}`}
+                  className="rounded-full bg-sand-100 px-3 py-1 text-xs font-bold text-ink-600 transition-colors hover:bg-sand-200"
+                >
+                  {t.label}
+                </Link>
+              ))}
+            </div>
+            <ButtonLink href={`/forum?board=${board.id}`} variant="secondary" className="mt-4 w-full justify-center">
+              All {board.name.replace(/ Bite Board$/, "")} questions
+            </ButtonLink>
           </Card>
         </aside>
       </div>
