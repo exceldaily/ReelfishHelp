@@ -18,7 +18,7 @@ export default function SignupPage() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label htmlFor="displayName">Display name</Label>
-            <Input id="displayName" name="displayName" required maxLength={40} placeholder="Brad H." />
+            <Input id="displayName" name="displayName" required maxLength={40} placeholder="John Doe" />
           </div>
           <div>
             <Label htmlFor="username">Username</Label>
