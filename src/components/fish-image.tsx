@@ -6,7 +6,7 @@ export function FishImage({
   src,
   alt,
   className = "",
-  fit = "cover",
+  fit = "contain",
   sizes = "(max-width: 768px) 100vw, 33vw",
   priority = false,
 }: {
