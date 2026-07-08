@@ -27,7 +27,33 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const db = await getDb();
   const s = await db.query.species.findFirst({ where: eq(species.slug, slug) });
-  return { title: s ? `${s.commonName} — Catch Guide` : "Catch Guide" };
+  if (!s) return { title: "Catch Guide" };
+
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://reelfishhelp.vercel.app").replace(/\/$/, "");
+  const url = `${base}/fish/${s.slug}`;
+  const title = `${s.commonName} — Catch Guide`;
+  const description = `How to catch ${s.commonName} (${s.scientificName}): best baits and lures, gear, techniques, seasons, habitat, size, and regulations. ${s.description}`.slice(0, 300);
+  const image = s.imageUrl ? (s.imageUrl.startsWith("http") ? s.imageUrl : `${base}${s.imageUrl}`) : undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title,
+      description,
+      siteName: "ReelFishHelp",
+      images: image ? [{ url: image, alt: s.commonName }] : [],
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: image ? [image] : [],
+    },
+  };
 }
 
 function Row({ label, value }: { label: string; value?: string | null }) {
