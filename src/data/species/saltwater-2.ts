@@ -625,6 +625,9 @@ export const saltwaterNearshoreOffshore: SpeciesSeed[] = [
     category: "Pelagic",
     difficulty: 4,
     beginnerFriendly: false,
+    // Retired July 8 2026 — split into individual tuna species (see saltwater-3.ts).
+    // Kept (hidden) so existing catches referencing this species still resolve.
+    active: false,
     wikiTitle: "Yellowfin tuna",
     description:
       "The muscle of the ocean — warm-blooded, deep-pulling, sashimi-grade. Yellowfin haunt the canyons and rigs; blackfin bring the tuna fight within reach of smaller boats.",

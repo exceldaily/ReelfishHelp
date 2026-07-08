@@ -14,7 +14,7 @@ import {
   type Visibility,
 } from "@/db";
 import { requireUser } from "@/lib/auth-helpers";
-import { storeImage } from "@/lib/storage";
+import { storeMedia, assertUnderQuota, deleteMediaByRelation } from "@/lib/media";
 import { approximate } from "@/lib/geo";
 
 export type CatchFormResult = { error?: string } | undefined;
@@ -80,9 +80,26 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
     photoUrls.push(existingPhoto);
   }
   const files = formData.getAll("photos").filter((f): f is File => f instanceof File && f.size > 0);
+  if (files.length > 0) {
+    try {
+      await assertUnderQuota(user.id);
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : "Storage limit reached" };
+    }
+  }
   for (const f of files.slice(0, 6)) {
     try {
-      photoUrls.push(await storeImage(f, "catches"));
+      // EXIF/GPS stripped, WebP variants generated, uploaded to R2 (or fallback),
+      // and recorded in media_assets with the catch's visibility.
+      const asset = await storeMedia({
+        file: f,
+        ownerId: user.id,
+        kind: "catch",
+        relatedId: row.id,
+        visibility: row.visibility,
+      });
+      const feed = asset.variants.find((v) => v.label === "feed") ?? asset.variants[asset.variants.length - 1];
+      if (feed) photoUrls.push(feed.url);
     } catch (e) {
       return { error: e instanceof Error ? e.message : "Photo upload failed" };
     }
@@ -100,6 +117,8 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
 export async function deleteCatch(catchId: string) {
   const user = await requireUser();
   const db = await getDb();
+  // free the storage its photos used (soft-delete; cleanup job purges R2 later)
+  await deleteMediaByRelation("catch", catchId, user.id);
   await db.delete(catches).where(and(eq(catches.id, catchId), eq(catches.userId, user.id)));
   revalidatePath("/catches");
   revalidatePath("/community");

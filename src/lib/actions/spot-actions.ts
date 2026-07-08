@@ -4,7 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getDb, spots, type SpotPrivacy } from "@/db";
 import { requireUser } from "@/lib/auth-helpers";
-import { storeImage } from "@/lib/storage";
+import { storeMediaUrl } from "@/lib/media";
 import { approximate } from "@/lib/geo";
 
 const PRIVACY_LEVELS: SpotPrivacy[] = ["private_exact", "private_area", "shared_area", "public_broad"];
@@ -30,7 +30,15 @@ export async function createSpot(_prev: SpotFormResult, formData: FormData): Pro
   const photo = formData.get("photo");
   if (photo instanceof File && photo.size > 0) {
     try {
-      photoUrl = await storeImage(photo, "spots");
+      // shared/public spots get public imagery; private levels stay private.
+      // EXIF (incl. any GPS in the photo) is stripped by the pipeline.
+      const spotPublic = privacy === "shared_area" || privacy === "public_broad";
+      photoUrl = await storeMediaUrl({
+        file: photo,
+        ownerId: user.id,
+        kind: "spot",
+        visibility: spotPublic ? "public" : "private",
+      });
     } catch (e) {
       return { error: e instanceof Error ? e.message : "Photo upload failed" };
     }

@@ -15,6 +15,13 @@
       "when": 1783456181110,
       "tag": "0001_messaging_terms",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783489639847,
+      "tag": "0002_media_storage",
+      "breakpoints": true
     }
   ]
 }

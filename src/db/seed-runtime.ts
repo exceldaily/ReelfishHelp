@@ -1,26 +1,42 @@
-import { count } from "drizzle-orm";
+import { count, inArray, eq } from "drizzle-orm";
 import type { Db } from "./index";
 import { species, regulationLinks } from "./schema";
 import { allSpecies } from "@/data/species";
 import { stateRegulations } from "@/data/regulations";
 
-/** Seeds species + regulation links if the database is empty. Idempotent. */
+/**
+ * Slugs that were split into individual species and should be hidden from the
+ * Fish Finder. The rows are kept (not deleted) so existing catches that
+ * reference them still resolve — they're just marked inactive.
+ */
+const RETIRED_SLUGS = ["tuna"];
+
+/**
+ * Seeds species + regulation links. Idempotent and ADDITIVE: it inserts any
+ * species/regulations that don't exist yet (so newly added species show up on
+ * the next seed/boot) without overwriting existing rows or admin edits.
+ */
 export async function ensureSeed(db: Db) {
-  const [{ value: speciesCount }] = await db
-    .select({ value: count() })
-    .from(species);
-  if (speciesCount === 0) {
-    for (const s of allSpecies) {
-      await db.insert(species).values(s).onConflictDoNothing();
-    }
-    console.log(`[seed] inserted ${allSpecies.length} species`);
+  // insert-missing: onConflictDoNothing skips species already in the table,
+  // so admin edits are preserved and only genuinely-new species are added.
+  for (const s of allSpecies) {
+    await db.insert(species).values(s).onConflictDoNothing();
   }
 
-  const [{ value: regCount }] = await db
-    .select({ value: count() })
-    .from(regulationLinks);
+  // retire generic entries that have been split into per-species profiles
+  if (RETIRED_SLUGS.length > 0) {
+    await db.update(species).set({ active: false }).where(inArray(species.slug, RETIRED_SLUGS));
+  }
+
+  const [{ value: regCount }] = await db.select({ value: count() }).from(regulationLinks);
   if (regCount === 0) {
     await db.insert(regulationLinks).values(stateRegulations).onConflictDoNothing();
     console.log(`[seed] inserted ${stateRegulations.length} state regulation links`);
   }
+}
+
+/** Count of active species — handy for a post-seed sanity check. */
+export async function activeSpeciesCount(db: Db): Promise<number> {
+  const [{ value }] = await db.select({ value: count() }).from(species).where(eq(species.active, true));
+  return value;
 }

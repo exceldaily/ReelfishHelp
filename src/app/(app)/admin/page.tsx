@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { count, desc, eq } from "drizzle-orm";
-import { Shield, Fish, Flag, Users as UsersIcon, Trophy, Scale } from "lucide-react";
+import { Shield, Fish, Flag, Users as UsersIcon, Trophy, Scale, HardDrive } from "lucide-react";
 import { getDb, species, reports, users, catches } from "@/db";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { PageHeader, Card, Badge } from "@/components/ui";
@@ -53,6 +53,16 @@ export default async function AdminPage() {
             </h3>
             <p className="mt-1 text-sm text-ink-500">
               Edit species data, guide content, images, regions, seasons, and activate/retire species.
+            </p>
+          </Card>
+        </Link>
+        <Link href="/admin/storage" className="block">
+          <Card className="p-5 hover:shadow-lift transition-shadow">
+            <h3 className="font-display font-bold text-ink-900 flex items-center gap-2">
+              <HardDrive className="size-5 text-tide-600" /> Photo storage
+            </h3>
+            <p className="mt-1 text-sm text-ink-500">
+              R2 usage by category and user, upload activity, failed/orphaned media, and lifecycle cleanup.
             </p>
           </Card>
         </Link>

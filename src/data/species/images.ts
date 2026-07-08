@@ -45,4 +45,12 @@ export const speciesImages: Record<string, { url: string; credit: string; source
   "sailfish": { url: "/species/sailfish.jpg", credit: "Wikipedia — Atlantic sailfish", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Two_men_holding_a_freshly_caught_sailfish.jpg" },
   "blue-marlin": { url: "/species/blue-marlin.jpg", credit: "Wikipedia — Atlantic blue marlin", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Atlantic_blue_marlin.jpg/1280px-Atlantic_blue_marlin.jpg" },
   "sharks-coastal": { url: "/species/sharks-coastal.jpg", credit: "Wikipedia — Blacktip shark", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Carcharhinus_limbatus_%282%29.jpg/1280px-Carcharhinus_limbatus_%282%29.jpg" },
+  // ── Tuna family (individual species) + Hogfish — added July 8 2026 ──
+  "blackfin-tuna": { url: "/species/blackfin-tuna.jpg", credit: "Wikipedia — Blackfin tuna", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/0/04/Blackfin_tuna%2C_Duane_Raver_Jr.jpg" },
+  "yellowfin-tuna": { url: "/species/yellowfin-tuna.png", credit: "Wikipedia — Yellowfin tuna", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Thunnus_albacares.png" },
+  "bluefin-tuna": { url: "/species/bluefin-tuna.jpg", credit: "Wikipedia — Atlantic bluefin tuna", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/1/18/Bluefin-big.jpg" },
+  "bigeye-tuna": { url: "/species/bigeye-tuna.jpg", credit: "Wikipedia — Bigeye tuna", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Thunnus_obesus_%28bigeye_tuna%29.jpg" },
+  "albacore-tuna": { url: "/species/albacore-tuna.jpg", credit: "Wikipedia — Albacore", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Thon_germon_%28Thunnus_alalunga%29_%28Ifremer_00764-87615%29.jpg" },
+  "skipjack-tuna": { url: "/species/skipjack-tuna.png", credit: "Wikipedia — Skipjack tuna", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Katsuwonus_pelamis.png" },
+  "hogfish": { url: "/species/hogfish.jpg", credit: "Wikipedia — Hogfish", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/7/75/A_hogfish_is_a_large_wrasse%2C_Lachnolaimus_maximus.jpg" },
 };

@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getDb, profiles, type LocationMode, type Visibility, type WaterPref } from "@/db";
 import { requireUser } from "@/lib/auth-helpers";
 import { approximate, reverseGeocode } from "@/lib/geo";
-import { storeImage } from "@/lib/storage";
+import { storeMediaUrl } from "@/lib/media";
 
 /** Stores the user's location — always rounded to ~1km before it touches the database. */
 export async function saveLocation(input: {
@@ -109,7 +109,13 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
   const avatar = formData.get("avatar");
   if (avatar instanceof File && avatar.size > 0) {
     try {
-      avatarUrl = await storeImage(avatar, "avatars");
+      avatarUrl = await storeMediaUrl({
+        file: avatar,
+        ownerId: user.id,
+        kind: "profile",
+        relatedId: user.id,
+        visibility: "public",
+      });
     } catch (e) {
       return { error: e instanceof Error ? e.message : "Avatar upload failed" };
     }

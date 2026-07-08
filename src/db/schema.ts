@@ -4,6 +4,7 @@ import {
   timestamp,
   boolean,
   integer,
+  bigint,
   real,
   jsonb,
   primaryKey,
@@ -409,6 +410,97 @@ export const identifications = pgTable("identifications", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/* ------------------------------- media / R2 --------------------------------- */
+
+export type MediaKind = "catch" | "profile" | "gear" | "spot" | "identification" | "report" | "other";
+export type MediaStatus = "pending" | "ready" | "failed" | "deleted";
+export type StorageBackend = "r2" | "blob" | "local";
+export type VariantLabel = "thumbnail" | "feed" | "detail" | "original";
+
+/**
+ * One row per uploaded image. Neon stores ONLY metadata — never binaries.
+ * The actual bytes live in Cloudflare R2 (or Vercel Blob / local disk as a
+ * fallback when R2 is not configured). `visibility` drives the protected
+ * delivery route; exact coordinates are never stored here.
+ */
+export const mediaAssets = pgTable(
+  "media_assets",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kind: text("kind").$type<MediaKind>().notNull().default("other"),
+    relatedId: text("related_id"), // catchId / gearId / spotId / profile userId ...
+    backend: text("backend").$type<StorageBackend>().notNull().default("local"),
+    // base object key prefix in the bucket, e.g. catches/{userId}/{catchId}/{mediaId}
+    baseKey: text("base_key"),
+    contentType: text("content_type").notNull(),
+    originalName: text("original_name"),
+    // total bytes across all stored variants (kept in sync with variants)
+    byteSize: bigint("byte_size", { mode: "number" }).notNull().default(0),
+    width: integer("width"),
+    height: integer("height"),
+    visibility: text("visibility").$type<Visibility>().notNull().default("private"),
+    status: text("status").$type<MediaStatus>().notNull().default("pending"),
+    // whether the temporary original is still retained (for fish ID / retries)
+    hasOriginal: boolean("has_original").notNull().default(false),
+    originalKey: text("original_key"),
+    // denormalized copy of variants for fast reads (also normalized below)
+    variants: jsonb("variants")
+      .$type<{ label: VariantLabel; key: string; url: string; width: number; height: number; bytes: number; format: string }[]>()
+      .notNull()
+      .default([]),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("media_owner_idx").on(t.ownerId),
+    index("media_related_idx").on(t.kind, t.relatedId),
+    index("media_status_idx").on(t.status),
+  ]
+);
+
+export const mediaVariants = pgTable(
+  "media_variants",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    assetId: text("asset_id")
+      .notNull()
+      .references(() => mediaAssets.id, { onDelete: "cascade" }),
+    label: text("label").$type<VariantLabel>().notNull(),
+    key: text("key").notNull(), // R2 object key OR blob/local URL
+    url: text("url").notNull(), // protected delivery URL
+    format: text("format").notNull().default("webp"),
+    width: integer("width").notNull().default(0),
+    height: integer("height").notNull().default(0),
+    byteSize: bigint("byte_size", { mode: "number" }).notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("media_variants_asset_idx").on(t.assetId)]
+);
+
+export const userStorageUsage = pgTable("user_storage_usage", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  totalBytes: bigint("total_bytes", { mode: "number" }).notNull().default(0),
+  assetCount: integer("asset_count").notNull().default(0),
+  photoCount: integer("photo_count").notNull().default(0),
+  // per-user quota; null = use the global default (STORAGE_FREE_QUOTA_MB)
+  quotaBytes: bigint("quota_bytes", { mode: "number" }),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type MediaAsset = typeof mediaAssets.$inferSelect;
+export type MediaVariant = typeof mediaVariants.$inferSelect;
+export type UserStorageUsage = typeof userStorageUsage.$inferSelect;
+
 /* ------------------------------- messaging ---------------------------------- */
 
 /**
@@ -530,6 +622,19 @@ export const messagesRelations = relations(messages, ({ one }) => ({
 
 export const gearItemsRelations = relations(gearItems, ({ one }) => ({
   user: one(users, { fields: [gearItems.userId], references: [users.id] }),
+}));
+
+export const mediaAssetsRelations = relations(mediaAssets, ({ one, many }) => ({
+  owner: one(users, { fields: [mediaAssets.ownerId], references: [users.id] }),
+  variantRows: many(mediaVariants),
+}));
+
+export const mediaVariantsRelations = relations(mediaVariants, ({ one }) => ({
+  asset: one(mediaAssets, { fields: [mediaVariants.assetId], references: [mediaAssets.id] }),
+}));
+
+export const userStorageUsageRelations = relations(userStorageUsage, ({ one }) => ({
+  user: one(users, { fields: [userStorageUsage.userId], references: [users.id] }),
 }));
 
 export type User = typeof users.$inferSelect;

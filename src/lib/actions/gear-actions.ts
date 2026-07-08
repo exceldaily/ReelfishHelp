@@ -4,7 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getDb, gearItems } from "@/db";
 import { requireUser } from "@/lib/auth-helpers";
-import { storeImage } from "@/lib/storage";
+import { storeMediaUrl } from "@/lib/media";
 import { GEAR_CATEGORIES } from "@/lib/constants";
 
 export type GearFormResult = { error?: string; ok?: boolean } | undefined;
@@ -21,7 +21,13 @@ export async function saveGear(_prev: GearFormResult, formData: FormData): Promi
   const photo = formData.get("photo");
   if (photo instanceof File && photo.size > 0) {
     try {
-      photoUrl = await storeImage(photo, "gear");
+      photoUrl = await storeMediaUrl({
+        file: photo,
+        ownerId: user.id,
+        kind: "gear",
+        relatedId: id || null,
+        visibility: formData.get("isPublic") === "on" ? "public" : "private",
+      });
     } catch (e) {
       return { error: e instanceof Error ? e.message : "Photo upload failed" };
     }
