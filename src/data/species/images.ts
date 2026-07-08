@@ -53,4 +53,18 @@ export const speciesImages: Record<string, { url: string; credit: string; source
   "albacore-tuna": { url: "/species/albacore-tuna.jpg", credit: "Wikipedia — Albacore", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Thon_germon_%28Thunnus_alalunga%29_%28Ifremer_00764-87615%29.jpg" },
   "skipjack-tuna": { url: "/species/skipjack-tuna.png", credit: "Wikipedia — Skipjack tuna", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Katsuwonus_pelamis.png" },
   "hogfish": { url: "/species/hogfish.jpg", credit: "Wikipedia — Hogfish", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/7/75/A_hogfish_is_a_large_wrasse%2C_Lachnolaimus_maximus.jpg" },
+  // ── Snapper + grouper individual species — added July 8 2026 ──
+  "red-snapper": { url: "/species/red-snapper.jpg", credit: "Wikipedia — Northern red snapper", sourceUrl: "https://commons.wikimedia.org/wiki/File:Lutjanus_campechanus_SI.jpg" },
+  "mangrove-snapper": { url: "/species/mangrove-snapper.jpg", credit: "Wikipedia — Mangrove snapper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/6/6b/Grey_snapper_-_Lutjanus_griseus.jpg" },
+  "yellowtail-snapper": { url: "/species/yellowtail-snapper.jpg", credit: "Wikipedia — Yellowtail snapper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Yellowtail_snapper_seen_from_Underwater_Tunnel_Atlantis.jpg" },
+  "mutton-snapper": { url: "/species/mutton-snapper.jpg", credit: "Wikipedia — Mutton snapper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1d/Lutjanus_analis_SI.jpg" },
+  "lane-snapper": { url: "/species/lane-snapper.jpg", credit: "Wikipedia — Lane snapper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/2/25/Lutjanus_synagris.jpg" },
+  "vermilion-snapper": { url: "/species/vermilion-snapper.jpg", credit: "Wikipedia — Vermilion snapper", sourceUrl: "https://commons.wikimedia.org/wiki/File:Rhomboplites_aurorubens_-_Sanc2430.jpg" },
+  "cubera-snapper": { url: "/species/cubera-snapper.jpg", credit: "Wikipedia — Cubera snapper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/9/9f/Gfp-cubera-snapper.jpg" },
+  "gag-grouper": { url: "/species/gag-grouper.jpg", credit: "Wikipedia — Gag grouper", sourceUrl: "https://commons.wikimedia.org/wiki/File:Baltimore_Aquarium_-_Mycteroperca_microlepis_-_05.jpg" },
+  "red-grouper": { url: "/species/red-grouper.jpg", credit: "Wikipedia — Red grouper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Epinephelus_morio_in_Madagascar_Reef.jpg" },
+  "black-grouper": { url: "/species/black-grouper.jpg", credit: "Wikipedia — Black grouper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/a/a1/Mycteroperca_bonaci_331692609.jpg" },
+  "scamp-grouper": { url: "/species/scamp-grouper.jpg", credit: "Wikipedia — Scamp grouper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Mycteroperca_phenax.jpg" },
+  "snowy-grouper": { url: "/species/snowy-grouper.jpg", credit: "Wikipedia — Snowy grouper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Snowy_grouper_%28Epinephelus_niveatus%29.jpg" },
+  "red-hind": { url: "/species/red-hind.jpg", credit: "Wikipedia — Red hind", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/1/11/Epinephelus_guttatus1.jpg" },
 };

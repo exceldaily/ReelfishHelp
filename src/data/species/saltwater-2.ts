@@ -319,6 +319,9 @@ export const saltwaterNearshoreOffshore: SpeciesSeed[] = [
     category: "Grouper",
     difficulty: 3,
     beginnerFriendly: false,
+    // Retired July 8 2026 — split into individual grouper species (see saltwater-4.ts).
+    // Kept (hidden) so existing catches referencing this species still resolve.
+    active: false,
     wikiTitle: "Gag grouper",
     description:
       "The bulldogs of the bottom — thick-bodied ambushers that eat a bait, then try to break your tackle in the first ten feet back to the rocks. Winning happens in the first three seconds.",
@@ -421,6 +424,9 @@ export const saltwaterNearshoreOffshore: SpeciesSeed[] = [
     category: "Snapper",
     difficulty: 2,
     beginnerFriendly: true,
+    // Retired July 8 2026 — split into individual snapper species (see saltwater-4.ts).
+    // Kept (hidden) so existing catches referencing this species still resolve.
+    active: false,
     wikiTitle: "Northern red snapper",
     description:
       "The Gulf's crown jewel (red) and the wily dock bandit (mangrove) — snappers cover everything from kids' first keeper to leader-shy technical fishing on pressured reefs.",

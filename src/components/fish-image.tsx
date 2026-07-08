@@ -6,12 +6,14 @@ export function FishImage({
   src,
   alt,
   className = "",
+  fit = "cover",
   sizes = "(max-width: 768px) 100vw, 33vw",
   priority = false,
 }: {
   src: string | null;
   alt: string;
   className?: string;
+  fit?: "cover" | "contain";
   sizes?: string;
   priority?: boolean;
 }) {
@@ -27,7 +29,14 @@ export function FishImage({
   }
   return (
     <div className={`relative overflow-hidden bg-tide-950 ${className}`}>
-      <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        priority={priority}
+        className={fit === "contain" ? "object-contain p-2" : "object-cover"}
+      />
     </div>
   );
 }

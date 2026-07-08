@@ -9,7 +9,7 @@ import { stateRegulations } from "@/data/regulations";
  * Fish Finder. The rows are kept (not deleted) so existing catches that
  * reference them still resolve — they're just marked inactive.
  */
-const RETIRED_SLUGS = ["tuna"];
+const RETIRED_SLUGS = ["tuna", "snapper", "grouper"];
 
 /**
  * Seeds species + regulation links. Idempotent and ADDITIVE: it inserts any

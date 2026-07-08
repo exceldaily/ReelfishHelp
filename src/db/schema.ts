@@ -65,6 +65,9 @@ export const profiles = pgTable("profiles", {
 
 export type SpeciesGuide = {
   summary: string;
+  identification?: {
+    characteristics: string[];
+  };
   quickPlan: {
     bestBaitNow: string;
     lureType: string;

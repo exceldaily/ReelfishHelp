@@ -12,8 +12,9 @@ import {
   Trophy,
   ChevronDown,
   Eye,
+  Fingerprint,
 } from "lucide-react";
-import { getDb, species, savedGuides, regulationLinks } from "@/db";
+import { getDb, species, savedGuides, type Species } from "@/db";
 import { auth } from "@/auth";
 import { getProfile } from "@/lib/auth-helpers";
 import { resolveSpeciesImage } from "@/lib/wiki-images";
@@ -65,6 +66,29 @@ function Section({
   );
 }
 
+function cleanList(items: string[]) {
+  return items.filter(Boolean).map((item) => item.trim()).filter(Boolean);
+}
+
+function formatList(items: string[]) {
+  return cleanList(items).slice(0, 5).join(", ");
+}
+
+function buildIdentificationCharacteristics(s: Species): string[] {
+  const guideTraits = s.guide.identification?.characteristics ?? [];
+  const description = s.description.replace(/\s+/g, " ").trim();
+  const traits = [
+    ...guideTraits,
+    description ? `Overall look: ${description}` : "",
+    `Typical size: ${s.avgSize}; trophy class: ${s.trophySize}.`,
+    `Most likely setting: ${formatList(s.environments)}${s.regions.length ? ` in ${formatList(s.regions)}.` : "."}`,
+    s.guide.habitat.lookFor ? `Where to confirm it: ${s.guide.habitat.lookFor}` : "",
+    ...s.lookalikes.map((l) => `Compared with ${l.name}: ${l.howToTell}`),
+  ];
+
+  return cleanList([...new Set(traits)]);
+}
+
 export default async function CatchGuidePage({
   params,
 }: {
@@ -104,13 +128,14 @@ export default async function CatchGuidePage({
   const g = s.guide;
   const toc = [
     ["quick-plan", "Quick Plan"],
+    ["identification", "ID"],
     ["gear", "Gear"],
     ["techniques", "Techniques"],
     ["timing", "Timing"],
     ["habitat", "Habitat"],
     ["mistakes", "Mistakes"],
     ["handling", "Handling"],
-    ["regulations", "Regulations"],
+    ["regulations", "Regs"],
   ] as const;
 
   return (
@@ -118,7 +143,7 @@ export default async function CatchGuidePage({
       {/* hero */}
       <div className="rounded-3xl overflow-hidden bg-tide-950 text-white shadow-lift">
         <div className="grid md:grid-cols-2">
-          <FishImage src={imageUrl} alt={s.commonName} className="h-56 md:h-full min-h-56" priority sizes="(max-width: 768px) 100vw, 50vw" />
+          <FishImage src={imageUrl} alt={s.commonName} className="h-56 md:h-full min-h-56" fit="contain" priority sizes="(max-width: 768px) 100vw, 50vw" />
           <div className="p-6 sm:p-8">
             <div className="flex flex-wrap gap-2">
               <WaterBadge water={s.water} />
@@ -191,6 +216,21 @@ export default async function CatchGuidePage({
               Local relevance: it&apos;s {season} and {s.commonName.toLowerCase()} are in season in your area — this plan applies right now.
             </p>
           )}
+        </Section>
+
+        {/* identification */}
+        <Section id="identification" icon={Fingerprint} title="ID Characteristics">
+          <p className="text-sm text-ink-600 leading-relaxed mb-4">
+            Use these field marks and context clues to separate {s.commonName.toLowerCase()} from similar fish before logging or keeping one.
+          </p>
+          <ul className="grid gap-3">
+            {buildIdentificationCharacteristics(s).map((trait) => (
+              <li key={trait} className="flex gap-3 rounded-xl bg-sand-100/70 px-4 py-3 text-sm text-ink-700 leading-relaxed">
+                <span className="mt-2 size-1.5 rounded-full bg-tide-600 shrink-0" />
+                <span>{trait}</span>
+              </li>
+            ))}
+          </ul>
         </Section>
 
         {/* gear */}

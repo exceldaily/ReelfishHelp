@@ -8,26 +8,27 @@
  */
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 
 // slug → Wikipedia page title
 const TARGETS: Record<string, string> = {
-  "blackfin-tuna": "Blackfin tuna",
-  "yellowfin-tuna": "Yellowfin tuna",
-  "bluefin-tuna": "Atlantic bluefin tuna",
-  "bigeye-tuna": "Bigeye tuna",
-  "albacore-tuna": "Albacore",
-  "skipjack-tuna": "Skipjack tuna",
-  "hogfish": "Hogfish",
+  "red-snapper": "Northern red snapper",
+  "mangrove-snapper": "Mangrove snapper",
+  "yellowtail-snapper": "Yellowtail snapper",
+  "mutton-snapper": "Mutton snapper",
+  "lane-snapper": "Lane snapper",
+  "vermilion-snapper": "Vermilion snapper",
+  "cubera-snapper": "Cubera snapper",
+  "gag-grouper": "Gag grouper",
+  "red-grouper": "Red grouper",
+  "black-grouper": "Black grouper",
+  "scamp-grouper": "Scamp grouper",
+  "snowy-grouper": "Snowy grouper",
+  "red-hind": "Red hind",
 };
 
 const OUT = path.join(process.cwd(), "public", "species");
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-function extOf(url: string): string {
-  const m = url.toLowerCase().match(/\.(jpe?g|png|webp)(\?|$)/);
-  if (!m) return ".jpg";
-  return m[1] === "jpeg" ? ".jpg" : `.${m[1]}`;
-}
 
 async function main() {
   fs.mkdirSync(OUT, { recursive: true });
@@ -45,14 +46,18 @@ async function main() {
       console.log(`FAIL no image ${slug}`);
       continue;
     }
-    const ext = extOf(src);
-    const file = `${slug}${ext}`;
+    const file = `${slug}.jpg`;
     const img = await fetch(src, { headers: { "User-Agent": "ReelFishHelp/1.0 (species images; exceldaily7@gmail.com)" } });
     if (!img.ok) {
       console.log(`FAIL download ${slug}: HTTP ${img.status}`);
       continue;
     }
-    const buf = Buffer.from(await img.arrayBuffer());
+    const raw = Buffer.from(await img.arrayBuffer());
+    const buf = await sharp(raw)
+      .rotate()
+      .resize({ width: 1280, height: 1280, fit: "inside", withoutEnlargement: true })
+      .jpeg({ quality: 84, mozjpeg: true })
+      .toBuffer();
     fs.writeFileSync(path.join(OUT, file), buf);
     console.log(`saved ${file}  ${(buf.length / 1024).toFixed(0)} KB  <- ${title}`);
     lines.push(
