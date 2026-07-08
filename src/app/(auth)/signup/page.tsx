@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { register, type AuthResult } from "@/lib/actions/auth-actions";
 import { Button, Input, Label, FieldError } from "@/components/ui";
+import { TurnstileField } from "@/components/turnstile-field";
 
 export default function SignupPage() {
   const [state, action, pending] = useActionState<AuthResult, FormData>(register, undefined);
@@ -45,8 +46,9 @@ export default function SignupPage() {
             type="password"
             required
             minLength={8}
+            maxLength={72}
             autoComplete="new-password"
-            placeholder="8+ characters"
+            placeholder="8 to 72 characters"
           />
         </div>
         <label className="flex items-start gap-2.5 text-sm text-ink-700">
@@ -59,6 +61,7 @@ export default function SignupPage() {
             — including no hate, harassment, or illegal fishing.
           </span>
         </label>
+        <TurnstileField />
         <FieldError>{state?.error}</FieldError>
         <Button size="lg" className="w-full" disabled={pending}>
           {pending ? "Creating account…" : "Create account"}

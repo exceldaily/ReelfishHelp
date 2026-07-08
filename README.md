@@ -18,7 +18,7 @@ A production-ready fishing help platform for US freshwater and saltwater anglers
 | **Gear** | Categorized gear locker + wishlist, save recommended setups straight from catch guides |
 | **Community** | Public feed, follows, likes, comments, saves, reporting |
 | **Profiles** | Stats, badges, public gear, shared general areas, follower privacy |
-| **Admin** | Species/guide CMS, reports queue with content removal, first registered account becomes admin |
+| **Admin** | Species/guide CMS, reports queue with content removal, intentional admin bootstrap |
 
 ## Stack
 
@@ -60,7 +60,21 @@ ANTHROPIC_API_KEY=sk-ant-...   # console.anthropic.com
    ```bash
    DATABASE_URL="postgres://...neon connection string..." npm run db:setup
    ```
-6. Deploy. Register your account first — the first user becomes admin.
+6. Deploy. Create/admin users intentionally; production signups do not become admin automatically.
+
+## Signup security
+
+The app ships with bcrypt password hashing, generic login errors, trimmed/lowercased email handling, auth throttling, security headers, and optional Cloudflare Turnstile on login/signup.
+
+Recommended Cloudflare setup:
+
+1. Put the production hostname behind Cloudflare proxy mode.
+2. Enable the Cloudflare WAF managed ruleset.
+3. Add rate limiting rules for `POST /login`, `POST /signup`, `/api/auth/*`, and expensive upload/identify routes.
+4. Create a Cloudflare Turnstile widget and set these Vercel environment variables:
+   - `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+   - `TURNSTILE_SECRET_KEY`
+5. Keep `ALLOW_FIRST_USER_ADMIN` unset or `false` in production. Only use `true` for local bootstrap on an empty dev database.
 
 ## Cloudflare R2 photo storage
 

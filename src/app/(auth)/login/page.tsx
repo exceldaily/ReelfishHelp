@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { login, type AuthResult } from "@/lib/actions/auth-actions";
+import { TurnstileField } from "@/components/turnstile-field";
 import { Button, Input, Label, FieldError } from "@/components/ui";
 
 export default function LoginPage() {
@@ -19,11 +20,12 @@ export default function LoginPage() {
         </div>
         <div>
           <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" required autoComplete="current-password" placeholder="••••••••" />
+          <Input id="password" name="password" type="password" required autoComplete="current-password" placeholder="8+ characters" />
         </div>
+        <TurnstileField />
         <FieldError>{state?.error}</FieldError>
         <Button size="lg" className="w-full" disabled={pending}>
-          {pending ? "Logging in…" : "Log in"}
+          {pending ? "Logging in..." : "Log in"}
         </Button>
       </form>
       <p className="mt-5 text-sm text-ink-500 text-center">
