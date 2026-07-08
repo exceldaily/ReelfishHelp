@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { getDb } from "@/db";
 import { biteBoards, forumAnswers, forumAnswerVotes, forumQuestions } from "@/db/schema";
 import { requireUser } from "@/lib/auth-helpers";
+import { DEFAULT_FORUM_TOPIC, isForumTopic } from "@/data/forum-topics";
 
 function cleanText(value: FormDataEntryValue | null, max: number) {
   return String(value ?? "").trim().replace(/\s+/g, " ").slice(0, max);
@@ -37,11 +38,15 @@ export async function createForumQuestion(formData: FormData) {
     ? await db.query.biteBoards.findFirst({ where: and(eq(biteBoards.id, boardId), eq(biteBoards.active, true)) })
     : null;
 
+  const requestedTopic = cleanText(formData.get("topic"), 40);
+  const topic = isForumTopic(requestedTopic) ? requestedTopic : DEFAULT_FORUM_TOPIC;
+
   const questionId = randomUUID();
   await db.insert(forumQuestions).values({
     id: questionId,
     userId: user.id,
     boardId: board?.id ?? null,
+    topic,
     title,
     body,
     tags: parseTags(formData.get("tags")),

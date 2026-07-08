@@ -371,6 +371,7 @@ export const forumQuestions = pgTable(
     title: text("title").notNull(),
     body: text("body").notNull(),
     tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    topic: text("topic").notNull().default("general"),
     status: text("status", { enum: ["open", "resolved"] }).notNull().default("open"),
     answerCount: integer("answer_count").notNull().default(0),
     helpfulCount: integer("helpful_count").notNull().default(0),
@@ -382,6 +383,7 @@ export const forumQuestions = pgTable(
     index("forum_questions_board_idx").on(t.boardId),
     index("forum_questions_created_idx").on(t.createdAt),
     index("forum_questions_status_idx").on(t.status),
+    index("forum_questions_topic_idx").on(t.topic),
   ]
 );
 

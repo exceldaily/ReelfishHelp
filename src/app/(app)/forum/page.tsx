@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { CheckCircle2, MessageCircle, PlusCircle, ThumbsUp } from "lucide-react";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { biteBoards, forumQuestions } from "@/db/schema";
 import { createForumQuestion } from "@/lib/actions/forum-actions";
+import { FORUM_TOPICS, forumTopicLabel, isForumTopic } from "@/data/forum-topics";
 import { Badge, Button, Card, EmptyState, Input, Label, PageHeader, Select, Textarea } from "@/components/ui";
 
 export const metadata = { title: "Forum" };
@@ -16,12 +17,15 @@ function shortDate(value: Date) {
 export default async function ForumPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; topic?: string }>;
 }) {
-  const [{ error }, session, db] = await Promise.all([searchParams, auth(), getDb()]);
+  const [{ error, topic }, session, db] = await Promise.all([searchParams, auth(), getDb()]);
+  const activeTopic = isForumTopic(topic) ? topic! : null;
+
   const [boards, questions] = await Promise.all([
     db.query.biteBoards.findMany({ where: eq(biteBoards.active, true), orderBy: [biteBoards.name] }),
     db.query.forumQuestions.findMany({
+      where: activeTopic ? eq(forumQuestions.topic, activeTopic) : undefined,
       orderBy: [desc(forumQuestions.updatedAt)],
       limit: 40,
       with: { board: true, user: { with: { profile: true } } },
@@ -32,13 +36,47 @@ export default async function ForumPage({
     <div>
       <PageHeader
         title="Forum"
-        subtitle="Ask fishing questions and compare notes with the community."
+        subtitle="Ask fishing questions and compare notes with the community — by state and by topic."
       />
+
+      {/* topic sections */}
+      <nav className="mb-5 flex flex-wrap gap-2">
+        <Link
+          href="/forum"
+          className={`rounded-full px-3.5 py-1.5 text-sm font-bold transition-colors ${
+            activeTopic ? "bg-sand-100 text-ink-600 hover:bg-sand-200" : "bg-tide-700 text-white"
+          }`}
+        >
+          All topics
+        </Link>
+        {FORUM_TOPICS.map((t) => (
+          <Link
+            key={t.slug}
+            href={`/forum?topic=${t.slug}`}
+            title={t.blurb}
+            className={`rounded-full px-3.5 py-1.5 text-sm font-bold transition-colors ${
+              activeTopic === t.slug ? "bg-tide-700 text-white" : "bg-sand-100 text-ink-600 hover:bg-sand-200"
+            }`}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </nav>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <section className="space-y-3">
+          {activeTopic && (
+            <p className="text-sm font-semibold text-ink-500">
+              Showing <span className="text-ink-800">{forumTopicLabel(activeTopic)}</span> ·{" "}
+              <Link href="/forum" className="text-tide-700 hover:text-tide-900">clear</Link>
+            </p>
+          )}
           {questions.length === 0 ? (
-            <EmptyState icon={<MessageCircle />} title="No questions yet" body="Start the first discussion." />
+            <EmptyState
+              icon={<MessageCircle />}
+              title={activeTopic ? `No ${forumTopicLabel(activeTopic)} questions yet` : "No questions yet"}
+              body="Start the first discussion."
+            />
           ) : (
             questions.map((q) => (
               <Link
@@ -51,6 +89,7 @@ export default async function ForumPage({
                     {q.status === "resolved" && <CheckCircle2 className="size-3" />}
                     {q.status}
                   </Badge>
+                  <Badge variant="salt">{forumTopicLabel(q.topic)}</Badge>
                   {q.board && <Badge variant="neutral">{q.board.regionLabel}</Badge>}
                   <span>{shortDate(q.updatedAt)}</span>
                 </div>
@@ -81,6 +120,16 @@ export default async function ForumPage({
                 <div>
                   <Label htmlFor="title">Question</Label>
                   <Input id="title" name="title" required maxLength={140} placeholder="What should I throw for..." />
+                </div>
+                <div>
+                  <Label htmlFor="topic">Topic</Label>
+                  <Select id="topic" name="topic" defaultValue={activeTopic ?? "general"}>
+                    {FORUM_TOPICS.map((t) => (
+                      <option key={t.slug} value={t.slug}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="boardId">State board</Label>
