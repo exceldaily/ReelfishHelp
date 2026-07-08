@@ -64,7 +64,7 @@ export const speciesImages: Record<string, { url: string; credit: string; source
   "gag-grouper": { url: "/species/gag-grouper.jpg", credit: "NOAA Fisheries", sourceUrl: "https://www.fisheries.noaa.gov/species/gag-grouper" },
   "red-grouper": { url: "/species/red-grouper.jpg", credit: "NOAA Fisheries", sourceUrl: "https://www.fisheries.noaa.gov/species/red-grouper" },
   "black-grouper": { url: "/species/black-grouper.jpg", credit: "NOAA Fisheries", sourceUrl: "https://www.fisheries.noaa.gov/species/black-grouper" },
-  "scamp-grouper": { url: "/species/scamp-grouper.jpg", credit: "Wikipedia — Scamp grouper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Mycteroperca_phenax.jpg" },
+  "scamp-grouper": { url: "/species/scamp-grouper.jpg", credit: "iNaturalist — Pauline Walsh Jacobson (CC BY)", sourceUrl: "https://www.inaturalist.org/observations/105380733" },
   "snowy-grouper": { url: "/species/snowy-grouper.jpg", credit: "Wikipedia — Snowy grouper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Snowy_grouper_%28Epinephelus_niveatus%29.jpg" },
   "red-hind": { url: "/species/red-hind.jpg", credit: "Wikipedia — Red hind", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/1/11/Epinephelus_guttatus1.jpg" },
 };
