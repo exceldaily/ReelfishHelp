@@ -25,5 +25,5 @@ export async function GET() {
       write = "R2 error: " + (e instanceof Error ? e.message : String(e));
     }
   }
-  return NextResponse.json(flags && { ...flags, write });
+  return NextResponse.json({ ...flags, write });
 }
