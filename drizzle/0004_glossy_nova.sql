@@ -1,0 +1,1 @@
+ALTER TABLE "bite_boards" ADD COLUMN "active" boolean DEFAULT true NOT NULL;

@@ -3,7 +3,7 @@ import type { Db } from "./index";
 import { species, regulationLinks, biteBoards } from "./schema";
 import { allSpecies } from "@/data/species";
 import { stateRegulations } from "@/data/regulations";
-import { starterBiteBoards } from "@/data/bite-boards";
+import { retiredStarterBiteBoardSlugs, starterBiteBoards, starterBiteBoardSlugs } from "@/data/bite-boards";
 
 /**
  * Slugs that were split into individual species and should be hidden from the
@@ -36,6 +36,8 @@ export async function ensureSeed(db: Db) {
   }
 
   await db.insert(biteBoards).values(starterBiteBoards).onConflictDoNothing();
+  await db.update(biteBoards).set({ active: true }).where(inArray(biteBoards.slug, starterBiteBoardSlugs));
+  await db.update(biteBoards).set({ active: false }).where(inArray(biteBoards.slug, retiredStarterBiteBoardSlugs));
 }
 
 /** Count of active species — handy for a post-seed sanity check. */

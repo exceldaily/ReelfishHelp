@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { desc, eq, inArray, or, isNull, lte } from "drizzle-orm";
+import { and, desc, eq, inArray, or, isNull, lte } from "drizzle-orm";
 import { CalendarDays, Fish, PlusCircle, TrendingUp } from "lucide-react";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
@@ -11,7 +11,7 @@ import { Badge, ButtonLink, Card, EmptyState, PageHeader } from "@/components/ui
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const db = await getDb();
-  const board = await db.query.biteBoards.findFirst({ where: eq(biteBoards.slug, slug) });
+  const board = await db.query.biteBoards.findFirst({ where: and(eq(biteBoards.slug, slug), eq(biteBoards.active, true)) });
   return { title: board ? `${board.name} Bite Board` : "Bite Board" };
 }
 
@@ -36,7 +36,7 @@ function whatsBiting(reports: { speciesName: string; bait: string | null; method
 export default async function BoardPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const db = await getDb();
-  const board = await db.query.biteBoards.findFirst({ where: eq(biteBoards.slug, slug) });
+  const board = await db.query.biteBoards.findFirst({ where: and(eq(biteBoards.slug, slug), eq(biteBoards.active, true)) });
   if (!board) notFound();
 
   const session = await auth();

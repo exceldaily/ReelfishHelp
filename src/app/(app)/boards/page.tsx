@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { Map, PlusCircle, Waves } from "lucide-react";
 import { getDb } from "@/db";
 import { biteBoards, biteReports } from "@/db/schema";
@@ -10,6 +10,7 @@ export const metadata = { title: "Bite Boards" };
 export default async function BoardsPage() {
   const db = await getDb();
   const boards = await db.query.biteBoards.findMany({
+    where: eq(biteBoards.active, true),
     orderBy: [biteBoards.water, biteBoards.name],
     with: { reports: true, members: true },
   });
@@ -18,7 +19,7 @@ export default async function BoardsPage() {
     limit: 6,
     with: { board: true, species: true },
   });
-  const publicRecent = recentReports.filter((r) => r.visibility === "public_area" || r.visibility === "public_no_area");
+  const publicRecent = recentReports.filter((r) => r.board?.active && (r.visibility === "public_area" || r.visibility === "public_no_area"));
 
   return (
     <div>

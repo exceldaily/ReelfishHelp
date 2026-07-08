@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb } from "@/db";
@@ -89,7 +89,7 @@ export async function createBiteReport(
     }
   }
 
-  const board = boardId ? await db.query.biteBoards.findFirst({ where: eq(biteBoards.id, boardId) }) : null;
+  const board = boardId ? await db.query.biteBoards.findFirst({ where: and(eq(biteBoards.id, boardId), eq(biteBoards.active, true)) }) : null;
   revalidatePath("/community");
   revalidatePath("/boards");
   if (board) revalidatePath(`/boards/${board.slug}`);

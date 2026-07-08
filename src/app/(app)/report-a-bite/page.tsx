@@ -13,7 +13,7 @@ export default async function ReportBitePage({
 }) {
   const { board: boardSlug } = await searchParams;
   const db = await getDb();
-  const boards = await db.query.biteBoards.findMany({ orderBy: [biteBoards.name] });
+  const boards = await db.query.biteBoards.findMany({ where: eq(biteBoards.active, true), orderBy: [biteBoards.name] });
   const selected = boardSlug ? boards.find((b) => b.slug === boardSlug) : null;
   const speciesRows = await db.query.species.findMany({ where: eq(species.active, true), orderBy: [species.commonName] });
 

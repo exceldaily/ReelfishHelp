@@ -511,7 +511,7 @@ export type UserStorageUsage = typeof userStorageUsage.$inferSelect;
 
 /* ----------------------------- community core ------------------------------ */
 
-export type BiteBoardKind = "region" | "lake" | "river" | "bay" | "beach" | "marsh" | "offshore" | "pier";
+export type BiteBoardKind = "state" | "region" | "lake" | "river" | "bay" | "beach" | "marsh" | "offshore" | "pier";
 export type BiteReportOutcome = "caught" | "missed" | "hooked" | "observed";
 export type BiteReportVisibility = "private" | "followers" | "public_area" | "public_no_area";
 
@@ -528,6 +528,7 @@ export const biteBoards = pgTable(
     state: text("state"),
     water: text("water").$type<WaterPref>().notNull().default("both"),
     description: text("description").notNull(),
+    active: boolean("active").notNull().default(true),
     coverMediaId: text("cover_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },

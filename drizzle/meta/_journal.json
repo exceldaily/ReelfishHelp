@@ -29,6 +29,13 @@
       "when": 1783503162471,
       "tag": "0003_sloppy_killmonger",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783506453905,
+      "tag": "0004_glossy_nova",
+      "breakpoints": true
     }
   ]
 }
