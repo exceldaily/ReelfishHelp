@@ -1,6 +1,7 @@
-import { desc, eq } from "drizzle-orm";
-import { Users } from "lucide-react";
-import { getDb, catches } from "@/db";
+import { desc, eq, isNull, lte, or } from "drizzle-orm";
+import { Map, PlusCircle, Users } from "lucide-react";
+import { getDb } from "@/db";
+import { catches, userBlocks } from "@/db/schema";
 import { auth } from "@/auth";
 import { PageHeader, EmptyState, ButtonLink } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
@@ -13,10 +14,17 @@ export default async function CommunityPage({
   searchParams: Promise<{ water?: string }>;
 }) {
   const { water } = await searchParams;
-  await auth(); // session not required — public catches are public
+  const session = await auth(); // session not required — public catches are public
   const db = await getDb();
+  const blockedRows = session?.user
+    ? await db
+        .select()
+        .from(userBlocks)
+        .where(or(eq(userBlocks.blockerId, session.user.id), eq(userBlocks.blockedId, session.user.id)))
+    : [];
+  const blockedIds = new Set(blockedRows.flatMap((b) => [b.blockerId, b.blockedId]).filter((id) => id !== session?.user?.id));
   const rows = await db.query.catches.findMany({
-    where: eq(catches.visibility, "public"),
+    where: (c, { and }) => and(eq(c.visibility, "public"), or(isNull(c.publishAt), lte(c.publishAt, new Date()))),
     orderBy: [desc(catches.createdAt)],
     limit: 60,
     with: {
@@ -29,8 +37,8 @@ export default async function CommunityPage({
   });
 
   const filtered = water
-    ? rows.filter((c) => (water === "saltwater" ? c.species?.water === "saltwater" : c.species?.water === "freshwater"))
-    : rows;
+    ? rows.filter((c) => !blockedIds.has(c.userId) && (water === "saltwater" ? c.species?.water === "saltwater" : c.species?.water === "freshwater"))
+    : rows.filter((c) => !blockedIds.has(c.userId));
 
   return (
     <div>
@@ -38,22 +46,30 @@ export default async function CommunityPage({
         title="Community"
         subtitle="Public catches from anglers across the country. Location details stay approximate — always."
         action={
-          <div className="flex gap-1.5 rounded-xl bg-sand-100 p-1">
-            {[
-              ["", "All"],
-              ["freshwater", "Freshwater"],
-              ["saltwater", "Saltwater"],
-            ].map(([v, label]) => (
-              <a
-                key={label}
-                href={v ? `/community?water=${v}` : "/community"}
-                className={`rounded-lg px-3.5 py-1.5 text-sm font-bold ${
-                  (water ?? "") === v ? "bg-white shadow-card text-ink-900" : "text-ink-500 hover:text-ink-900"
-                }`}
-              >
-                {label}
-              </a>
-            ))}
+          <div className="flex flex-wrap items-center gap-2">
+            <ButtonLink href="/boards" variant="secondary" size="sm">
+              <Map className="size-4" /> Bite Boards
+            </ButtonLink>
+            <ButtonLink href="/report-a-bite" size="sm">
+              <PlusCircle className="size-4" /> Report a Bite
+            </ButtonLink>
+            <div className="flex gap-1.5 rounded-xl bg-sand-100 p-1">
+              {[
+                ["", "All"],
+                ["freshwater", "Freshwater"],
+                ["saltwater", "Saltwater"],
+              ].map(([v, label]) => (
+                <a
+                  key={label}
+                  href={v ? `/community?water=${v}` : "/community"}
+                  className={`rounded-lg px-3.5 py-1.5 text-sm font-bold ${
+                    (water ?? "") === v ? "bg-white shadow-card text-ink-900" : "text-ink-500 hover:text-ink-900"
+                  }`}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
           </div>
         }
       />
@@ -79,8 +95,8 @@ export default async function CommunityPage({
                 bait: c.bait,
                 released: c.released,
                 visibility: c.visibility,
-                locationLabel: c.locationLabel,
-                showLocation: c.showLocation,
+                locationLabel: c.broadAreaLabel ?? c.locationLabel,
+                showLocation: !!(c.broadAreaLabel ?? (c.showLocation ? c.locationLabel : null)),
                 author: c.user.profile
                   ? {
                       username: c.user.profile.username,

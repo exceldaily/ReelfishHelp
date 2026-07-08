@@ -38,7 +38,7 @@ const primary = (fishId: boolean) => [
   ...(fishId ? [{ href: "/identify", label: "Identify", icon: Camera }] : []),
   { href: "/conditions", label: "Conditions", icon: CloudSun },
   { href: "/trips", label: "Trips", icon: CalendarDays },
-  { href: "/community", label: "Community", icon: Users },
+  { href: "/boards", label: "Bite Boards", icon: Users },
 ];
 
 const personal = [

@@ -1,8 +1,9 @@
 import { count, inArray, eq } from "drizzle-orm";
 import type { Db } from "./index";
-import { species, regulationLinks } from "./schema";
+import { species, regulationLinks, biteBoards } from "./schema";
 import { allSpecies } from "@/data/species";
 import { stateRegulations } from "@/data/regulations";
+import { starterBiteBoards } from "@/data/bite-boards";
 
 /**
  * Slugs that were split into individual species and should be hidden from the
@@ -33,6 +34,8 @@ export async function ensureSeed(db: Db) {
     await db.insert(regulationLinks).values(stateRegulations).onConflictDoNothing();
     console.log(`[seed] inserted ${stateRegulations.length} state regulation links`);
   }
+
+  await db.insert(biteBoards).values(starterBiteBoards).onConflictDoNothing();
 }
 
 /** Count of active species — handy for a post-seed sanity check. */

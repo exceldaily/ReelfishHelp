@@ -18,6 +18,7 @@ import { storeMedia, assertUnderQuota, deleteMediaByRelation } from "@/lib/media
 import { approximate } from "@/lib/geo";
 
 export type CatchFormResult = { error?: string } | undefined;
+type ShareDelay = "now" | "12h" | "24h" | "never";
 
 export async function createCatch(_prev: CatchFormResult, formData: FormData): Promise<CatchFormResult> {
   const user = await requireUser();
@@ -46,6 +47,21 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
   const coords = latRaw != null && lngRaw != null ? approximate(latRaw, lngRaw) : null;
 
   const visibility = (String(formData.get("visibility") ?? "private") as Visibility) || "private";
+  const requestedDelay = String(formData.get("shareDelay") ?? "never");
+  const shareDelay: ShareDelay = ["now", "12h", "24h", "never"].includes(requestedDelay)
+    ? (requestedDelay as ShareDelay)
+    : "never";
+  const effectiveVisibility: Visibility = shareDelay === "never" ? "private" : ["public", "followers"].includes(visibility) ? visibility : "private";
+  const publishAt =
+    effectiveVisibility === "private"
+      ? null
+      : shareDelay === "12h"
+        ? new Date(Date.now() + 12 * 60 * 60 * 1000)
+        : shareDelay === "24h"
+          ? new Date(Date.now() + 24 * 60 * 60 * 1000)
+          : new Date();
+  const locationLabel = String(formData.get("locationLabel") ?? "").slice(0, 120) || null;
+  const showLocation = formData.get("showLocation") === "on";
 
   const [row] = await db
     .insert(catches)
@@ -64,11 +80,15 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
       tideNotes: String(formData.get("tideNotes") ?? "").slice(0, 400) || null,
       story: String(formData.get("story") ?? "").slice(0, 3000) || null,
       released: formData.get("released") === "on" || formData.get("released") === "true",
-      visibility: ["public", "followers", "private"].includes(visibility) ? visibility : "private",
+      visibility: effectiveVisibility,
+      shareDelay,
+      publishAt,
+      locationPrecision: showLocation && locationLabel ? "shared_broad_area" : coords ? "approx_private" : "hidden",
       lat: coords?.lat ?? null,
       lng: coords?.lng ?? null,
-      locationLabel: String(formData.get("locationLabel") ?? "").slice(0, 120) || null,
-      showLocation: formData.get("showLocation") === "on",
+      locationLabel,
+      broadAreaLabel: showLocation ? locationLabel : null,
+      showLocation,
       tripId: String(formData.get("tripId") ?? "") || null,
     })
     .returning();
@@ -182,7 +202,7 @@ export async function deleteComment(commentId: string, catchId: string) {
 }
 
 export async function reportContent(input: {
-  targetType: "catch" | "comment" | "profile" | "spot" | "message";
+  targetType: "catch" | "comment" | "profile" | "spot" | "message" | "bite_report";
   targetId: string;
   reason: string;
   details?: string;

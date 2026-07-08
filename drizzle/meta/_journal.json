@@ -22,6 +22,13 @@
       "when": 1783489639847,
       "tag": "0002_media_storage",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783503162471,
+      "tag": "0003_sloppy_killmonger",
+      "breakpoints": true
     }
   ]
 }

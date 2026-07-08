@@ -178,6 +178,15 @@ export function NewCatchForm({
               <option value="public">Public</option>
             </Select>
           </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="shareDelay" className="mb-0">Share</Label>
+            <Select id="shareDelay" name="shareDelay" defaultValue="never" className="w-44">
+              <option value="never">Do not share</option>
+              <option value="now">Now</option>
+              <option value="12h">After 12 hours</option>
+              <option value="24h">After 24 hours</option>
+            </Select>
+          </div>
         </div>
 
         <FieldError>{state?.error}</FieldError>

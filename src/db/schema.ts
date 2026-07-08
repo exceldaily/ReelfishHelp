@@ -30,6 +30,7 @@ export const users = pgTable("users", {
 export type WaterPref = "freshwater" | "saltwater" | "both";
 export type Visibility = "public" | "followers" | "private";
 export type LocationMode = "precise" | "approximate" | "off";
+export type LocationPrecision = "exact_private" | "approx_private" | "shared_broad_area" | "hidden";
 
 export const profiles = pgTable("profiles", {
   userId: text("user_id")
@@ -188,10 +189,14 @@ export const catches = pgTable(
     story: text("story"),
     released: boolean("released").notNull().default(true),
     visibility: text("visibility").$type<Visibility>().notNull().default("private"),
+    publishAt: timestamp("publish_at", { withTimezone: true }),
+    shareDelay: text("share_delay", { enum: ["now", "12h", "24h", "never"] }).notNull().default("never"),
+    locationPrecision: text("location_precision").$type<LocationPrecision>().notNull().default("approx_private"),
     // location is always stored approximately (2 decimal places ≈ 1km)
     lat: real("lat"),
     lng: real("lng"),
     locationLabel: text("location_label"),
+    broadAreaLabel: text("broad_area_label"),
     showLocation: boolean("show_location").notNull().default(false),
     tripId: text("trip_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -389,7 +394,7 @@ export const reports = pgTable("reports", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   targetType: text("target_type", {
-    enum: ["catch", "comment", "profile", "spot", "message"],
+    enum: ["catch", "comment", "profile", "spot", "message", "bite_report"],
   }).notNull(),
   targetId: text("target_id").notNull(),
   reason: text("reason").notNull(),
@@ -504,6 +509,102 @@ export type MediaAsset = typeof mediaAssets.$inferSelect;
 export type MediaVariant = typeof mediaVariants.$inferSelect;
 export type UserStorageUsage = typeof userStorageUsage.$inferSelect;
 
+/* ----------------------------- community core ------------------------------ */
+
+export type BiteBoardKind = "region" | "lake" | "river" | "bay" | "beach" | "marsh" | "offshore" | "pier";
+export type BiteReportOutcome = "caught" | "missed" | "hooked" | "observed";
+export type BiteReportVisibility = "private" | "followers" | "public_area" | "public_no_area";
+
+export const biteBoards = pgTable(
+  "bite_boards",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    kind: text("kind").$type<BiteBoardKind>().notNull(),
+    regionLabel: text("region_label").notNull(),
+    state: text("state"),
+    water: text("water").$type<WaterPref>().notNull().default("both"),
+    description: text("description").notNull(),
+    coverMediaId: text("cover_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("bite_boards_water_idx").on(t.water), index("bite_boards_state_idx").on(t.state)]
+);
+
+export const biteBoardMembers = pgTable(
+  "bite_board_members",
+  {
+    boardId: text("board_id")
+      .notNull()
+      .references(() => biteBoards.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: text("role", { enum: ["member", "mod"] }).notNull().default("member"),
+    joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.boardId, t.userId] })]
+);
+
+export const biteReports = pgTable(
+  "bite_reports",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    boardId: text("board_id").references(() => biteBoards.id, { onDelete: "set null" }),
+    speciesId: text("species_id").references(() => species.id, { onDelete: "set null" }),
+    customSpecies: text("custom_species"),
+    outcome: text("outcome").$type<BiteReportOutcome>().notNull().default("caught"),
+    bait: text("bait"),
+    method: text("method"),
+    timeOfDay: text("time_of_day"),
+    weatherSummary: jsonb("weather_summary").$type<Record<string, unknown> | null>(),
+    tideSummary: text("tide_summary"),
+    moonSummary: text("moon_summary"),
+    notes: text("notes"),
+    photoMediaId: text("photo_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+    photoUrl: text("photo_url"),
+    visibility: text("visibility").$type<BiteReportVisibility>().notNull().default("private"),
+    locationPrecision: text("location_precision").$type<LocationPrecision>().notNull().default("hidden"),
+    lat: real("lat"),
+    lng: real("lng"),
+    broadAreaLabel: text("broad_area_label"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("bite_reports_board_idx").on(t.boardId),
+    index("bite_reports_user_idx").on(t.userId),
+    index("bite_reports_created_idx").on(t.createdAt),
+    index("bite_reports_visibility_idx").on(t.visibility),
+  ]
+);
+
+export const userBlocks = pgTable(
+  "user_blocks",
+  {
+    blockerId: text("blocker_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    blockedId: text("blocked_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.blockerId, t.blockedId] })]
+);
+
+export type BiteBoard = typeof biteBoards.$inferSelect;
+export type NewBiteBoard = typeof biteBoards.$inferInsert;
+export type BiteReport = typeof biteReports.$inferSelect;
+export type NewBiteReport = typeof biteReports.$inferInsert;
+
 /* ------------------------------- messaging ---------------------------------- */
 
 /**
@@ -572,6 +673,7 @@ export const regulationLinks = pgTable(
 export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   catches: many(catches),
+  biteReports: many(biteReports),
   gear: many(gearItems),
   spots: many(spots),
   trips: many(trips),
@@ -638,6 +740,29 @@ export const mediaVariantsRelations = relations(mediaVariants, ({ one }) => ({
 
 export const userStorageUsageRelations = relations(userStorageUsage, ({ one }) => ({
   user: one(users, { fields: [userStorageUsage.userId], references: [users.id] }),
+}));
+
+export const biteBoardsRelations = relations(biteBoards, ({ one, many }) => ({
+  coverMedia: one(mediaAssets, { fields: [biteBoards.coverMediaId], references: [mediaAssets.id] }),
+  members: many(biteBoardMembers),
+  reports: many(biteReports),
+}));
+
+export const biteBoardMembersRelations = relations(biteBoardMembers, ({ one }) => ({
+  board: one(biteBoards, { fields: [biteBoardMembers.boardId], references: [biteBoards.id] }),
+  user: one(users, { fields: [biteBoardMembers.userId], references: [users.id] }),
+}));
+
+export const biteReportsRelations = relations(biteReports, ({ one }) => ({
+  user: one(users, { fields: [biteReports.userId], references: [users.id] }),
+  board: one(biteBoards, { fields: [biteReports.boardId], references: [biteBoards.id] }),
+  species: one(species, { fields: [biteReports.speciesId], references: [species.id] }),
+  photoMedia: one(mediaAssets, { fields: [biteReports.photoMediaId], references: [mediaAssets.id] }),
+}));
+
+export const userBlocksRelations = relations(userBlocks, ({ one }) => ({
+  blocker: one(users, { fields: [userBlocks.blockerId], references: [users.id], relationName: "blocker" }),
+  blocked: one(users, { fields: [userBlocks.blockedId], references: [users.id], relationName: "blocked" }),
 }));
 
 export type User = typeof users.$inferSelect;
