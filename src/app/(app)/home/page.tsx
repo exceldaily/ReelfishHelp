@@ -105,7 +105,7 @@ export default async function HomePage() {
       {/* greeting + quick actions */}
       <div className="mb-6">
         <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink-900">
-          Ready to fish, {profile.displayName.split(" ")[0]}?
+          Ready to Fish, {profile.displayName.split(" ")[0]}?
         </h1>
         {profile.lastLocationLabel && (
           <p className="text-ink-500 mt-1 flex items-center gap-1.5 text-sm">
