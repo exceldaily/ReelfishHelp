@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { UserCircle2, MapPin, Award, Fish, Backpack } from "lucide-react";
@@ -131,18 +132,29 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
 
         <div className="mt-6 grid grid-cols-3 sm:grid-cols-6 gap-3 text-center">
           {[
-            [stats.catches, "Catches"],
-            [stats.species, "Species"],
-            [stats.released, "Released"],
-            [friendsCount, "Friends"],
-            [followerRows.length, "Followers"],
-            [followingRows.length, "Following"],
-          ].map(([n, label]) => (
-            <div key={label} className="rounded-xl bg-sand-100/70 py-3">
-              <div className="font-display text-xl font-extrabold text-ink-900">{n}</div>
-              <div className="text-[11px] font-bold uppercase tracking-wide text-ink-500">{label}</div>
-            </div>
-          ))}
+            { n: stats.catches, label: "Catches" },
+            { n: stats.species, label: "Species" },
+            { n: stats.released, label: "Released" },
+            { n: friendsCount, label: "Friends" },
+            { n: followerRows.length, label: "Followers", href: `/u/${profile.username}/followers` },
+            { n: followingRows.length, label: "Following", href: `/u/${profile.username}/following` },
+          ].map(({ n, label, href }) => {
+            const inner = (
+              <>
+                <div className="font-display text-xl font-extrabold text-ink-900">{n}</div>
+                <div className="text-[11px] font-bold uppercase tracking-wide text-ink-500">{label}</div>
+              </>
+            );
+            return href ? (
+              <Link key={label} href={href} className="rounded-xl bg-sand-100/70 py-3 hover:bg-sand-200 transition-colors">
+                {inner}
+              </Link>
+            ) : (
+              <div key={label} className="rounded-xl bg-sand-100/70 py-3">
+                {inner}
+              </div>
+            );
+          })}
         </div>
 
         {earned.length > 0 && (
