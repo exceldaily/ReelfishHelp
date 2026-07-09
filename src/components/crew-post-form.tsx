@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Send } from "lucide-react";
+import { Send, Camera } from "lucide-react";
 import { createCrewPost, type CrewFormResult } from "@/lib/actions/crew-actions";
 import { Button, Card, FieldError, Select, Textarea } from "@/components/ui";
 import { ImageInput } from "@/components/image-input";
@@ -22,8 +22,11 @@ export function CrewPostForm({
         <Textarea name="body" placeholder="Share an update with your crew…" maxLength={2000} />
         <div className="grid sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-ink-500 mb-1">Attach a photo</label>
-            <ImageInput name="photo" className="text-sm" />
+            <span className="block text-xs font-semibold text-ink-500 mb-1">Attach a photo</span>
+            <label className="flex items-center gap-2 rounded-xl border-2 border-dashed border-sand-300 hover:border-tide-400 px-3 py-2.5 cursor-pointer transition-colors">
+              <Camera className="size-4 text-tide-600 shrink-0" />
+              <ImageInput name="photo" className="text-sm" />
+            </label>
           </div>
           {catches.length > 0 && (
             <div>

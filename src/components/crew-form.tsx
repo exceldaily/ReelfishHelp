@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Camera } from "lucide-react";
 import { Button, Card, FieldError, Input, Label, Select, Textarea } from "@/components/ui";
 import { ImageInput } from "@/components/image-input";
 import type { CrewFormResult } from "@/lib/actions/crew-actions";
@@ -58,7 +59,11 @@ export function CrewForm({
         </div>
         <div>
           <Label htmlFor="avatar">Crew photo (optional)</Label>
-          <ImageInput id="avatar" name="avatar" />
+          <label className="flex items-center gap-3 rounded-xl border-2 border-dashed border-sand-300 hover:border-tide-400 px-4 py-4 cursor-pointer transition-colors">
+            <Camera className="size-5 text-tide-600" />
+            <span className="text-sm font-semibold text-ink-700">Add a crew photo</span>
+            <ImageInput id="avatar" name="avatar" className="text-sm" />
+          </label>
         </div>
         <FieldError>{state?.error}</FieldError>
         <Button type="submit" disabled={pending}>{pending ? "Saving…" : submitLabel}</Button>
