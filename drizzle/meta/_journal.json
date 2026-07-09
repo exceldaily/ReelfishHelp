@@ -50,6 +50,13 @@
       "when": 1783526958059,
       "tag": "0006_forum_topics",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1783585978548,
+      "tag": "0007_glorious_jackpot",
+      "breakpoints": true
     }
   ]
 }

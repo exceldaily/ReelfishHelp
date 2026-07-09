@@ -10,6 +10,7 @@ import {
   CloudSun,
   CalendarDays,
   Users,
+  UsersRound,
   Backpack,
   Trophy,
   MapPin,
@@ -39,6 +40,7 @@ const primary = (fishId: boolean) => [
   { href: "/conditions", label: "Conditions", icon: CloudSun },
   { href: "/trips", label: "Trips", icon: CalendarDays },
   { href: "/boards", label: "Bite Boards", icon: Users },
+  { href: "/crews", label: "Crews", icon: UsersRound },
   { href: "/forum", label: "Forum", icon: MessageCircle },
 ];
 
@@ -144,6 +146,19 @@ export function TopNav({
               </button>
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-60 rounded-xl bg-white shadow-lift border border-sand-200 py-2 animate-fade-up">
+                  {/* mobile-only: primary nav lives in the top bar on desktop, but is
+                      hidden on phones — surface it here so Forum/Boards/Crews stay reachable */}
+                  <div className="md:hidden border-b border-sand-100 pb-2 mb-2">
+                    {primary(fishId).map(({ href, label, icon: Icon }) => (
+                      <Link
+                        key={href}
+                        href={href}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold text-ink-900 hover:bg-sand-100"
+                      >
+                        <Icon className="size-4 text-ink-500" /> {label}
+                      </Link>
+                    ))}
+                  </div>
                   {user.username && (
                     <Link
                       href={`/u/${user.username}`}

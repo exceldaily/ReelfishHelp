@@ -735,6 +735,74 @@ export const regulationLinks = pgTable(
   (t) => [uniqueIndex("regs_state_idx").on(t.state)]
 );
 
+/* ---------------------------------- crews ---------------------------------- */
+
+export type CrewPrivacy = "open" | "private";
+export type CrewRole = "owner" | "admin" | "member";
+
+export const crews = pgTable(
+  "crews",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    description: text("description"),
+    avatarUrl: text("avatar_url"),
+    homeState: text("home_state"), // optional 2-letter state, for discovery
+    privacy: text("privacy").$type<CrewPrivacy>().notNull().default("open"),
+    inviteCode: text("invite_code").notNull(), // join token for private crews
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    memberCount: integer("member_count").notNull().default(1), // denormalized
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("crews_privacy_idx").on(t.privacy), index("crews_state_idx").on(t.homeState)]
+);
+
+export const crewMembers = pgTable(
+  "crew_members",
+  {
+    crewId: text("crew_id")
+      .notNull()
+      .references(() => crews.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    role: text("role").$type<CrewRole>().notNull().default("member"),
+    joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.crewId, t.userId] }), index("crew_members_user_idx").on(t.userId)]
+);
+
+export const crewPosts = pgTable(
+  "crew_posts",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    crewId: text("crew_id")
+      .notNull()
+      .references(() => crews.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    body: text("body"),
+    catchId: text("catch_id").references(() => catches.id, { onDelete: "set null" }),
+    photoMediaId: text("photo_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+    photoUrl: text("photo_url"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("crew_posts_crew_idx").on(t.crewId), index("crew_posts_created_idx").on(t.createdAt)]
+);
+
+export type Crew = typeof crews.$inferSelect;
+export type NewCrew = typeof crews.$inferInsert;
+export type CrewMember = typeof crewMembers.$inferSelect;
+export type CrewPost = typeof crewPosts.$inferSelect;
+
 /* --------------------------------- relations --------------------------------- */
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -850,6 +918,23 @@ export const biteReportsRelations = relations(biteReports, ({ one }) => ({
 export const userBlocksRelations = relations(userBlocks, ({ one }) => ({
   blocker: one(users, { fields: [userBlocks.blockerId], references: [users.id], relationName: "blocker" }),
   blocked: one(users, { fields: [userBlocks.blockedId], references: [users.id], relationName: "blocked" }),
+}));
+
+export const crewsRelations = relations(crews, ({ one, many }) => ({
+  owner: one(users, { fields: [crews.ownerId], references: [users.id] }),
+  members: many(crewMembers),
+  posts: many(crewPosts),
+}));
+
+export const crewMembersRelations = relations(crewMembers, ({ one }) => ({
+  crew: one(crews, { fields: [crewMembers.crewId], references: [crews.id] }),
+  user: one(users, { fields: [crewMembers.userId], references: [users.id] }),
+}));
+
+export const crewPostsRelations = relations(crewPosts, ({ one }) => ({
+  crew: one(crews, { fields: [crewPosts.crewId], references: [crews.id] }),
+  user: one(users, { fields: [crewPosts.userId], references: [users.id] }),
+  catch: one(catches, { fields: [crewPosts.catchId], references: [catches.id] }),
 }));
 
 export type User = typeof users.$inferSelect;
