@@ -44,7 +44,7 @@ export default async function ForumPage({
     <div>
       <PageHeader
         title="Forum"
-        subtitle="Ask fishing questions and compare notes with the community — by state and by topic."
+        subtitle="Ask fishing questions and compare notes with the community, by state and by topic."
       />
 
       {/* topic sections */}
