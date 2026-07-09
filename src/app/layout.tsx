@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   },
   description:
     "Location-based fishing intelligence for US anglers: live conditions and tides, species catch guides, photo fish ID, trip planning, and catch logging.",
+  applicationName: "ReelFishHelp",
+  appleWebApp: {
+    capable: true,
+    title: "ReelFishHelp",
+    statusBarStyle: "black-translucent",
+  },
   other: {
     "impact-site-verification": "072a5cba-8378-4ade-b12e-a6cd53870c20",
   },
