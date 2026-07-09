@@ -94,11 +94,16 @@ export function HeroScene() {
           <line x1="80" y1="556" x2="420" y2="556" />
         </g>
 
-        {/* fish splashes at scattered spots (staggered so they feel random) */}
+        {/* fish splashes — scattered across the water, clustered around the boat
+            (staggered timers so they feel random) */}
         <Splash cls="hero-splash--1" x={210} y={486} />
         <Splash cls="hero-splash--2" x={650} y={506} />
         <Splash cls="hero-splash--3" x={980} y={470} />
-        <Splash cls="hero-splash--4" x={520} y={550} />
+        <Splash cls="hero-splash--4" x={300} y={556} />
+        <Splash cls="hero-splash--5" x={360} y={452} />
+        <Splash cls="hero-splash--6" x={512} y={462} />
+        <Splash cls="hero-splash--7" x={440} y={498} />
+        <Splash cls="hero-splash--8" x={396} y={470} />
 
         {/* boat silhouette with a fishing rod, gently rocking on the water */}
         <g className="hero-boat">
@@ -107,10 +112,10 @@ export function HeroScene() {
           <path d="M412 419 L412 407 L441 407 L447 419 Z" fill="#06181f" />
           <line x1="427" y1="407" x2="427" y2="390" stroke="#06181f" strokeWidth="2.4" strokeLinecap="round" />
           <path d="M429 391 L444 396 L429 401 Z" fill="#06181f" />
-          {/* fishing rod cast out over the water + line + bobber */}
-          <line x1="448" y1="416" x2="500" y2="385" stroke="#06181f" strokeWidth="2.2" strokeLinecap="round" />
-          <line x1="500" y1="385" x2="504" y2="420" stroke="#0c2531" strokeWidth="1" strokeOpacity="0.85" />
-          <circle cx="504" cy="420" r="2.2" fill="#ff8a3c" />
+          {/* small fishing rod with the line running down into the water */}
+          <line x1="446" y1="416" x2="480" y2="397" stroke="#06181f" strokeWidth="2" strokeLinecap="round" />
+          <line x1="480" y1="397" x2="486" y2="423" stroke="#0c2531" strokeWidth="0.9" strokeOpacity="0.8" />
+          <ellipse cx="486" cy="422" rx="4" ry="1.3" fill="none" stroke="#cdeaf1" strokeOpacity="0.5" strokeWidth="1" />
         </g>
       </svg>
 

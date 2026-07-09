@@ -157,6 +157,10 @@ body {
 .hero-splash--2 { animation: hero-splash 9s ease-out infinite; animation-delay: -3s; }
 .hero-splash--3 { animation: hero-splash 8s ease-out infinite; animation-delay: -5.5s; }
 .hero-splash--4 { animation: hero-splash 11s ease-out infinite; animation-delay: -8s; }
+.hero-splash--5 { animation: hero-splash 6.5s ease-out infinite; animation-delay: -2s; }
+.hero-splash--6 { animation: hero-splash 8.5s ease-out infinite; animation-delay: -6.5s; }
+.hero-splash--7 { animation: hero-splash 10s ease-out infinite; animation-delay: -4s; }
+.hero-splash--8 { animation: hero-splash 7.5s ease-out infinite; animation-delay: -9s; }
 
 /* wavier boat: uneven bob + roll, like riding small swells */
 @keyframes hero-rock {
