@@ -56,6 +56,16 @@ export default async function AdminPage() {
             </p>
           </Card>
         </Link>
+        <Link href="/admin/users" className="block">
+          <Card className="p-5 hover:shadow-lift transition-shadow">
+            <h3 className="font-display font-bold text-ink-900 flex items-center gap-2">
+              <UsersIcon className="size-5 text-tide-600" /> Users
+            </h3>
+            <p className="mt-1 text-sm text-ink-500">
+              View every account with role, home state, join date, and catch/forum activity. Search by name, username, or email.
+            </p>
+          </Card>
+        </Link>
         <Link href="/admin/gear" className="block">
           <Card className="p-5 hover:shadow-lift transition-shadow">
             <h3 className="font-display font-bold text-ink-900 flex items-center gap-2">
