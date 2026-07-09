@@ -1,4 +1,4 @@
-import { count, inArray, eq, and, ne, like } from "drizzle-orm";
+import { count, inArray, eq, and, ne, like, isNull } from "drizzle-orm";
 import type { Db } from "./index";
 import { species, regulationLinks, biteBoards, gearArticles, knots, gearSetups, gearBrands, fishGearRequirements } from "./schema";
 import { allSpecies } from "@/data/species";
@@ -66,6 +66,14 @@ export async function ensureSeed(db: Db) {
   for (const su of setupData) await db.insert(gearSetups).values(su).onConflictDoNothing();
   for (const b of brandData) await db.insert(gearBrands).values(b).onConflictDoNothing();
   for (const r of fishRequirementData) await db.insert(fishGearRequirements).values(r).onConflictDoNothing();
+
+  // give each knot a default "how to tie it" video link where none is set yet.
+  // YouTube search URLs never 404 and return relevant tutorials; admins can
+  // replace any with a specific curated video. Only fills nulls (preserves edits).
+  for (const k of knotData) {
+    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(`how to tie the ${k.name} fishing knot`)}`;
+    await db.update(knots).set({ videoUrl: url }).where(and(eq(knots.slug, k.slug), isNull(knots.videoUrl)));
+  }
 }
 
 /** Count of active species — handy for a post-seed sanity check. */

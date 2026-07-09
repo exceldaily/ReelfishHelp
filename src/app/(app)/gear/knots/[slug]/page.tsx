@@ -62,7 +62,7 @@ export default async function KnotDetailPage({ params }: { params: Promise<{ slu
           )}
           {k.videoUrl && (
             <a href={k.videoUrl} target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-sand-200 bg-white p-5 flex items-center gap-3 hover:shadow-lift transition-shadow">
-              <Video className="size-6 text-tide-700" /> <span className="font-semibold text-ink-800">Watch the video</span>
+              <Video className="size-6 text-tide-700" /> <span className="font-semibold text-ink-800">Watch how to tie it</span>
             </a>
           )}
         </div>
