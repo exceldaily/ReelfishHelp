@@ -19,6 +19,7 @@ import { eq } from "drizzle-orm";
 import { resolveManyImages } from "@/lib/wiki-images";
 import { fishIdEnabled } from "@/lib/flags";
 import { Logo } from "@/components/logo";
+import { HeroScene } from "@/components/hero-scene";
 import { FishImage } from "@/components/fish-image";
 import { WaterBadge, Badge } from "@/components/ui";
 
@@ -53,7 +54,7 @@ export default async function LandingPage() {
     <div className="flex-1">
       {/* ───────────────────────────── hero ───────────────────────────── */}
       <div className="water-gradient text-white relative">
-        <div className="topo-lines absolute inset-0" aria-hidden />
+        <HeroScene />
         <header className="relative bg-black border-b border-neutral-800">
           <div className="mx-auto max-w-6xl px-4 h-20 flex items-center justify-between">
             <Logo dark />
@@ -95,7 +96,7 @@ export default async function LandingPage() {
             <h1 className="mt-5 font-display text-4xl sm:text-6xl font-extrabold leading-[1.05] tracking-tight">
               Know the water.
               <br />
-              <span className="text-tide-300">Catch the fish.</span>
+              <span className="text-tide-300">Catch the Fish.</span>
             </h1>
             <p className="mt-5 text-lg text-tide-100/90 max-w-xl">
               Live local conditions and tides{fishId ? ", photo fish identification," : ""} and
