@@ -1,4 +1,4 @@
-import { count, inArray, eq } from "drizzle-orm";
+import { count, inArray, eq, and, ne, like } from "drizzle-orm";
 import type { Db } from "./index";
 import { species, regulationLinks, biteBoards } from "./schema";
 import { allSpecies } from "@/data/species";
@@ -22,6 +22,26 @@ export async function ensureSeed(db: Db) {
   // so admin edits are preserved and only genuinely-new species are added.
   for (const s of allSpecies) {
     await db.insert(species).values(s).onConflictDoNothing();
+  }
+
+  // self-heal curated photos: a species whose stored image_url is a self-hosted
+  // /species/* path that no longer matches the curated file (e.g. the extension
+  // changed from .png/.webp to .jpg) is stale seed data — onConflictDoNothing
+  // above can't fix it, so re-point it here. Only touches mismatched /species/*
+  // paths, so external "https://…" admin overrides (and intentionally-blank
+  // image_url that falls back to Wikipedia auto-resolve) are left untouched.
+  for (const s of allSpecies) {
+    if (!s.imageUrl) continue;
+    await db
+      .update(species)
+      .set({ imageUrl: s.imageUrl, imageCredit: s.imageCredit })
+      .where(
+        and(
+          eq(species.slug, s.slug),
+          like(species.imageUrl, "/species/%"),
+          ne(species.imageUrl, s.imageUrl),
+        ),
+      );
   }
 
   // retire generic entries that have been split into per-species profiles
