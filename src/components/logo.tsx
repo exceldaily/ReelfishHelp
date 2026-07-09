@@ -29,12 +29,12 @@ export function Logo({ dark = false }: { dark?: boolean }) {
   return (
     <Link href="/" className="flex items-center shrink-0" aria-label="ReelFishHelp home">
       <Image
-        src="/brand/reelfishhelp-header-logo.png"
+        src="/brand/rfh-mark.png"
         alt="ReelFishHelp"
-        width={420}
-        height={223}
+        width={512}
+        height={512}
         priority
-        className="h-14 w-auto sm:h-16"
+        className="h-12 w-12 sm:h-14 sm:w-14"
       />
       <span className="sr-only">ReelFishHelp</span>
       <span
