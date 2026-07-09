@@ -37,6 +37,6 @@ export async function saveSetupToGear(speciesId: string, tier: "beginner" | "bud
     wishlist: true,
     condition: "new",
   });
-  revalidatePath("/gear");
+  revalidatePath("/my-gear");
   return { ok: true };
 }

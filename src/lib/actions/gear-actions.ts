@@ -61,7 +61,7 @@ export async function saveGear(_prev: GearFormResult, formData: FormData): Promi
   } else {
     await db.insert(gearItems).values({ userId: user.id, photoUrl, ...values });
   }
-  revalidatePath("/gear");
+  revalidatePath("/my-gear");
   return { ok: true };
 }
 
@@ -69,7 +69,7 @@ export async function deleteGear(id: string) {
   const user = await requireUser();
   const db = await getDb();
   await db.delete(gearItems).where(and(eq(gearItems.id, id), eq(gearItems.userId, user.id)));
-  revalidatePath("/gear");
+  revalidatePath("/my-gear");
 }
 
 export async function toggleGearFlag(id: string, flag: "favorite" | "wishlist" | "isPublic") {
@@ -83,6 +83,6 @@ export async function toggleGearFlag(id: string, flag: "favorite" | "wishlist" |
     .update(gearItems)
     .set({ [flag]: !item[flag] })
     .where(eq(gearItems.id, id));
-  revalidatePath("/gear");
+  revalidatePath("/my-gear");
   return { ok: true };
 }

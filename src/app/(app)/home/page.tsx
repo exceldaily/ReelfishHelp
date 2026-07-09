@@ -37,7 +37,7 @@ const quickActions = (fishId: boolean) => [
     : [{ href: "/spots", label: "My Spots", icon: MapPin }]),
   { href: "/fish", label: "Find Fish", icon: Fish },
   { href: "/catches/new", label: "Log Catch", icon: Trophy },
-  { href: "/gear", label: "Add Gear", icon: Backpack },
+  { href: "/my-gear", label: "Add Gear", icon: Backpack },
   { href: "/trips/new", label: "Plan Trip", icon: CalendarDays },
 ];
 
@@ -324,7 +324,7 @@ export default async function HomePage() {
           <Card className="p-5">
             <div className="flex items-center justify-between mb-3">
               <SectionTitle className="mb-0">Gear locker</SectionTitle>
-              <Link href="/gear" className="text-xs font-bold text-tide-700 hover:underline">Open →</Link>
+              <Link href="/my-gear" className="text-xs font-bold text-tide-700 hover:underline">Open →</Link>
             </div>
             <p className="text-sm text-ink-700">
               <strong>{gear.filter((g) => !g.wishlist).length}</strong> items ·{" "}

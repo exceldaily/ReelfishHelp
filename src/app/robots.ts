@@ -16,7 +16,7 @@ export default function robots(): MetadataRoute.Robots {
         "/messages",
         "/catches",
         "/trips",
-        "/gear",
+        "/my-gear",
         "/spots",
         "/report-a-bite",
         "/onboarding",

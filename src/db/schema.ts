@@ -803,6 +803,220 @@ export type NewCrew = typeof crews.$inferInsert;
 export type CrewMember = typeof crewMembers.$inferSelect;
 export type CrewPost = typeof crewPosts.$inferSelect;
 
+/* ------------------------------ gear education ------------------------------ */
+
+export type ContentStatus = "draft" | "review" | "published";
+export type GearArticleCategory = "rod" | "reel" | "line" | "leader" | "terminal" | "concept";
+export type KnotUseCategory =
+  | "line-to-hook"
+  | "line-to-lure"
+  | "braid-to-leader"
+  | "line-to-line"
+  | "loop"
+  | "offshore"
+  | "fly"
+  | "wire";
+export type GearSetupCategory =
+  | "all-around"
+  | "shore"
+  | "pier"
+  | "kayak"
+  | "inshore-boat"
+  | "offshore"
+  | "technique"
+  | "trophy";
+
+export type GearArticleBody = {
+  useCases: string[];
+  pros: string[];
+  cons: string[];
+  mistakes?: string[];
+  // rod fields
+  lengthNote?: string;
+  power?: string;
+  action?: string;
+  lineRange?: string;
+  lureRange?: string;
+  bestReel?: string;
+  bestEnvironment?: string;
+  bestSpeciesNote?: string;
+  // line fields
+  underwaterVisibility?: string;
+  stretch?: string;
+  abrasion?: string;
+  casting?: string;
+  knotStrength?: string;
+  // reel / generic
+  sizeNote?: string;
+  gearRatioNote?: string;
+  dragNote?: string;
+  facts?: { label: string; value: string }[];
+};
+
+export const gearArticles = pgTable(
+  "gear_articles",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+    slug: text("slug").notNull().unique(),
+    category: text("category").$type<GearArticleCategory>().notNull(),
+    subtype: text("subtype"),
+    name: text("name").notNull(),
+    summary: text("summary").notNull(),
+    body: jsonb("body").$type<GearArticleBody>().notNull(),
+    relatedSpecies: jsonb("related_species").$type<string[]>().notNull().default([]),
+    waterTypes: jsonb("water_types").$type<string[]>().notNull().default([]),
+    difficulty: integer("difficulty"),
+    status: text("status").$type<ContentStatus>().notNull().default("published"),
+    sort: integer("sort").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("gear_articles_cat_idx").on(t.category), index("gear_articles_status_idx").on(t.status)]
+);
+
+export const knots = pgTable(
+  "knots",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    useCategory: text("use_category").$type<KnotUseCategory>().notNull(),
+    bestUse: text("best_use").notNull(),
+    lineTypes: jsonb("line_types").$type<string[]>().notNull().default([]),
+    difficulty: integer("difficulty").notNull().default(2),
+    strengthRating: integer("strength_rating").notNull().default(3),
+    species: jsonb("species").$type<string[]>().notNull().default([]),
+    steps: jsonb("steps").$type<{ n: number; text: string }[]>().notNull().default([]),
+    mistakes: jsonb("mistakes").$type<string[]>().notNull().default([]),
+    whenNotToUse: text("when_not_to_use"),
+    alternatives: jsonb("alternatives").$type<string[]>().notNull().default([]),
+    imageUrl: text("image_url"),
+    videoUrl: text("video_url"),
+    status: text("status").$type<ContentStatus>().notNull().default("published"),
+    sort: integer("sort").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("knots_use_idx").on(t.useCategory), index("knots_status_idx").on(t.status)]
+);
+
+export type GearSetupFlags = {
+  beginnerFriendly?: boolean;
+  heavyTackle?: boolean;
+  artificial?: boolean;
+  liveBait?: boolean;
+  bottom?: boolean;
+  trolling?: boolean;
+  jigging?: boolean;
+};
+
+export const gearSetups = pgTable(
+  "gear_setups",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    category: text("category").$type<GearSetupCategory>().notNull(),
+    water: text("water").$type<WaterPref>().notNull().default("both"),
+    environments: jsonb("environments").$type<string[]>().notNull().default([]),
+    methods: jsonb("methods").$type<string[]>().notNull().default([]),
+    summary: text("summary").notNull(),
+    rod: text("rod").notNull(),
+    reel: text("reel").notNull(),
+    mainLine: text("main_line").notNull(),
+    leader: text("leader").notNull(),
+    hook: text("hook").notNull(),
+    rig: text("rig").notNull(),
+    lureBait: text("lure_bait").notNull(),
+    knot: text("knot").notNull(),
+    whyItWorks: text("why_it_works").notNull(),
+    relatedSpecies: jsonb("related_species").$type<string[]>().notNull().default([]),
+    flags: jsonb("flags").$type<GearSetupFlags>().notNull().default({}),
+    status: text("status").$type<ContentStatus>().notNull().default("published"),
+    sort: integer("sort").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("gear_setups_cat_idx").on(t.category), index("gear_setups_water_idx").on(t.water)]
+);
+
+export const gearBrands = pgTable(
+  "gear_brands",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+    slug: text("slug").notNull().unique(),
+    name: text("name").notNull(),
+    categories: jsonb("categories").$type<string[]>().notNull().default([]),
+    water: text("water").$type<WaterPref>().notNull().default("both"),
+    reputation: text("reputation").notNull(),
+    bestKnownFor: jsonb("best_known_for").$type<string[]>().notNull().default([]),
+    beginnerNotes: text("beginner_notes"),
+    useCases: jsonb("use_cases").$type<string[]>().notNull().default([]),
+    status: text("status").$type<ContentStatus>().notNull().default("published"),
+    sort: integer("sort").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("gear_brands_status_idx").on(t.status)]
+);
+
+/** Per-species gear ranges the Setup Builder scores against. */
+export const fishGearRequirements = pgTable("fish_gear_requirements", {
+  speciesSlug: text("species_slug").primaryKey(),
+  lineLbMin: integer("line_lb_min").notNull(),
+  lineLbIdeal: integer("line_lb_ideal").notNull(),
+  lineLbMax: integer("line_lb_max").notNull(),
+  leaderLbMin: integer("leader_lb_min"),
+  leaderLbMax: integer("leader_lb_max"),
+  rodPower: jsonb("rod_power").$type<string[]>().notNull().default([]),
+  reelSizeMin: integer("reel_size_min"),
+  reelSizeMax: integer("reel_size_max"),
+  hookSize: text("hook_size"),
+  typicalSizeLb: real("typical_size_lb"),
+  fightStrength: integer("fight_strength").notNull().default(3),
+  structureRisk: integer("structure_risk").notNull().default(2),
+  methods: jsonb("methods").$type<string[]>().notNull().default([]),
+  notes: text("notes"),
+  status: text("status").$type<ContentStatus>().notNull().default("published"),
+});
+
+export const userSetups = pgTable(
+  "user_setups",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    fishingType: text("fishing_type"),
+    water: text("water"),
+    rod: jsonb("rod").$type<Record<string, unknown>>(),
+    reel: jsonb("reel").$type<Record<string, unknown>>(),
+    line: jsonb("line").$type<Record<string, unknown>>(),
+    leader: jsonb("leader").$type<Record<string, unknown>>(),
+    terminal: jsonb("terminal").$type<Record<string, unknown>>(),
+    baitLure: jsonb("bait_lure").$type<Record<string, unknown>>(),
+    method: text("method"),
+    notes: text("notes"),
+    visibility: text("visibility").$type<Visibility>().notNull().default("private"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("user_setups_owner_idx").on(t.ownerId), index("user_setups_vis_idx").on(t.visibility)]
+);
+
+export type GearArticle = typeof gearArticles.$inferSelect;
+export type NewGearArticle = typeof gearArticles.$inferInsert;
+export type Knot = typeof knots.$inferSelect;
+export type NewKnot = typeof knots.$inferInsert;
+export type GearSetup = typeof gearSetups.$inferSelect;
+export type NewGearSetup = typeof gearSetups.$inferInsert;
+export type GearBrand = typeof gearBrands.$inferSelect;
+export type NewGearBrand = typeof gearBrands.$inferInsert;
+export type FishGearRequirement = typeof fishGearRequirements.$inferSelect;
+export type NewFishGearRequirement = typeof fishGearRequirements.$inferInsert;
+export type UserSetup = typeof userSetups.$inferSelect;
+export type NewUserSetup = typeof userSetups.$inferInsert;
+
 /* --------------------------------- relations --------------------------------- */
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -935,6 +1149,10 @@ export const crewPostsRelations = relations(crewPosts, ({ one }) => ({
   crew: one(crews, { fields: [crewPosts.crewId], references: [crews.id] }),
   user: one(users, { fields: [crewPosts.userId], references: [users.id] }),
   catch: one(catches, { fields: [crewPosts.catchId], references: [catches.id] }),
+}));
+
+export const userSetupsRelations = relations(userSetups, ({ one }) => ({
+  owner: one(users, { fields: [userSetups.ownerId], references: [users.id] }),
 }));
 
 export type User = typeof users.$inferSelect;

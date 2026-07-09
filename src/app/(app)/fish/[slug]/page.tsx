@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import {
@@ -13,15 +14,17 @@ import {
   ChevronDown,
   Eye,
   Fingerprint,
+  Wand2,
+  Anchor,
 } from "lucide-react";
-import { getDb, species, savedGuides, type Species } from "@/db";
+import { getDb, species, savedGuides, gearSetups, knots, type Species } from "@/db";
 import { auth } from "@/auth";
 import { getProfile } from "@/lib/auth-helpers";
 import { resolveSpeciesImage } from "@/lib/wiki-images";
 import { seasonForMonth, regionsForState } from "@/lib/suggestions";
 import { FishImage } from "@/components/fish-image";
 import { Badge, WaterBadge, DifficultyDots, ButtonLink, Card } from "@/components/ui";
-import { SaveGuideButton, SaveSetupButton } from "@/components/guide-actions";
+import { SaveGuideButton } from "@/components/guide-actions";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -132,6 +135,14 @@ export default async function CatchGuidePage({
   if (!s.imageUrl) await resolveSpeciesImage(s.id);
   const fresh = await db.query.species.findFirst({ where: eq(species.slug, slug) });
   const imageUrl = fresh?.imageUrl ?? null;
+
+  // gear-education integration: situational setups + a recommended knot for this species
+  const [allSetups, allKnots] = await Promise.all([
+    db.query.gearSetups.findMany({ where: eq(gearSetups.status, "published") }),
+    db.query.knots.findMany({ where: eq(knots.status, "published") }),
+  ]);
+  const matchedSetups = allSetups.filter((su) => su.relatedSpecies.includes(s.slug)).slice(0, 4);
+  const recKnot = allKnots.find((k) => k.species.includes(s.slug)) ?? null;
 
   const saved = session?.user
     ? !!(await db.query.savedGuides.findFirst({
@@ -273,22 +284,42 @@ export default async function CatchGuidePage({
             <Row label="Lure colors" value={g.gear.lureColors} />
             <Row label="Baits" value={g.gear.baits.join(" · ")} />
           </dl>
-          <div className="mt-5 grid sm:grid-cols-3 gap-3">
-            {(
-              [
-                ["beginner", "Beginner setup", g.gear.setups.beginner],
-                ["budget", "Budget setup", g.gear.setups.budget],
-                ["serious", "Serious angler", g.gear.setups.serious],
-              ] as const
-            ).map(([tier, label, text]) => (
-              <div key={tier} className="rounded-2xl border border-sand-200 p-4 flex flex-col">
-                <div className="text-xs font-bold uppercase tracking-wider text-bait-600">{label}</div>
-                <p className="mt-1.5 text-sm text-ink-700 leading-relaxed flex-1">{text}</p>
-                <div className="mt-3">
-                  <SaveSetupButton speciesId={s.id} tier={tier} signedIn={!!session?.user} />
-                </div>
+          <div className="mt-6">
+            <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+              <h3 className="font-display font-bold text-ink-900">Complete setups</h3>
+              <ButtonLink href={`/gear/builder?species=${s.slug}`} variant="secondary" size="sm">
+                <Wand2 className="size-4" /> Build a {s.commonName} setup
+              </ButtonLink>
+            </div>
+            {matchedSetups.length > 0 ? (
+              <div className="grid sm:grid-cols-2 gap-3">
+                {matchedSetups.map((su) => (
+                  <Link
+                    key={su.id}
+                    href={`/gear/setups/${su.slug}`}
+                    className="group rounded-2xl border border-sand-200 p-4 hover:shadow-lift transition-shadow"
+                  >
+                    <div className="font-bold text-sm text-ink-900 group-hover:text-tide-700 transition-colors">{su.name}</div>
+                    <p className="mt-1 text-xs text-ink-500 line-clamp-2">{su.summary}</p>
+                    <div className="mt-2 text-xs text-ink-500"><span className="font-semibold text-ink-700">Rod:</span> {su.rod}</div>
+                  </Link>
+                ))}
               </div>
-            ))}
+            ) : (
+              <p className="text-sm text-ink-500">
+                Match a rig to {s.commonName} with the{" "}
+                <Link href={`/gear/builder?species=${s.slug}`} className="font-semibold text-tide-700 hover:underline">Setup Builder</Link>, or browse{" "}
+                <Link href="/gear/setups" className="font-semibold text-tide-700 hover:underline">all setups</Link>.
+              </p>
+            )}
+            {recKnot && (
+              <div className="mt-4 rounded-xl bg-tide-50 border border-tide-100 px-4 py-3 flex items-center gap-2 flex-wrap">
+                <Anchor className="size-4 text-tide-700 shrink-0" />
+                <span className="text-sm text-ink-700">Recommended knot:</span>
+                <Link href={`/gear/knots/${recKnot.slug}`} className="text-sm font-bold text-tide-700 hover:underline">{recKnot.name}</Link>
+                <span className="text-xs text-ink-500">— {recKnot.bestUse}</span>
+              </div>
+            )}
           </div>
         </Section>
 
