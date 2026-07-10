@@ -28,7 +28,6 @@ export function SettingsForm({
     favoriteSpecies: string[];
     avatarUrl: string | null;
     lastLocationLabel: string | null;
-    allowFeature: boolean;
   };
   speciesOptions: { id: string; name: string }[];
 }) {
@@ -192,24 +191,6 @@ export function SettingsForm({
           <p className="mt-1.5 text-xs text-ink-300">
             Locations are always stored rounded to about a mile. Your area is never shown publicly.
           </p>
-        </div>
-
-        <div className="rounded-xl border border-sand-200 bg-sand-50 p-4">
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              name="allowFeature"
-              defaultChecked={profile.allowFeature}
-              className="size-5 accent-tide-600 mt-0.5 shrink-0"
-            />
-            <span>
-              <span className="block text-sm font-bold text-ink-900">Let ReelFishHelp feature my catches</span>
-              <span className="block text-xs text-ink-500 mt-0.5">
-                Off by default. If you turn this on, the ReelFishHelp team may feature your public catches in social posts
-                and promos. Your exact locations are never shown. You can turn this off any time.
-              </span>
-            </span>
-          </label>
         </div>
 
         <FieldError>{error}</FieldError>

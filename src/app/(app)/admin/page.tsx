@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { count, desc, eq } from "drizzle-orm";
-import { Shield, Fish, Flag, Users as UsersIcon, Trophy, Scale, HardDrive, Wrench, Clapperboard } from "lucide-react";
+import { Shield, Fish, Flag, Users as UsersIcon, Trophy, Scale, HardDrive, Wrench } from "lucide-react";
 import { getDb, species, reports, users, catches } from "@/db";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { PageHeader, Card, Badge } from "@/components/ui";
@@ -73,16 +73,6 @@ export default async function AdminPage() {
             </h3>
             <p className="mt-1 text-sm text-ink-500">
               Manage gear articles, knots (incl. images/videos), setups, brands, and fish gear requirements — with draft/review/published status.
-            </p>
-          </Card>
-        </Link>
-        <Link href="/admin/studio" className="block">
-          <Card className="p-5 hover:shadow-lift transition-shadow">
-            <h3 className="font-display font-bold text-ink-900 flex items-center gap-2">
-              <Clapperboard className="size-5 text-tide-600" /> Content Studio
-            </h3>
-            <p className="mt-1 text-sm text-ink-500">
-              Plan TikTok, Reels, Shorts, and Facebook content: idea generator, feature demos, captions, comment drafts, community highlights, templates, and a production pipeline.
             </p>
           </Card>
         </Link>
