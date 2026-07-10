@@ -66,6 +66,7 @@ export default async function SettingsPage() {
           favoriteSpecies: profile.favoriteSpecies,
           avatarUrl: profile.avatarUrl,
           lastLocationLabel: profile.lastLocationLabel,
+          allowFeature: profile.allowFeature,
         }}
         speciesOptions={allSpecies
           .map((s) => ({ id: s.id, name: s.commonName }))

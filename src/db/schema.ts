@@ -58,6 +58,8 @@ export const profiles = pgTable("profiles", {
   lastLng: real("last_lng"),
   lastLocationLabel: text("last_location_label"),
   onboarded: boolean("onboarded").notNull().default(false),
+  // opt-in: allow admins to feature this angler's public catches in social/marketing content
+  allowFeature: boolean("allow_feature").notNull().default(false),
   acceptedTermsAt: timestamp("accepted_terms_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -1017,6 +1019,81 @@ export type NewFishGearRequirement = typeof fishGearRequirements.$inferInsert;
 export type UserSetup = typeof userSetups.$inferSelect;
 export type NewUserSetup = typeof userSetups.$inferInsert;
 
+/* ------------------------------ content studio ------------------------------ */
+
+/** What kind of content package a row holds. */
+export type ContentKind =
+  | "idea"
+  | "feature-demo"
+  | "caption"
+  | "comment-pack"
+  | "highlight"
+  | "template";
+/** Where the content is in the production pipeline. */
+export type ContentStage =
+  | "idea"
+  | "in-progress"
+  | "recorded"
+  | "edited"
+  | "posted"
+  | "reuse-later";
+export type ContentPlatform = "tiktok" | "instagram" | "youtube" | "facebook" | "multi";
+
+/** Per-platform captions when a row carries a caption set. */
+export type PlatformCaptions = {
+  tiktok?: string;
+  instagram?: string;
+  youtube?: string;
+  facebook?: string;
+};
+
+/**
+ * Content Studio saves. One row = one full short-form content package that the
+ * admin reviews and manually posts. This is a PLANNING tool — nothing here is
+ * auto-posted anywhere. `sourceRefs` records which app content the package was
+ * grounded in (species slug, setup slug, crew slug, catch id, feature key).
+ */
+export const contentItems = pgTable(
+  "content_items",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+    authorId: text("author_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    kind: text("kind").$type<ContentKind>().notNull().default("idea"),
+    platform: text("platform").$type<ContentPlatform>(),
+    stage: text("stage").$type<ContentStage>().notNull().default("idea"),
+    title: text("title").notNull(),
+    hook: text("hook"),
+    script15: text("script_15"),
+    script30: text("script_30"),
+    overlays: jsonb("overlays").$type<string[]>().notNull().default([]),
+    visuals: jsonb("visuals").$type<string[]>().notNull().default([]),
+    cta: text("cta"),
+    hashtags: jsonb("hashtags").$type<string[]>().notNull().default([]),
+    caption: text("caption"),
+    captions: jsonb("captions").$type<PlatformCaptions | null>(),
+    comments: jsonb("comments").$type<string[]>().notNull().default([]),
+    shotList: jsonb("shot_list").$type<string[]>().notNull().default([]),
+    brollTerms: jsonb("broll_terms").$type<string[]>().notNull().default([]),
+    screenSteps: jsonb("screen_steps").$type<string[]>().notNull().default([]),
+    templateSlug: text("template_slug"),
+    sourceRefs: jsonb("source_refs").$type<Record<string, unknown>>().notNull().default({}),
+    notes: text("notes"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("content_items_author_idx").on(t.authorId),
+    index("content_items_stage_idx").on(t.stage),
+    index("content_items_kind_idx").on(t.kind),
+    index("content_items_created_idx").on(t.createdAt),
+  ]
+);
+
+export type ContentItem = typeof contentItems.$inferSelect;
+export type NewContentItem = typeof contentItems.$inferInsert;
+
 /* --------------------------------- relations --------------------------------- */
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1153,6 +1230,10 @@ export const crewPostsRelations = relations(crewPosts, ({ one }) => ({
 
 export const userSetupsRelations = relations(userSetups, ({ one }) => ({
   owner: one(users, { fields: [userSetups.ownerId], references: [users.id] }),
+}));
+
+export const contentItemsRelations = relations(contentItems, ({ one }) => ({
+  author: one(users, { fields: [contentItems.authorId], references: [users.id] }),
 }));
 
 export type User = typeof users.$inferSelect;

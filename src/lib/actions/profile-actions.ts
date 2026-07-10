@@ -104,6 +104,7 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
   const locationMode = String(formData.get("locationMode") ?? "approximate") as LocationMode;
   const fishingStyles = formData.getAll("fishingStyles").map(String).slice(0, 10);
   const favoriteSpecies = formData.getAll("favoriteSpecies").map(String).slice(0, 12);
+  const allowFeature = formData.get("allowFeature") === "on";
 
   let avatarUrl: string | undefined;
   const avatar = formData.get("avatar");
@@ -133,6 +134,7 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
       locationMode,
       fishingStyles,
       favoriteSpecies,
+      allowFeature,
       ...(avatarUrl ? { avatarUrl } : {}),
     })
     .where(eq(profiles.userId, user.id));
