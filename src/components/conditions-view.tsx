@@ -182,8 +182,9 @@ export function ConditionsView({ initialCoords, initialLabel }: Props) {
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-sand-100 pt-3">
           <CalendarClock className="size-4 text-ink-500" />
-          <span className="text-sm font-semibold text-ink-700">Plan ahead:</span>
+          <label htmlFor="plan-ahead" className="text-sm font-semibold text-ink-700">Plan ahead:</label>
           <input
+            id="plan-ahead"
             type="datetime-local"
             value={planAt}
             onChange={(e) => setPlanAt(e.target.value)}

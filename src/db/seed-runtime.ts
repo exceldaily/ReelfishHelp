@@ -56,6 +56,25 @@ export async function ensureSeed(db: Db) {
     console.log(`[seed] inserted ${stateRegulations.length} state regulation links`);
   }
 
+  // self-heal: agencies moved these pages (found via July 2026 link audit). Only
+  // rows still pointing at the known-stale URL are rewritten, so any URL an
+  // admin has hand-edited is left alone.
+  const REG_URL_FIXES: { state: string; from: string; to: string }[] = [
+    { state: "IL", from: "https://dnr.illinois.gov/fishing.html", to: "https://ifishillinois.org/" },
+    { state: "IA", from: "https://www.iowadnr.gov/things-to-do/fishing", to: "https://www.iowadnr.gov/things-do/fishing" },
+    { state: "KS", from: "https://ksoutdoors.com/Fishing", to: "https://www.ksoutdoors.gov/Fishing" },
+    { state: "LA", from: "https://www.wlf.louisiana.gov/page/fishing", to: "https://www.wlf.louisiana.gov/page/recreational-fishing" },
+    { state: "RI", from: "https://dem.ri.gov/natural-resources-bureau/fish-wildlife/fishing", to: "https://dem.ri.gov/natural-resources-bureau/fish-wildlife" },
+    { state: "UT", from: "https://wildlife.utah.gov/fishing-in-utah.html", to: "https://wildlife.utah.gov/fishing" },
+    { state: "MS", from: "https://www.mdwfp.com/fishing-boating/", to: "https://www.mdwfp.com/fishing-boating" },
+  ];
+  for (const fix of REG_URL_FIXES) {
+    await db
+      .update(regulationLinks)
+      .set({ url: fix.to })
+      .where(and(eq(regulationLinks.state, fix.state), eq(regulationLinks.url, fix.from)));
+  }
+
   await db.insert(biteBoards).values(starterBiteBoards).onConflictDoNothing();
   await db.update(biteBoards).set({ active: true }).where(inArray(biteBoards.slug, starterBiteBoardSlugs));
   await db.update(biteBoards).set({ active: false }).where(inArray(biteBoards.slug, retiredStarterBiteBoardSlugs));

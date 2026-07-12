@@ -32,7 +32,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           Local development database (PGlite) — set DATABASE_URL to connect Neon Postgres for production.
         </div>
       )}
-      <main className="flex-1 w-full mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-10">{children}</main>
+      <main className="flex-1 w-full mx-auto max-w-6xl px-4 py-6 pb-24 lg:pb-10">{children}</main>
       <MobileTabs user={user} fishId={fishId} />
     </div>
   );

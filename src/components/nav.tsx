@@ -86,12 +86,14 @@ export function TopNav({
     <header className="sticky top-0 z-40 bg-black border-b border-neutral-800">
       <div className="mx-auto max-w-6xl px-4 h-20 flex items-center gap-4">
         <Logo dark />
-        <nav className="hidden md:flex items-center gap-1 ml-4">
+        {/* lg breakpoint: 9 links + logo measure ~1000px, which overflows tablet
+            widths (768-1023px) — those sizes use the avatar menu instead */}
+        <nav className="hidden lg:flex items-center gap-1 ml-4">
           {primary(fishId).map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm font-semibold transition-colors ${
                 isActive(pathname, href)
                   ? "bg-blue-900 text-white"
                   : "text-slate-200 hover:text-white hover:bg-neutral-900"
@@ -148,9 +150,9 @@ export function TopNav({
               </button>
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-60 rounded-xl bg-white shadow-lift border border-sand-200 py-2 animate-fade-up">
-                  {/* mobile-only: primary nav lives in the top bar on desktop, but is
-                      hidden on phones — surface it here so Forum/Boards/Crews stay reachable */}
-                  <div className="md:hidden border-b border-sand-100 pb-2 mb-2">
+                  {/* below lg: primary nav lives in the top bar on desktop, but is
+                      hidden on phones/tablets — surface it here so Forum/Boards/Crews stay reachable */}
+                  <div className="lg:hidden border-b border-sand-100 pb-2 mb-2">
                     {primary(fishId).map(({ href, label, icon: Icon }) => (
                       <Link
                         key={href}
@@ -230,7 +232,7 @@ export function MobileTabs({ user, fishId = false }: { user: NavUser; fishId?: b
       : { href: "/login", label: "Profile", icon: UserCircle2 },
   ];
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-black border-t border-neutral-800 pb-[env(safe-area-inset-bottom)]">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-black border-t border-neutral-800 pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-5">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);

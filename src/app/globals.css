@@ -33,15 +33,15 @@
   /* Bait orange — action color */
   --color-bait-100: #fdeada;
   --color-bait-400: #e89144;
-  --color-bait-500: #d97a26;
-  --color-bait-600: #bc621a;
-  --color-bait-700: #9a4e15;
+  --color-bait-500: #b25b17;
+  --color-bait-600: #9a4e15;
+  --color-bait-700: #7d3f11;
 
   /* Ink */
   --color-ink-900: #101d24;
   --color-ink-700: #2b3d47;
   --color-ink-500: #51656f;
-  --color-ink-300: #8ba0aa;
+  --color-ink-300: #5b6f79;
 
   --font-display: var(--font-display-var), ui-serif, Georgia, serif;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;

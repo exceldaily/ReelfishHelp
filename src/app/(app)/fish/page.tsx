@@ -86,38 +86,39 @@ export default async function FishFinderPage({
       />
 
       {/* filters */}
-      <form method="GET" className="rounded-2xl bg-white border border-sand-200 shadow-card p-4 mb-6">
+      <form method="GET" role="search" aria-label="Fish finder filters" className="rounded-2xl bg-white border border-sand-200 shadow-card p-4 mb-6">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <input
             name="q"
             defaultValue={f.q ?? ""}
+            aria-label="Search species"
             placeholder="Search species…"
             className="w-full rounded-xl border border-sand-300 px-3.5 py-2.5 text-[15px] min-h-11 sm:col-span-2 lg:col-span-1"
           />
-          <select name="water" defaultValue={f.water ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white">
+          <select name="water" aria-label="Water type" defaultValue={f.water ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white">
             <option value="">Fresh + saltwater</option>
             <option value="freshwater">Freshwater</option>
             <option value="saltwater">Saltwater</option>
           </select>
-          <select name="state" defaultValue={f.state ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white">
+          <select name="state" aria-label="State" defaultValue={f.state ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white">
             <option value="">Any state</option>
             {US_STATES.map((s) => (
               <option key={s.code} value={s.code}>{s.name}</option>
             ))}
           </select>
-          <select name="env" defaultValue={f.env ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white capitalize">
+          <select name="env" aria-label="Environment" defaultValue={f.env ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white capitalize">
             <option value="">Any water type</option>
             {ENV_OPTIONS.map((e) => (
               <option key={e} value={e} className="capitalize">{e}</option>
             ))}
           </select>
-          <select name="style" defaultValue={f.style ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white capitalize">
+          <select name="style" aria-label="Fishing style" defaultValue={f.style ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white capitalize">
             <option value="">Any fishing style</option>
             {STYLE_OPTIONS.map((s) => (
               <option key={s} value={s} className="capitalize">{s} fishing</option>
             ))}
           </select>
-          <select name="season" defaultValue={f.season ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white capitalize">
+          <select name="season" aria-label="Season" defaultValue={f.season ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white capitalize">
             <option value="">Any season</option>
             {SEASON_OPTIONS.map((s) => (
               <option key={s} value={s} className="capitalize">
