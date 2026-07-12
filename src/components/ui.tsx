@@ -69,7 +69,7 @@ export function Card({
 const badgeVariants = {
   fresh: "bg-moss-100 text-moss-700",
   salt: "bg-tide-100 text-tide-700",
-  both: "bg-sand-100 text-sand-500",
+  both: "bg-sand-200 text-ink-700",
   neutral: "bg-sand-100 text-ink-700",
   orange: "bg-bait-100 text-bait-700",
   dark: "bg-tide-900 text-white",

@@ -220,7 +220,7 @@ export default async function CatchGuidePage({
             <a
               key={id}
               href={`#${id}`}
-              className="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold text-ink-500 hover:bg-sand-100 hover:text-ink-900"
+              className="inline-flex min-h-11 shrink-0 items-center rounded-full px-3 py-2.5 text-xs font-bold text-ink-500 hover:bg-sand-100 hover:text-ink-900"
             >
               {label}
             </a>

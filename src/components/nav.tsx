@@ -200,13 +200,13 @@ export function TopNav({
             <>
               <Link
                 href="/login"
-                className="rounded-lg px-3 py-2 text-sm font-semibold text-slate-200 hover:text-white"
+                className="inline-flex min-h-11 items-center rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-200 hover:text-white"
               >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="rounded-xl bg-bait-500 hover:bg-bait-600 px-4 py-2 text-sm font-bold text-white"
+                className="inline-flex min-h-11 items-center rounded-xl bg-bait-500 hover:bg-bait-600 px-4 py-2.5 text-sm font-bold text-white"
               >
                 Sign up free
               </Link>

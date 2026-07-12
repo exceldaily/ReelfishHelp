@@ -94,42 +94,42 @@ export function SetupBuilder({ initialSpecies }: { initialSpecies?: string }) {
       {mode === "scratch" ? (
         <form onSubmit={onScratch} className="bg-white rounded-2xl border border-sand-200 shadow-card p-5 sm:p-6 space-y-5">
           <Step n={1} title="What kind of fishing are you doing?">
-            <select name="water" className={selCls} defaultValue="saltwater">
+            <select name="water" aria-label="Water type" className={selCls} defaultValue="saltwater">
               {WATER_TYPES.map((w) => <option key={w} value={w}>{w}</option>)}
             </select>
           </Step>
           <Step n={2} title="What rod are you using?">
             <div className="grid sm:grid-cols-2 gap-3">
-              <div><label className={labelCls}>Rod type</label><select name="rodType" className={selCls} defaultValue="spinning">{ROD_TYPES.map((r) => <option key={r} value={r}>{r}</option>)}</select></div>
-              <div><label className={labelCls}>Power</label><select name="rodPower" className={selCls} defaultValue="medium">{POWERS.map((p) => <option key={p} value={p}>{p}</option>)}</select></div>
+              <div><label className={labelCls}>Rod type</label><select name="rodType" aria-label="Rod type" className={selCls} defaultValue="spinning">{ROD_TYPES.map((r) => <option key={r} value={r}>{r}</option>)}</select></div>
+              <div><label className={labelCls}>Power</label><select name="rodPower" aria-label="Rod power" className={selCls} defaultValue="medium">{POWERS.map((p) => <option key={p} value={p}>{p}</option>)}</select></div>
             </div>
           </Step>
           <Step n={3} title="What reel?">
             <div className="grid sm:grid-cols-2 gap-3">
-              <div><label className={labelCls}>Reel type</label><select name="reelType" className={selCls} defaultValue="spinning">{REEL_TYPES.map((r) => <option key={r} value={r}>{r}</option>)}</select></div>
-              <div><label className={labelCls}>Reel size</label><select name="reelSize" className={selCls} defaultValue="3000">{REEL_SIZES.map((r) => <option key={r} value={r}>{r}</option>)}</select></div>
+              <div><label className={labelCls}>Reel type</label><select name="reelType" aria-label="Reel type" className={selCls} defaultValue="spinning">{REEL_TYPES.map((r) => <option key={r} value={r}>{r}</option>)}</select></div>
+              <div><label className={labelCls}>Reel size</label><select name="reelSize" aria-label="Reel size" className={selCls} defaultValue="3000">{REEL_SIZES.map((r) => <option key={r} value={r}>{r}</option>)}</select></div>
             </div>
           </Step>
           <Step n={4} title="What line is on your reel?">
             <div className="grid sm:grid-cols-2 gap-3">
-              <div><label className={labelCls}>Line type</label><select name="lineType" className={selCls} defaultValue="braid">{LINE_TYPES.map((l) => <option key={l} value={l}>{l}</option>)}</select></div>
+              <div><label className={labelCls}>Line type</label><select name="lineType" aria-label="Line type" className={selCls} defaultValue="braid">{LINE_TYPES.map((l) => <option key={l} value={l}>{l}</option>)}</select></div>
               <div><label className={labelCls}>Pound test</label><input name="lineLb" type="number" min={2} max={200} defaultValue={20} className={numCls} /></div>
             </div>
           </Step>
           <Step n={5} title="Leader">
             <div className="grid sm:grid-cols-2 gap-3">
-              <div><label className={labelCls}>Leader type</label><select name="leaderType" className={selCls} defaultValue="fluorocarbon">{LEADER_TYPES.map((l) => <option key={l} value={l}>{l}</option>)}</select></div>
+              <div><label className={labelCls}>Leader type</label><select name="leaderType" aria-label="Leader type" className={selCls} defaultValue="fluorocarbon">{LEADER_TYPES.map((l) => <option key={l} value={l}>{l}</option>)}</select></div>
               <div><label className={labelCls}>Leader pound test</label><input name="leaderLb" type="number" min={0} max={250} defaultValue={30} className={numCls} /></div>
             </div>
           </Step>
           <Step n={6} title="Hook & bait">
             <div className="grid sm:grid-cols-2 gap-3">
-              <div><label className={labelCls}>Hook</label><select name="hook" className={selCls} defaultValue="circle hook">{HOOKS.map((h) => <option key={h} value={h}>{h}</option>)}</select></div>
-              <div><label className={labelCls}>Bait or lure</label><select name="baitLure" className={selCls} defaultValue="soft plastic">{BAITS.map((b) => <option key={b} value={b}>{b}</option>)}</select></div>
+              <div><label className={labelCls}>Hook</label><select name="hook" aria-label="Hook" className={selCls} defaultValue="circle hook">{HOOKS.map((h) => <option key={h} value={h}>{h}</option>)}</select></div>
+              <div><label className={labelCls}>Bait or lure</label><select name="baitLure" aria-label="Bait or lure" className={selCls} defaultValue="soft plastic">{BAITS.map((b) => <option key={b} value={b}>{b}</option>)}</select></div>
             </div>
           </Step>
           <Step n={7} title="How are you fishing it?">
-            <select name="method" className={selCls} defaultValue="casting">{METHODS.map((m) => <option key={m} value={m}>{m}</option>)}</select>
+            <select name="method" aria-label="Fishing method" className={selCls} defaultValue="casting">{METHODS.map((m) => <option key={m} value={m}>{m}</option>)}</select>
           </Step>
           <div className="pt-2">
             <Button type="submit" size="lg" className="w-full">See what this setup can catch</Button>
@@ -143,19 +143,19 @@ export function SetupBuilder({ initialSpecies }: { initialSpecies?: string }) {
           </div>
           <div>
             <label className={labelCls}>Where are you fishing?</label>
-            <select name="water" className={selCls} defaultValue="saltwater">{WATER_TYPES.map((w) => <option key={w} value={w}>{w}</option>)}</select>
+            <select name="water" aria-label="Water type" className={selCls} defaultValue="saltwater">{WATER_TYPES.map((w) => <option key={w} value={w}>{w}</option>)}</select>
           </div>
           <div>
             <label className={labelCls}>Shore, pier, kayak, boat, surf, or offshore?</label>
-            <select name="platform" className={selCls} defaultValue="boat">{["shore", "pier", "kayak", "boat", "surf", "offshore"].map((p) => <option key={p} value={p}>{p}</option>)}</select>
+            <select name="platform" aria-label="Fishing platform" className={selCls} defaultValue="boat">{["shore", "pier", "kayak", "boat", "surf", "offshore"].map((p) => <option key={p} value={p}>{p}</option>)}</select>
           </div>
           <div>
             <label className={labelCls}>Live bait or artificial?</label>
-            <select name="baitKind" className={selCls} defaultValue="artificial">{["artificial", "live"].map((p) => <option key={p} value={p}>{p}</option>)}</select>
+            <select name="baitKind" aria-label="Bait kind" className={selCls} defaultValue="artificial">{["artificial", "live"].map((p) => <option key={p} value={p}>{p}</option>)}</select>
           </div>
           <div>
             <label className={labelCls}>Light tackle or heavy tackle?</label>
-            <select name="tackle" className={selCls} defaultValue="medium">{["light", "medium", "heavy"].map((p) => <option key={p} value={p}>{p}</option>)}</select>
+            <select name="tackle" aria-label="Tackle weight" className={selCls} defaultValue="medium">{["light", "medium", "heavy"].map((p) => <option key={p} value={p}>{p}</option>)}</select>
           </div>
           <div className="pt-2">
             <Button type="submit" size="lg" className="w-full">Build my setup</Button>
