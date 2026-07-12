@@ -62,7 +62,7 @@ export default async function CommunityPage({
                 <a
                   key={label}
                   href={v ? `/community?water=${v}` : "/community"}
-                  className={`rounded-lg px-3.5 py-1.5 text-sm font-bold ${
+                  className={`inline-flex items-center min-h-10 rounded-lg px-3.5 py-1.5 text-sm font-bold ${
                     (water ?? "") === v ? "bg-white shadow-card text-ink-900" : "text-ink-500 hover:text-ink-900"
                   }`}
                 >

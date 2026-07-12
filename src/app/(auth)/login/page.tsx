@@ -30,7 +30,7 @@ export default function LoginPage() {
       </form>
       <p className="mt-5 text-sm text-ink-500 text-center">
         New here?{" "}
-        <Link href="/signup" className="font-bold text-tide-700 hover:underline">
+        <Link href="/signup" className="inline-block py-3 -my-3 font-bold text-tide-700 hover:underline">
           Create a free account
         </Link>
       </p>

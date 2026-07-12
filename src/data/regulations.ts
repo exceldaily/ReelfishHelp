@@ -20,7 +20,7 @@ export const stateRegulations: { state: string; agency: string; url: string; not
   { state: "LA", agency: "Louisiana Dept. of Wildlife & Fisheries", url: "https://www.wlf.louisiana.gov/page/recreational-fishing" },
   { state: "ME", agency: "Maine Dept. of Inland Fisheries & Wildlife", url: "https://www.maine.gov/ifw/fishing-boating/fishing/" },
   { state: "MD", agency: "Maryland Dept. of Natural Resources", url: "https://dnr.maryland.gov/fisheries/Pages/default.aspx" },
-  { state: "MA", agency: "MassWildlife / Div. of Marine Fisheries", url: "https://www.mass.gov/fishing" },
+  { state: "MA", agency: "MassWildlife / Div. of Marine Fisheries", url: "https://www.mass.gov/topics/fishing-hunting" },
   { state: "MI", agency: "Michigan Dept. of Natural Resources", url: "https://www.michigan.gov/dnr/things-to-do/fishing" },
   { state: "MN", agency: "Minnesota Dept. of Natural Resources", url: "https://www.dnr.state.mn.us/fishing/index.html" },
   { state: "MS", agency: "Mississippi Dept. of Wildlife, Fisheries & Parks", url: "https://www.mdwfp.com/fishing-boating" },

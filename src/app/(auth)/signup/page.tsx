@@ -51,11 +51,25 @@ export default function SignupPage() {
             placeholder="8 to 72 characters"
           />
         </div>
-        <label className="flex items-start gap-2.5 text-sm text-ink-700">
-          <input type="checkbox" name="acceptTerms" className="mt-0.5 size-4 accent-bait-500" />
+        <label className="flex items-start gap-2.5 text-sm text-ink-700 cursor-pointer">
+          {/* native checkboxes ignore padding, so a transparent 40px input overlays
+              a 20px visual box to give a full-size tap target */}
+          <span className="relative mt-0.5 grid size-5 shrink-0 place-items-center">
+            <input
+              type="checkbox"
+              name="acceptTerms"
+              className="peer absolute -inset-2.5 size-10 cursor-pointer opacity-0"
+            />
+            <span
+              aria-hidden
+              className="pointer-events-none grid size-5 place-items-center rounded border border-sand-300 bg-white text-xs font-bold text-transparent peer-checked:border-bait-500 peer-checked:bg-bait-500 peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-tide-500"
+            >
+              ✓
+            </span>
+          </span>
           <span>
             I agree to the{" "}
-            <Link href="/terms" target="_blank" className="font-bold text-tide-700 hover:underline">
+            <Link href="/terms" target="_blank" className="inline-block py-3 -my-3 font-bold text-tide-700 hover:underline">
               Community Rules &amp; Terms
             </Link>{" "}
             — including no hate, harassment, or illegal fishing.
@@ -69,7 +83,7 @@ export default function SignupPage() {
       </form>
       <p className="mt-5 text-sm text-ink-500 text-center">
         Already fishing with us?{" "}
-        <Link href="/login" className="font-bold text-tide-700 hover:underline">
+        <Link href="/login" className="inline-block py-3 -my-3 font-bold text-tide-700 hover:underline">
           Log in
         </Link>
       </p>

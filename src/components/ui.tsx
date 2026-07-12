@@ -10,7 +10,7 @@ function cx(...parts: (string | false | null | undefined)[]) {
 const btnBase =
   "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-500 disabled:opacity-50 disabled:pointer-events-none select-none";
 const btnSizes = {
-  sm: "text-sm px-3 py-1.5 min-h-9",
+  sm: "text-sm px-3 py-1.5 min-h-10",
   md: "text-sm px-4 py-2.5 min-h-11",
   lg: "text-base px-6 py-3 min-h-12",
 };

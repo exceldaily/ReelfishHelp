@@ -67,6 +67,7 @@ export async function ensureSeed(db: Db) {
     { state: "RI", from: "https://dem.ri.gov/natural-resources-bureau/fish-wildlife/fishing", to: "https://dem.ri.gov/natural-resources-bureau/fish-wildlife" },
     { state: "UT", from: "https://wildlife.utah.gov/fishing-in-utah.html", to: "https://wildlife.utah.gov/fishing" },
     { state: "MS", from: "https://www.mdwfp.com/fishing-boating/", to: "https://www.mdwfp.com/fishing-boating" },
+    { state: "MA", from: "https://www.mass.gov/fishing", to: "https://www.mass.gov/topics/fishing-hunting" },
   ];
   for (const fix of REG_URL_FIXES) {
     await db
