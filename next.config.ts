@@ -8,7 +8,7 @@ const csp = [
   "form-action 'self'",
   "frame-ancestors 'none'",
   "object-src 'none'",
-  "img-src 'self' data: blob: https://upload.wikimedia.org https://*.public.blob.vercel-storage.com",
+  "img-src 'self' data: blob: https://upload.wikimedia.org https://*.public.blob.vercel-storage.com https://*.r2.cloudflarestorage.com",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
   `script-src 'self' 'unsafe-inline' ${isProd ? "" : "'unsafe-eval'"} https://challenges.cloudflare.com`,
@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "upload.wikimedia.org" },
       { protocol: "https", hostname: "**.public.blob.vercel-storage.com" },
+      { protocol: "https", hostname: "**.r2.cloudflarestorage.com" },
     ],
   },
   // Photos upload through server actions; the default 1 MB cap rejects real
