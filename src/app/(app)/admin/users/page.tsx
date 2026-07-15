@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { count, desc } from "drizzle-orm";
 import { ArrowLeft, Search, Shield, UserCircle2 } from "lucide-react";
-import { getDb, users, catches, forumQuestions } from "@/db";
+import { getDb, users, catches, forumQuestions, userBadges } from "@/db";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { PageHeader, Card, Badge } from "@/components/ui";
+import { AdminBadgeManager } from "@/components/admin-badge-manager";
 
 export const metadata = { title: "Users · Admin" };
 
@@ -16,13 +17,16 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
   const { q } = await searchParams;
   const db = await getDb();
 
-  const [allUsers, catchCounts, qCounts] = await Promise.all([
+  const [allUsers, catchCounts, qCounts, badgeRows] = await Promise.all([
     db.query.users.findMany({ with: { profile: true }, orderBy: [desc(users.createdAt)] }),
     db.select({ userId: catches.userId, n: count() }).from(catches).groupBy(catches.userId),
     db.select({ userId: forumQuestions.userId, n: count() }).from(forumQuestions).groupBy(forumQuestions.userId),
+    db.query.userBadges.findMany(),
   ]);
   const catchMap = new Map(catchCounts.map((r) => [r.userId, Number(r.n)]));
   const qMap = new Map(qCounts.map((r) => [r.userId, Number(r.n)]));
+  const badgeMap = new Map<string, string[]>();
+  for (const b of badgeRows) badgeMap.set(b.userId, [...(badgeMap.get(b.userId) ?? []), b.badgeSlug]);
 
   const needle = (q ?? "").trim().toLowerCase();
   const rows = needle
@@ -61,6 +65,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                 <th className="py-3 px-4 font-semibold">User</th>
                 <th className="py-3 px-4 font-semibold">Email</th>
                 <th className="py-3 px-3 font-semibold">Role</th>
+                <th className="py-3 px-3 font-semibold">Badges</th>
                 <th className="py-3 px-3 font-semibold">State</th>
                 <th className="py-3 px-3 font-semibold text-right">Catches</th>
                 <th className="py-3 px-3 font-semibold text-right">Questions</th>
@@ -99,6 +104,9 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                       ) : (
                         <Badge variant="neutral">User</Badge>
                       )}
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <AdminBadgeManager userId={u.id} granted={badgeMap.get(u.id) ?? []} />
                     </td>
                     <td className="py-2.5 px-3 text-ink-600">{p?.homeState ?? "-"}</td>
                     <td className="py-2.5 px-3 text-right text-ink-700 font-semibold">{catchMap.get(u.id) ?? 0}</td>

@@ -3,6 +3,7 @@ import { asc, eq } from "drizzle-orm";
 import { ArrowLeft, SlidersHorizontal, Backpack } from "lucide-react";
 import { getDb, gearSetups } from "@/db";
 import { PageHeader, Card, Badge, EmptyState, WaterBadge } from "@/components/ui";
+import { LureDecor } from "@/components/decor";
 
 export const metadata = {
   title: "Gear Setups · Gear",
@@ -36,7 +37,8 @@ export default async function SetupsPage({ searchParams }: { searchParams: Promi
   const sel = "rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white";
 
   return (
-    <div>
+    <div className="relative">
+      <LureDecor className="absolute -top-3 right-2 hidden sm:block w-20 lg:w-24 text-tide-200" />
       <Link href="/gear" className="inline-flex items-center gap-1.5 text-sm font-semibold text-tide-700 mb-2">
         <ArrowLeft className="size-4" /> All gear
       </Link>
