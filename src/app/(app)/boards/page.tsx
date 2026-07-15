@@ -1,24 +1,42 @@
 import Link from "next/link";
-import { desc, eq } from "drizzle-orm";
-import { Map, PlusCircle, Waves } from "lucide-react";
+import Image from "next/image";
+import { desc, eq, isNull, lte, or } from "drizzle-orm";
+import { Fish, Map, PlusCircle, Trophy, Waves } from "lucide-react";
 import { getDb } from "@/db";
-import { biteBoards, biteReports } from "@/db/schema";
-import { PageHeader, Badge, ButtonLink, Card } from "@/components/ui";
+import { biteBoards, biteReports, catches } from "@/db/schema";
+import { PageHeader, ButtonLink, Card } from "@/components/ui";
+import { UsaBiteMap, type StateBoardStat } from "@/components/usa-bite-map";
 
 export const metadata = { title: "Bite Boards" };
 
 export default async function BoardsPage() {
   const db = await getDb();
-  const boards = await db.query.biteBoards.findMany({
-    where: eq(biteBoards.active, true),
-    orderBy: [biteBoards.water, biteBoards.name],
-    with: { reports: true, members: true },
-  });
-  const recentReports = await db.query.biteReports.findMany({
-    orderBy: [desc(biteReports.createdAt)],
-    limit: 6,
-    with: { board: true, species: true },
-  });
+  const [boards, recentReports, recentCatches] = await Promise.all([
+    db.query.biteBoards.findMany({
+      where: eq(biteBoards.active, true),
+      with: { reports: true },
+    }),
+    db.query.biteReports.findMany({
+      orderBy: [desc(biteReports.createdAt)],
+      limit: 6,
+      with: { board: true, species: true },
+    }),
+    db.query.catches.findMany({
+      where: (c, { and }) => and(eq(c.visibility, "public"), or(isNull(c.publishAt), lte(c.publishAt, new Date()))),
+      orderBy: [desc(catches.createdAt)],
+      limit: 5,
+      with: { species: true, photos: true, user: { with: { profile: true } } },
+    }),
+  ]);
+
+  const stats: Record<string, StateBoardStat> = {};
+  let totalPublic = 0;
+  for (const board of boards) {
+    const count = board.reports.filter((r) => r.visibility === "public_area" || r.visibility === "public_no_area").length;
+    stats[board.slug] = { name: board.name, count };
+    totalPublic += count;
+  }
+
   const publicRecent = recentReports.filter((r) => r.board?.active && (r.visibility === "public_area" || r.visibility === "public_no_area"));
 
   return (
@@ -33,37 +51,67 @@ export default async function BoardsPage() {
         }
       />
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {boards.map((board) => {
-            const publicCount = board.reports.filter((r) => r.visibility === "public_area" || r.visibility === "public_no_area").length;
-            return (
-              <Link
-                key={board.id}
-                href={`/boards/${board.slug}`}
-                className="group bg-white rounded-2xl border border-sand-200 shadow-card p-4 hover:shadow-lift transition-shadow"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="size-10 rounded-xl bg-tide-100 grid place-items-center">
-                    <Map className="size-5 text-tide-700" />
-                  </div>
-                  <Badge variant={board.water === "saltwater" ? "salt" : board.water === "freshwater" ? "fresh" : "both"}>
-                    {board.water === "both" ? "Fresh + Salt" : board.water}
-                  </Badge>
-                </div>
-                <h2 className="mt-3 font-display font-bold text-ink-900 group-hover:text-tide-700">{board.name}</h2>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-ink-300">{board.regionLabel}</p>
-                <p className="mt-2 text-sm text-ink-600 leading-relaxed">{board.description}</p>
-                <div className="mt-3 flex gap-3 text-xs font-semibold text-ink-500">
-                  <span>{publicCount} public reports</span>
-                  <span>{board.members.length} members</span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        {/* min-w-0 lets the wide tile grid scroll inside the card instead of stretching the page */}
+        <Card className="p-4 sm:p-6 min-w-0">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h2 className="font-display font-bold text-ink-900 flex items-center gap-2">
+              <Map className="size-5 text-tide-700" /> What&apos;s biting across the country
+            </h2>
+            <span className="text-xs font-semibold text-ink-500">{totalPublic} public reports</span>
+          </div>
+          <UsaBiteMap stats={stats} />
+          <p className="mt-4 text-xs text-ink-500">
+            Tap a state to open its bite board: recent reports, local questions, and broad conditions. Exact spots are never shown.
+          </p>
+        </Card>
 
-        <aside className="space-y-4">
+        <aside className="space-y-4 min-w-0">
+          <Card className="p-5">
+            <h2 className="font-display font-bold text-ink-900 flex items-center gap-2">
+              <Trophy className="size-5 text-tide-700" />
+              Recent Catches
+            </h2>
+            <div className="mt-3 space-y-2.5">
+              {recentCatches.length === 0 ? (
+                <p className="text-sm text-ink-500">No public catches yet. Log one and show the community what&apos;s biting.</p>
+              ) : (
+                recentCatches.map((c) => {
+                  const photo = c.photos[0]?.url ?? null;
+                  const name = c.species?.commonName ?? c.customSpeciesName ?? "Mystery fish";
+                  const specs = [
+                    c.lengthIn != null ? `${c.lengthIn}"` : null,
+                    c.weightLb != null ? `${c.weightLb} lb` : null,
+                  ].filter(Boolean).join(" · ");
+                  return (
+                    <Link key={c.id} href={`/catch/${c.id}`} className="flex items-center gap-3 rounded-xl bg-sand-100/70 p-2.5 hover:bg-sand-100">
+                      <span className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-tide-900 grid place-items-center">
+                        {photo ? (
+                          <Image src={photo} alt="" fill sizes="48px" className="object-cover" unoptimized={photo.startsWith("/api/")} />
+                        ) : (
+                          <Fish className="size-5 text-tide-400" />
+                        )}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-bold text-ink-900">{name}</span>
+                        <span className="block truncate text-xs text-ink-500">
+                          {c.user?.profile?.displayName ?? "An angler"}
+                          {specs ? ` · ${specs}` : ""}
+                        </span>
+                        <span className="block text-[11px] text-ink-500">
+                          {new Date(c.caughtAt).toLocaleDateString([], { month: "short", day: "numeric" })}
+                        </span>
+                      </span>
+                    </Link>
+                  );
+                })
+              )}
+            </div>
+            <ButtonLink href="/community" variant="secondary" size="sm" className="mt-3 w-full">
+              See the full community feed
+            </ButtonLink>
+          </Card>
+
           <Card className="p-5">
             <h2 className="font-display font-bold text-ink-900 flex items-center gap-2">
               <Waves className="size-5 text-tide-700" />
