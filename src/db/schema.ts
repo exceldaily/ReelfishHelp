@@ -1017,6 +1017,28 @@ export type NewFishGearRequirement = typeof fishGearRequirements.$inferInsert;
 export type UserSetup = typeof userSetups.$inferSelect;
 export type NewUserSetup = typeof userSetups.$inferInsert;
 
+/* ---------------------------------- badges ---------------------------------- */
+
+/**
+ * Stored badge grants (special badges like founding-member/og/partner that an
+ * admin awards). Activity badges (first-catch, catch-master, ...) are derived
+ * from live stats at render time and never stored — see src/lib/badges.ts.
+ * badgeSlug references the catalog in src/data/badges.ts.
+ */
+export const userBadges = pgTable(
+  "user_badges",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    badgeSlug: text("badge_slug").notNull(),
+    awardedAt: timestamp("awarded_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.badgeSlug] })]
+);
+
+export type UserBadge = typeof userBadges.$inferSelect;
+
 /* --------------------------------- relations --------------------------------- */
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1153,6 +1175,10 @@ export const crewPostsRelations = relations(crewPosts, ({ one }) => ({
 
 export const userSetupsRelations = relations(userSetups, ({ one }) => ({
   owner: one(users, { fields: [userSetups.ownerId], references: [users.id] }),
+}));
+
+export const userBadgesRelations = relations(userBadges, ({ one }) => ({
+  user: one(users, { fields: [userBadges.userId], references: [users.id] }),
 }));
 
 export type User = typeof users.$inferSelect;

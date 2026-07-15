@@ -1,6 +1,6 @@
 import { count, inArray, eq, and, ne, like, isNull } from "drizzle-orm";
 import type { Db } from "./index";
-import { species, regulationLinks, biteBoards, gearArticles, knots, gearSetups, gearBrands, fishGearRequirements } from "./schema";
+import { species, regulationLinks, biteBoards, gearArticles, knots, gearSetups, gearBrands, fishGearRequirements, users, userBadges } from "./schema";
 import { allSpecies } from "@/data/species";
 import { stateRegulations } from "@/data/regulations";
 import { retiredStarterBiteBoardSlugs, starterBiteBoards, starterBiteBoardSlugs } from "@/data/bite-boards";
@@ -75,6 +75,16 @@ export async function ensureSeed(db: Db) {
       .set({ url: fix.to })
       .where(and(eq(regulationLinks.state, fix.state), eq(regulationLinks.url, fix.from)));
   }
+
+  // founder badge grants: site admins carry OG / Founding Member / Crew Captain
+  // (idempotent — activity badges are derived at render time, never stored)
+  const adminRows = await db.query.users.findMany({ where: eq(users.role, "admin") });
+  for (const admin of adminRows) {
+    for (const slug of ["og", "founding-member", "crew-captain"]) {
+      await db.insert(userBadges).values({ userId: admin.id, badgeSlug: slug }).onConflictDoNothing();
+    }
+  }
+  if (adminRows.length > 0) console.log(`[seed] founder badges ensured for ${adminRows.length} admin account(s)`);
 
   await db.insert(biteBoards).values(starterBiteBoards).onConflictDoNothing();
   await db.update(biteBoards).set({ active: true }).where(inArray(biteBoards.slug, starterBiteBoardSlugs));

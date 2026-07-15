@@ -10,17 +10,8 @@ import { CatchCard } from "@/components/catch-card";
 import { FollowButton } from "@/components/follow-button";
 import { MessageButton } from "@/components/message-button";
 import { ReportButton } from "@/components/report-button";
-
-function badges(stats: { catches: number; species: number; released: number; trips: number }) {
-  const out: { label: string; emoji: string }[] = [];
-  if (stats.catches >= 1) out.push({ label: "First catch", emoji: "🎣" });
-  if (stats.catches >= 10) out.push({ label: "10 catches", emoji: "🔟" });
-  if (stats.catches >= 50) out.push({ label: "50 catches", emoji: "🏆" });
-  if (stats.species >= 5) out.push({ label: "5 species", emoji: "🐟" });
-  if (stats.species >= 15) out.push({ label: "Species collector", emoji: "🌊" });
-  if (stats.released >= 10) out.push({ label: "Conservationist", emoji: "💚" });
-  return out;
-}
+import { BadgeRow } from "@/components/badge-row";
+import { earnedBadges } from "@/lib/badges";
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
@@ -83,7 +74,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     released: allCatches.filter((c) => c.released).length,
     trips: 0,
   };
-  const earned = badges(stats);
+  const likesReceived = allCatches.reduce((n, c) => n + c.likes.length, 0);
+  const earned = await earnedBadges(db, profile.userId, {
+    catchCount: allCatches.length,
+    likesReceived,
+  });
 
   // friends = mutual follows (each follows the other)
   const followerIds = new Set(followerRows.map((f) => f.followerId));
@@ -130,6 +125,13 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           </div>
         </div>
 
+        {/* earned badges — hover or focus one to see what it's for */}
+        {earned.length > 0 && (
+          <div className="mt-4">
+            <BadgeRow badges={earned} />
+          </div>
+        )}
+
         <div className="mt-6 grid grid-cols-3 sm:grid-cols-6 gap-3 text-center">
           {[
             { n: stats.catches, label: "Catches" },
@@ -157,18 +159,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           })}
         </div>
 
-        {earned.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {earned.map((b) => (
-              <span key={b.label} className="inline-flex items-center gap-1.5 rounded-full bg-bait-100 text-bait-700 px-3 py-1 text-xs font-bold">
-                {b.emoji} {b.label}
-              </span>
-            ))}
-            {saved.length > 0 && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-tide-100 text-tide-800 px-3 py-1 text-xs font-bold">
-                <Award className="size-3.5" /> {saved.length} saved guide{saved.length === 1 ? "" : "s"}
-              </span>
-            )}
+        {saved.length > 0 && (
+          <div className="mt-4">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-tide-100 text-tide-800 px-3 py-1 text-xs font-bold">
+              <Award className="size-3.5" /> {saved.length} saved guide{saved.length === 1 ? "" : "s"}
+            </span>
           </div>
         )}
       </Card>
