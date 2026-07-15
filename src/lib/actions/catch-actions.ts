@@ -29,12 +29,16 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
   const speciesId = String(formData.get("speciesId") ?? "") || null;
   const customSpeciesName = String(formData.get("customSpeciesName") ?? "").trim() || null;
   if (!speciesId && !customSpeciesName) {
+    console.error("[createCatch] rejected: no species picked", { userId: user.id });
     return { error: "Pick a species (or type a custom one)." };
   }
 
   const caughtAtRaw = String(formData.get("caughtAt") ?? "");
   const caughtAt = caughtAtRaw ? new Date(caughtAtRaw) : new Date();
-  if (Number.isNaN(caughtAt.getTime())) return { error: "Invalid date/time." };
+  if (Number.isNaN(caughtAt.getTime())) {
+    console.error("[createCatch] rejected: bad date", { userId: user.id, caughtAtRaw });
+    return { error: "Invalid date/time." };
+  }
 
   const num = (name: string) => {
     const v = String(formData.get(name) ?? "").trim();
@@ -106,6 +110,7 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
     try {
       await assertUnderQuota(user.id);
     } catch (e) {
+      console.error("[createCatch] rejected: quota", { userId: user.id, msg: e instanceof Error ? e.message : e });
       return { error: e instanceof Error ? e.message : "Storage limit reached" };
     }
   }
@@ -123,6 +128,12 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
       const feed = asset.variants.find((v) => v.label === "feed") ?? asset.variants[asset.variants.length - 1];
       if (feed) photoUrls.push(feed.url);
     } catch (e) {
+      console.error("[createCatch] rejected: photo store failed", {
+        userId: user.id,
+        file: { name: f.name, type: f.type, size: f.size },
+        msg: e instanceof Error ? e.message : e,
+        stack: e instanceof Error ? e.stack?.slice(0, 500) : undefined,
+      });
       return { error: e instanceof Error ? e.message : "Photo upload failed" };
     }
   }
