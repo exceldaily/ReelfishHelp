@@ -48,10 +48,23 @@ export async function putObject(
   body: Buffer | Uint8Array,
   contentType: string
 ): Promise<void> {
-  const res = await client().fetch(bucketUrl(key), {
+  // Sign first, then send the raw bytes in a fresh fetch. Passing a
+  // pre-built Request to fetch turns the body into a stream, which Node
+  // sends with chunked encoding and no Content-Length — R2 rejects that
+  // with 411 (Length Required). A typed-array body on a direct fetch call
+  // gets an automatic Content-Length.
+  const bytes = new Uint8Array(body);
+  const signed = await client().sign(
+    new Request(bucketUrl(key), {
+      method: "PUT",
+      body: bytes,
+      headers: { "Content-Type": contentType },
+    })
+  );
+  const res = await fetch(signed.url, {
     method: "PUT",
-    body: new Uint8Array(body),
-    headers: { "Content-Type": contentType },
+    headers: signed.headers,
+    body: bytes,
   });
   if (!res.ok) {
     throw new Error(`R2 put failed (${res.status}) for ${key}: ${await safeText(res)}`);
