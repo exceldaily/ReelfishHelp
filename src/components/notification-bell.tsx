@@ -7,6 +7,36 @@ import { useRouter } from "next/navigation";
 import { Bell, Heart, MessageCircle, MessagesSquare, UserPlus, Award, CheckCircle2, Sparkles } from "lucide-react";
 import { getNotifications, markNotificationsRead, type NotificationItem } from "@/lib/actions/notification-actions";
 
+/**
+ * Bobber notification emblem. Unlit: quiet line art matching the nav icons.
+ * Lit (unread notifications): white top half, red bottom half, red tip, with
+ * a soft red glow — like a bobber getting hit.
+ */
+function BobberIcon({ lit }: { lit: boolean }) {
+  if (!lit) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" className="size-5" aria-hidden>
+        <circle cx="12" cy="4" r="1.6" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M12 5.6 L12 7.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="12" cy="14.5" r="6.5" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M5.5 14.5 L18.5 14.5" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className="size-5 drop-shadow-[0_0_5px_rgba(239,68,68,0.9)]" aria-hidden>
+      {/* red tip */}
+      <circle cx="12" cy="4" r="1.8" fill="#ef4444" />
+      <path d="M12 5.8 L12 8" stroke="#e2e8f0" strokeWidth="1.6" strokeLinecap="round" />
+      {/* white top half */}
+      <path d="M5.5 14.5 A6.5 6.5 0 0 1 18.5 14.5 Z" fill="#ffffff" />
+      {/* red bottom half */}
+      <path d="M5.5 14.5 A6.5 6.5 0 0 0 18.5 14.5 Z" fill="#ef4444" />
+      <circle cx="12" cy="14.5" r="6.5" stroke="#fecaca" strokeWidth="1" />
+    </svg>
+  );
+}
+
 const TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   follow: UserPlus,
   like: Heart,
@@ -67,7 +97,7 @@ export function NotificationBell({ initialUnread }: { initialUnread: number }) {
         aria-expanded={open}
         className="relative grid place-items-center size-10 rounded-full text-slate-200 hover:text-white hover:bg-neutral-900 transition-colors"
       >
-        <Bell className="size-5" />
+        <BobberIcon lit={unread > 0} />
         {unread > 0 && (
           <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-bait-500 text-white text-[10px] font-bold grid place-items-center">
             {unread > 9 ? "9+" : unread}
