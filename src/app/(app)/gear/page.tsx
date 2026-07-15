@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Fish, Disc3, Spline, Link as LinkIcon, Anchor, Wrench, Backpack, Award, Wand2, ArrowRight } from "lucide-react";
 import { PageHeader, Card } from "@/components/ui";
-import { RodDecor } from "@/components/decor";
 
 export const metadata = {
   title: "Gear",
@@ -22,14 +21,11 @@ const AREAS = [
 
 export default function GearHubPage() {
   return (
-    <div className="relative">
-      <RodDecor className="absolute -top-4 right-0 hidden sm:block w-40 lg:w-48 text-tide-200 -z-0" />
-      <div className="relative">
-        <PageHeader
-          title="Gear"
-          subtitle="Learn your tackle and dial in the right setup — clear, practical, no affiliate-store fluff."
-        />
-      </div>
+    <div>
+      <PageHeader
+        title="Gear"
+        subtitle="Learn your tackle and dial in the right setup — clear, practical, no affiliate-store fluff."
+      />
 
       <Link
         href="/gear/builder"

@@ -3,7 +3,6 @@ import { asc, eq } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import { getDb, knots } from "@/db";
 import { PageHeader } from "@/components/ui";
-import { HookDecor } from "@/components/decor";
 import { KnotBrowser } from "@/components/gear/knot-browser";
 
 export const metadata = {
@@ -24,8 +23,7 @@ export default async function KnotsPage() {
   }));
 
   return (
-    <div className="relative">
-      <HookDecor className="absolute -top-2 right-2 hidden sm:block w-20 lg:w-24 text-tide-200" />
+    <div>
       <Link href="/gear" className="inline-flex items-center gap-1.5 text-sm font-semibold text-tide-700 mb-2">
         <ArrowLeft className="size-4" /> All gear
       </Link>
