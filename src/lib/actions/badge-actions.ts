@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getDb, userBadges } from "@/db";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { badgeBySlug } from "@/data/badges";
+import { notify } from "@/lib/notify";
 
 /**
  * Admin-only: grant or revoke a stored badge for a user. Revoking only removes
@@ -25,6 +26,15 @@ export async function setBadge(input: {
       .insert(userBadges)
       .values({ userId: input.userId, badgeSlug: input.slug })
       .onConflictDoNothing();
+    const badge = badgeBySlug(input.slug)!;
+    await notify(db, {
+      userId: input.userId,
+      type: "badge",
+      title: `Badge earned: ${badge.name}`,
+      body: badge.blurb,
+      image: `/badges/${input.slug}.png`,
+      dedupeKey: `badge:${input.slug}`,
+    });
   } else {
     await db
       .delete(userBadges)

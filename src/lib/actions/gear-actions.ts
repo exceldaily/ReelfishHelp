@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getDb, gearItems } from "@/db";
 import { requireUser } from "@/lib/auth-helpers";
+import { notifyBadges } from "@/lib/notify";
 import { storeMediaUrl } from "@/lib/media";
 import { GEAR_CATEGORIES } from "@/lib/constants";
 
@@ -60,6 +61,7 @@ export async function saveGear(_prev: GearFormResult, formData: FormData): Promi
       .where(and(eq(gearItems.id, id), eq(gearItems.userId, user.id)));
   } else {
     await db.insert(gearItems).values({ userId: user.id, photoUrl, ...values });
+    await notifyBadges(db, user.id); // gear-guru check
   }
   revalidatePath("/my-gear");
   return { ok: true };

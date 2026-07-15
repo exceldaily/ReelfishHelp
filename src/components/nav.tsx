@@ -24,6 +24,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { Logo } from "./logo";
+import { NotificationBell } from "./notification-bell";
 import { signOutAction } from "@/lib/actions/signout";
 
 export type NavUser = {
@@ -63,10 +64,12 @@ export function TopNav({
   user,
   fishId = false,
   unread = 0,
+  unreadNotifications = 0,
 }: {
   user: NavUser;
   fishId?: boolean;
   unread?: number;
+  unreadNotifications?: number;
 }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -116,6 +119,7 @@ export function TopNav({
               >
                 <Search className="size-5" />
               </Link>
+              <NotificationBell initialUnread={unreadNotifications} />
               <Link
                 href="/messages"
                 aria-label="Messages"

@@ -11,9 +11,11 @@ import {
   comments,
   savedPosts,
   reports,
+  profiles,
   type Visibility,
 } from "@/db";
 import { requireUser } from "@/lib/auth-helpers";
+import { notify, notifyBadges } from "@/lib/notify";
 import { storeMedia, assertUnderQuota, deleteMediaByRelation } from "@/lib/media";
 import { approximate } from "@/lib/geo";
 
@@ -128,6 +130,8 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
     await db.insert(catchPhotos).values(photoUrls.map((url, i) => ({ catchId: row.id, url, position: i })));
   }
 
+  await notifyBadges(db, user.id);
+
   revalidatePath("/catches");
   revalidatePath("/community");
   revalidatePath("/home");
@@ -155,6 +159,17 @@ export async function toggleLike(catchId: string) {
     await db.delete(likes).where(and(eq(likes.userId, user.id), eq(likes.catchId, catchId)));
   } else {
     await db.insert(likes).values({ userId: user.id, catchId });
+    const parent = await db.query.catches.findFirst({ where: eq(catches.id, catchId), with: { species: true } });
+    if (parent && parent.userId !== user.id) {
+      const p = await db.query.profiles.findFirst({ where: eq(profiles.userId, user.id) });
+      await notify(db, {
+        userId: parent.userId,
+        type: "like",
+        title: `${p?.displayName ?? "An angler"} liked your ${parent.species?.commonName ?? "catch"}`,
+        href: `/catch/${catchId}`,
+      });
+      await notifyBadges(db, parent.userId); // community-star check
+    }
   }
   revalidatePath(`/catch/${catchId}`);
   revalidatePath("/community");
@@ -182,6 +197,17 @@ export async function addComment(catchId: string, body: string) {
   if (!text) return { error: "Comment can't be empty" };
   const db = await getDb();
   await db.insert(comments).values({ catchId, userId: user.id, body: text });
+  const parent = await db.query.catches.findFirst({ where: eq(catches.id, catchId), with: { species: true } });
+  if (parent && parent.userId !== user.id) {
+    const p = await db.query.profiles.findFirst({ where: eq(profiles.userId, user.id) });
+    await notify(db, {
+      userId: parent.userId,
+      type: "comment",
+      title: `${p?.displayName ?? "An angler"} commented on your ${parent.species?.commonName ?? "catch"}`,
+      body: text.slice(0, 140),
+      href: `/catch/${catchId}`,
+    });
+  }
   revalidatePath(`/catch/${catchId}`);
   return { ok: true };
 }

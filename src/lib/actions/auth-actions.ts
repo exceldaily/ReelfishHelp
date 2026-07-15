@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { enforceAuthRateLimit, RateLimitError } from "@/lib/auth-rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { sendWelcome } from "@/lib/welcome";
 
 const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
@@ -81,6 +82,9 @@ export async function register(_prev: AuthResult, formData: FormData): Promise<A
     displayName,
     acceptedTermsAt: new Date(),
   });
+
+  // founder welcome DM + follow + notification (never blocks signup)
+  await sendWelcome(db, user.id);
 
   await signIn("credentials", { email, password, redirect: false });
   redirect("/onboarding");

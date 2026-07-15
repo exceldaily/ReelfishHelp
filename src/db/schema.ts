@@ -1039,6 +1039,48 @@ export const userBadges = pgTable(
 
 export type UserBadge = typeof userBadges.$inferSelect;
 
+/* ------------------------------- notifications ------------------------------- */
+
+export type NotificationType =
+  | "badge"
+  | "follow"
+  | "like"
+  | "comment"
+  | "answer"
+  | "accepted"
+  | "welcome"
+  | "system";
+
+/**
+ * In-app notifications shown in the bell dropdown. `dedupeKey` prevents
+ * repeats of one-time events (e.g. badge:<slug> per user); null for events
+ * that can legitimately repeat. `image` is an optional icon path (badge art).
+ */
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<NotificationType>().notNull(),
+    title: text("title").notNull(),
+    body: text("body"),
+    href: text("href"),
+    image: text("image"),
+    dedupeKey: text("dedupe_key"),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("notifications_user_idx").on(t.userId),
+    index("notifications_created_idx").on(t.createdAt),
+    uniqueIndex("notifications_dedupe_idx").on(t.userId, t.dedupeKey),
+  ]
+);
+
+export type Notification = typeof notifications.$inferSelect;
+
 /* --------------------------------- relations --------------------------------- */
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1179,6 +1221,10 @@ export const userSetupsRelations = relations(userSetups, ({ one }) => ({
 
 export const userBadgesRelations = relations(userBadges, ({ one }) => ({
   user: one(users, { fields: [userBadges.userId], references: [users.id] }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, { fields: [notifications.userId], references: [users.id] }),
 }));
 
 export type User = typeof users.$inferSelect;

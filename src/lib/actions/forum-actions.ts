@@ -5,8 +5,9 @@ import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb } from "@/db";
-import { biteBoards, forumAnswers, forumAnswerVotes, forumQuestions } from "@/db/schema";
+import { biteBoards, forumAnswers, forumAnswerVotes, forumQuestions, profiles } from "@/db/schema";
 import { requireUser } from "@/lib/auth-helpers";
+import { notify, notifyBadges } from "@/lib/notify";
 import { DEFAULT_FORUM_TOPIC, isForumTopic } from "@/data/forum-topics";
 
 function cleanText(value: FormDataEntryValue | null, max: number) {
@@ -52,6 +53,8 @@ export async function createForumQuestion(formData: FormData) {
     tags: parseTags(formData.get("tags")),
   });
 
+  await notifyBadges(db, user.id);
+
   revalidatePath("/forum");
   redirect(`/forum/${questionId}`);
 }
@@ -72,6 +75,18 @@ export async function createForumAnswer(formData: FormData) {
     .update(forumQuestions)
     .set({ answerCount: sql`${forumQuestions.answerCount} + 1`, updatedAt: new Date() })
     .where(eq(forumQuestions.id, questionId));
+
+  if (question.userId !== user.id) {
+    const p = await db.query.profiles.findFirst({ where: eq(profiles.userId, user.id) });
+    await notify(db, {
+      userId: question.userId,
+      type: "answer",
+      title: `${p?.displayName ?? "An angler"} answered: ${question.title.slice(0, 80)}`,
+      body: body.slice(0, 140),
+      href: `/forum/${questionId}`,
+    });
+  }
+  await notifyBadges(db, user.id);
 
   revalidatePath("/forum");
   revalidatePath(`/forum/${questionId}`);
@@ -132,6 +147,20 @@ export async function acceptForumAnswer(formData: FormData) {
     .set({ accepted: true })
     .where(and(eq(forumAnswers.id, answerId), eq(forumAnswers.questionId, questionId)));
   await db.update(forumQuestions).set({ status: "resolved", updatedAt: new Date() }).where(eq(forumQuestions.id, questionId));
+
+  const accepted = answerId
+    ? await db.query.forumAnswers.findFirst({ where: eq(forumAnswers.id, answerId) })
+    : null;
+  if (accepted && accepted.userId !== user.id) {
+    await notify(db, {
+      userId: accepted.userId,
+      type: "accepted",
+      title: "Your answer was accepted as the solution",
+      body: question.title.slice(0, 140),
+      href: `/forum/${questionId}`,
+    });
+    await notifyBadges(db, accepted.userId); // helpful-angler check
+  }
 
   revalidatePath("/forum");
   revalidatePath(`/forum/${questionId}`);

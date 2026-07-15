@@ -2,7 +2,8 @@
 
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { getDb, follows } from "@/db";
+import { getDb, follows, profiles } from "@/db";
+import { notify } from "@/lib/notify";
 import { requireUser } from "@/lib/auth-helpers";
 
 export async function toggleFollow(targetUserId: string) {
@@ -18,6 +19,13 @@ export async function toggleFollow(targetUserId: string) {
       .where(and(eq(follows.followerId, user.id), eq(follows.followingId, targetUserId)));
   } else {
     await db.insert(follows).values({ followerId: user.id, followingId: targetUserId });
+    const p = await db.query.profiles.findFirst({ where: eq(profiles.userId, user.id) });
+    await notify(db, {
+      userId: targetUserId,
+      type: "follow",
+      title: `${p?.displayName ?? "An angler"} followed you`,
+      href: p ? `/u/${p.username}` : undefined,
+    });
   }
   revalidatePath("/community");
   return { following: !existing };

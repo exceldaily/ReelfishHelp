@@ -4,11 +4,13 @@ import { TopNav, MobileTabs, type NavUser } from "@/components/nav";
 import { dbMode } from "@/db";
 import { fishIdEnabled } from "@/lib/flags";
 import { unreadConversationCount } from "@/lib/actions/message-actions";
+import { unreadNotificationCount } from "@/lib/actions/notification-actions";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   let user: NavUser = null;
   let unread = 0;
+  let unreadNotifs = 0;
   if (session?.user) {
     const profile = await getProfile(session.user.id);
     user = {
@@ -19,6 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       avatarUrl: profile?.avatarUrl ?? null,
     };
     unread = await unreadConversationCount(session.user.id).catch(() => 0);
+    unreadNotifs = await unreadNotificationCount(session.user.id).catch(() => 0);
   }
   const localDb = dbMode() === "pglite" || !!process.env.DATABASE_URL === false;
 
@@ -26,7 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-dvh flex flex-col bg-[#e7f7fb]">
-      <TopNav user={user} fishId={fishId} unread={unread} />
+      <TopNav user={user} fishId={fishId} unread={unread} unreadNotifications={unreadNotifs} />
       {localDb && (
         <div className="bg-bait-100 text-bait-700 text-center text-xs font-semibold py-1.5 px-4">
           Local development database (PGlite) — set DATABASE_URL to connect Neon Postgres for production.

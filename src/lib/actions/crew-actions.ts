@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { getDb } from "@/db";
 import { crews, crewMembers, crewPosts, catches, type Crew, type CrewPrivacy, type CrewRole } from "@/db/schema";
 import { requireUser } from "@/lib/auth-helpers";
+import { notifyBadges } from "@/lib/notify";
 import { assertUnderQuota, storeMedia, storeMediaUrl, deleteMedia } from "@/lib/media";
 import { crewRole, canModerate } from "@/lib/crews";
 
@@ -81,6 +82,7 @@ export async function createCrew(_prev: CrewFormResult, formData: FormData): Pro
     .values({ slug, name, description, homeState, privacy, avatarUrl, inviteCode: newInviteCode(), ownerId: user.id, memberCount: 1 })
     .returning();
   await db.insert(crewMembers).values({ crewId: crew.id, userId: user.id, role: "owner" });
+  await notifyBadges(db, user.id); // crew-captain check
 
   revalidatePath("/crews");
   redirect(`/crews/${crew.slug}`);

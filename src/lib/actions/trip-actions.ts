@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb, trips, type ChecklistItem, type Visibility } from "@/db";
 import { requireUser } from "@/lib/auth-helpers";
+import { notifyBadges } from "@/lib/notify";
 import { approximate } from "@/lib/geo";
 
 export type TripFormResult = { error?: string } | undefined;
@@ -80,6 +81,7 @@ export async function setTripStatus(tripId: string, status: "planned" | "complet
     .update(trips)
     .set({ status })
     .where(and(eq(trips.id, tripId), eq(trips.userId, user.id)));
+  if (status === "completed") await notifyBadges(db, user.id); // tournament-ready check
   revalidatePath(`/trips/${tripId}`);
   revalidatePath("/trips");
   return { ok: true };
