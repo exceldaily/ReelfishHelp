@@ -83,7 +83,7 @@ export function SettingsForm({
               <UserCircle2 className="size-9 text-tide-500" />
             </div>
           )}
-          <div>
+          <div className="min-w-0 flex-1">
             <Label htmlFor="avatar">Profile photo</Label>
             <ImageInput id="avatar" name="avatar" className="text-sm" />
           </div>

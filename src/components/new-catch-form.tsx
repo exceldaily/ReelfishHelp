@@ -77,7 +77,7 @@ export function NewCatchForm({
             <span className="text-sm font-semibold text-ink-700">Add photos</span>
             <ImageInput id="photos" name="photos" multiple className="text-sm" />
           </label>
-          <p className="mt-1 text-xs text-ink-300">Photos are resized on your phone before upload — big camera shots are fine.</p>
+          <p className="mt-1 text-xs text-ink-300">Photos are resized on your phone before upload, big camera shots are fine.</p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">

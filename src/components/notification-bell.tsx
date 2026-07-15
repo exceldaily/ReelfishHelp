@@ -24,7 +24,7 @@ function BobberIcon({ lit }: { lit: boolean }) {
     );
   }
   return (
-    <svg viewBox="0 0 24 24" fill="none" className="size-5 drop-shadow-[0_0_5px_rgba(239,68,68,0.9)]" aria-hidden>
+    <svg viewBox="0 0 24 24" fill="none" className="size-5 bobber-lit drop-shadow-[0_0_5px_rgba(239,68,68,0.9)]" aria-hidden>
       {/* red tip */}
       <circle cx="12" cy="4" r="1.8" fill="#ef4444" />
       <path d="M12 5.8 L12 8" stroke="#e2e8f0" strokeWidth="1.6" strokeLinecap="round" />
@@ -106,7 +106,9 @@ export function NotificationBell({ initialUnread }: { initialUnread: number }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-80 max-w-[calc(100vw-1.5rem)] rounded-xl bg-white border border-sand-200 shadow-lift py-1.5 animate-fade-up">
+        /* phones: fixed + full-width under the header so nothing clips off-screen;
+           sm+: anchored dropdown under the bobber */
+        <div className="fixed inset-x-3 top-[5.25rem] z-50 rounded-xl bg-white border border-sand-200 shadow-lift py-1.5 animate-fade-up sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80">
           <div className="px-4 py-2 text-xs font-bold uppercase tracking-wide text-ink-500 border-b border-sand-100">
             Notifications
           </div>

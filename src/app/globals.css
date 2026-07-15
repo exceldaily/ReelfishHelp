@@ -217,3 +217,18 @@ input[type="date"],
 input[type="time"] {
   min-height: 2.5rem;
 }
+
+/* notification bobber: dips twice when it lights up, like a bite */
+@keyframes bobber-dip {
+  0%, 100% { transform: translateY(0); }
+  20% { transform: translateY(3.5px) rotate(-4deg); }
+  40% { transform: translateY(-1.5px); }
+  60% { transform: translateY(2.5px) rotate(3deg); }
+  80% { transform: translateY(-0.5px); }
+}
+.bobber-lit {
+  animation: bobber-dip 1.3s ease-in-out 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bobber-lit { animation: none; }
+}
