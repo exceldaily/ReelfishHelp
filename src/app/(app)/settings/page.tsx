@@ -7,6 +7,7 @@ import { getUsage } from "@/lib/media";
 import { formatBytes } from "@/lib/storage-admin";
 import { PageHeader, Card } from "@/components/ui";
 import { SettingsForm } from "@/components/settings-form";
+import { AccountDeletion } from "@/components/account-deletion";
 import { redirect } from "next/navigation";
 
 export const metadata = { title: "Profile & Settings" };
@@ -71,6 +72,9 @@ export default async function SettingsPage() {
           .map((s) => ({ id: s.id, name: s.commonName }))
           .sort((a, b) => a.name.localeCompare(b.name))}
       />
+      <div className="mt-6">
+        <AccountDeletion />
+      </div>
     </div>
   );
 }
