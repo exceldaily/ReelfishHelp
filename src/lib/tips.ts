@@ -70,6 +70,8 @@ export async function getDailyTip(db: Db, viewerId: string | null): Promise<Dail
 /** Category list for filters and the admin editor. Extend freely. */
 export const TIP_CATEGORIES = [
   "Beginner",
+  "Finding Fish",
+  "Fighting Fish",
   "Bass",
   "Saltwater",
   "Freshwater",

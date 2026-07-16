@@ -1,171 +1,60 @@
 import type { NewAnglerTip } from "@/db/schema";
 
 /**
- * Starter Daily Angler Tips. Seeded additively (fixed slug = stable identity)
- * so admin edits are never clobbered; admins manage the live set at /admin/tips.
- * `icon` keys into the card's icon map (lightbulb fallback).
+ * The owner's 50 Daily Angler Tips (July 2026), covering finding fish,
+ * presentation, tackle, fighting fish, and conditions. Seeded additively
+ * (fixed slug = stable identity) so admin edits are never clobbered; admins
+ * manage the live set at /admin/tips. `icon` keys into the card's icon map.
  */
 export const starterTips: (NewAnglerTip & { slug: string })[] = [
-  {
-    slug: "rain-runoff-creek-mouths",
-    title: "Fish the runoff after heavy rain",
-    tipText:
-      "Fishing after heavy rain? Focus on creek mouths and runoff areas where moving water carries food into the main body. Predators stage on the edge of the stained water and ambush whatever washes past.",
-    category: "Bass",
-    icon: "waves",
-    displayOrder: 1,
-  },
-  {
-    slug: "match-the-hatch-size-first",
-    title: "Match size before color",
-    tipText:
-      "When fish are keyed on bait, matching the SIZE of what they're eating matters more than nailing the color. If they're on 3-inch glass minnows, a 6-inch lure gets ignored no matter how pretty it is.",
-    category: "Lures",
-    icon: "fish",
-    displayOrder: 2,
-  },
-  {
-    slug: "wet-hands-before-release",
-    title: "Wet your hands before touching a fish",
-    tipText:
-      "Dry hands strip the protective slime coat that keeps fish healthy. Wet your hands before handling any fish you plan to release, keep it horizontal, and get it back in the water fast.",
-    category: "Catch Handling",
-    icon: "lifebuoy",
-    displayOrder: 3,
-  },
-  {
-    slug: "retie-after-every-big-fish",
-    title: "Retie after every good fish",
-    tipText:
-      "The last foot of line takes the abuse: teeth, rocks, shells, and the fight itself. After landing a good fish, run your fingers down the leader and retie if you feel any roughness. Knots are cheap, trophies are not.",
-    category: "Knots",
-    icon: "anchor",
-    displayOrder: 4,
-  },
-  {
-    slug: "falling-tide-drains",
-    title: "Falling tide? Watch the drains",
-    tipText:
-      "On a falling tide, bait gets flushed out of marshes and creeks through narrow drains. Redfish, trout, and snook line up at those exits like it's a buffet. Find the drain, cast up-current, and let the tide do the work.",
-    category: "Inshore",
-    icon: "waves",
-    displayOrder: 5,
-  },
-  {
-    slug: "sun-in-your-face",
-    title: "Keep the sun in your face when sight fishing",
-    tipText:
-      "Approach flats and shorelines with the sun in your face when possible. Your shadow and glare-line stay behind you, letting you see fish before they see you. Polarized glasses do the rest.",
-    category: "Saltwater",
-    icon: "compass",
-    displayOrder: 6,
-  },
-  {
-    slug: "storm-front-bite-window",
-    title: "The pre-front bite is real",
-    tipText:
-      "Falling barometric pressure right before a storm front often triggers a feeding window. If it's safe to be out, the last few hours before a front arrives can be the best bite of the week. After it passes, expect a slowdown for a day or two.",
-    category: "Weather",
-    icon: "wind",
-    displayOrder: 7,
-  },
-  {
-    slug: "kayak-drift-sock",
-    title: "A drift sock makes windy kayak days fishable",
-    tipText:
-      "Wind pushing your kayak too fast to fish? A small drift sock (or even a five-gallon bucket on a rope) slows your drift to a crawl, letting you work an area thoroughly instead of blowing across it.",
-    category: "Kayak Fishing",
-    icon: "ship",
-    displayOrder: 8,
-  },
-  {
-    slug: "circle-hooks-set-themselves",
-    title: "Don't set the hook on circle hooks",
-    tipText:
-      "Circle hooks are designed to slide to the corner of the mouth as the fish swims away. Yanking rips the hook free. When you get a bite, just reel tight and lift, the hook sets itself, and the fish is almost always lip-hooked for an easy release.",
-    category: "Bait",
-    icon: "anchor",
-    displayOrder: 9,
-  },
-  {
-    slug: "first-cast-counts",
-    title: "Make the first cast count",
-    tipText:
-      "The biggest fish on a spot usually eats on the first good presentation, before anything has been spooked. Take a breath, check your lure, and place the first cast where you'd bet money, not just to warm up.",
-    category: "Beginner",
-    icon: "lightbulb",
-    displayOrder: 10,
-  },
-  {
-    slug: "drag-check-before-trip",
-    title: "Check your drag before you leave the ramp",
-    tipText:
-      "Pull line off every reel by hand before the first cast of the day. A drag that's too tight breaks off the fish of the trip; too loose and you can't turn it. Set it around a third of your line's breaking strength and you're in the zone.",
-    category: "Gear",
-    icon: "lightbulb",
-    displayOrder: 11,
-  },
-  {
-    slug: "birds-mean-bait",
-    title: "Follow the birds to the bait",
-    tipText:
-      "Diving pelicans and hovering terns mean bait near the surface, and bait means predators. Never drive past working birds without a cast. On slow days, glassing the horizon for bird activity beats blind casting all day.",
-    category: "Offshore",
-    icon: "compass",
-    displayOrder: 12,
-  },
-  {
-    slug: "shore-anglers-fish-close-first",
-    title: "Fish close before you cast far",
-    tipText:
-      "Bank anglers wade in and bomb casts to the horizon, spooking every fish at their feet. The drop-off, laydown, or rocks within twenty feet of shore often hold the best fish. Work close water first, then extend.",
-    category: "Shore Fishing",
-    icon: "fish",
-    displayOrder: 13,
-  },
-  {
-    slug: "leader-in-clear-water",
-    title: "Clear water calls for longer, lighter leaders",
-    tipText:
-      "When the water goes gin-clear, downsize your leader and add length. Dropping from 20 lb to 15 lb fluoro and adding a foot often doubles your bites on pressured fish. Check it for nicks more often, though.",
-    category: "Freshwater",
-    icon: "waves",
-    displayOrder: 14,
-  },
-  {
-    slug: "file-a-float-plan",
-    title: "Tell someone where you're launching",
-    tipText:
-      "Before any solo trip, text someone your launch spot and expected return time. Phones die, motors quit, and tides strand people every week. Thirty seconds of caution turns a bad day into a story instead of a search.",
-    category: "Safety",
-    icon: "lifebuoy",
-    displayOrder: 15,
-  },
-  {
-    slug: "revive-fish-facing-current",
-    title: "Revive tired fish facing into the current",
-    tipText:
-      "A fish exhausted from a long fight needs water over its gills. Hold it upright facing INTO the current (or move it gently forward in still water) until it kicks away on its own. If it can't stay upright, it's not ready.",
-    category: "Conservation",
-    icon: "lifebuoy",
-    displayOrder: 16,
-  },
-  {
-    slug: "fly-line-management",
-    title: "Strip line onto something clean",
-    tipText:
-      "Half of fly fishing's 'bad casts' are actually line tangled on rocks, grass, or your own feet. Clear a stripping area, use a basket in the surf, and your next cast is always ready to go.",
-    category: "Fly Fishing",
-    icon: "wind",
-    displayOrder: 17,
-  },
-  {
-    slug: "idle-speed-over-structure",
-    title: "Idle over structure before you fish it",
-    tipText:
-      "Before anchoring on a reef, wreck, or brush pile, make one slow pass with your electronics to see which side holds bait and fish. Thirty seconds of scouting beats an hour anchored on the dead corner.",
-    category: "Boat Fishing",
-    icon: "ship",
-    displayOrder: 18,
-  },
+  { slug: "find-the-food-before-the-fish", title: "Find the food before the fish", tipText: "Predators usually position near baitfish, insects, shrimp, crabs, or other forage. Empty water rarely becomes productive just because the structure looks good.", category: "Finding Fish", icon: "fish", displayOrder: 1 },
+  { slug: "fish-transitions-not-just-obvious-structure", title: "Fish transitions, not just obvious structure", tipText: "Edges where rock changes to sand, weeds meet open water, or deep water meets a flat often hold more fish than the center of either area.", category: "Finding Fish", icon: "compass", displayOrder: 2 },
+  { slug: "current-breaks-are-feeding-stations", title: "Current breaks are feeding stations", tipText: "Fish often sit behind rocks, pilings, points, bridge supports, and channel edges where they can avoid the strongest current while waiting for food.", category: "Finding Fish", icon: "waves", displayOrder: 3 },
+  { slug: "pay-attention-to-the-down-current-side", title: "Pay attention to the down-current side", tipText: "Food usually gets pushed past structure, so predators commonly position where the current delivers prey directly to them.", category: "Finding Fish", icon: "waves", displayOrder: 4 },
+  { slug: "depth-changes-matter-more-than-distance", title: "Depth changes matter more than distance", tipText: "Moving your bait five feet deeper can be more important than casting fifty feet farther.", category: "Finding Fish", icon: "compass", displayOrder: 5 },
+  { slug: "use-birds-as-moving-fish-finders", title: "Use birds as moving fish finders", tipText: "Diving birds, hovering terns, and birds sitting over one area can reveal baitfish activity, but approach quietly and avoid driving through the school.", category: "Finding Fish", icon: "compass", displayOrder: 6 },
+  { slug: "look-for-nervous-water", title: "Look for nervous water", tipText: "Ripples, flickering bait, unusual surface texture, mud clouds, and sudden disturbances can reveal feeding fish before you see a strike.", category: "Finding Fish", icon: "waves", displayOrder: 7 },
+  { slug: "mud-lines-create-ambush-cover", title: "Mud lines create ambush cover", tipText: "Predators often patrol the cleaner edge of dirty water where they can see prey without being easily seen.", category: "Finding Fish", icon: "waves", displayOrder: 8 },
+  { slug: "shade-is-structure", title: "Shade is structure", tipText: "Docks, boats, trees, bridges, and steep banks create temperature relief and visual cover, especially during bright conditions.", category: "Finding Fish", icon: "lightbulb", displayOrder: 9 },
+  { slug: "do-not-ignore-tiny-depth-differences", title: "Do not ignore tiny depth differences", tipText: "A depression only one or two feet deeper than the surrounding area can hold fish when conditions are difficult.", category: "Finding Fish", icon: "compass", displayOrder: 10 },
+  { slug: "match-the-speed-before-matching-the-color", title: "Match the speed before matching the color", tipText: "A correctly paced lure in an average color often outperforms the perfect color moving too fast or too slowly.", category: "Lures", icon: "fish", displayOrder: 11 },
+  { slug: "let-the-fish-tell-you-the-retrieve", title: "Let the fish tell you the retrieve", tipText: "Change speed, pauses, depth, and direction before constantly switching lures.", category: "Lures", icon: "fish", displayOrder: 12 },
+  { slug: "longer-pauses-can-trigger-pressured-fish", title: "Longer pauses can trigger pressured fish", tipText: "When fish follow but will not strike, stop the lure longer than feels natural.", category: "Lures", icon: "lightbulb", displayOrder: 13 },
+  { slug: "change-casting-angles-before-leaving", title: "Change casting angles before leaving", tipText: "A fish may ignore a lure coming from one direction and attack the same lure when it crosses the current or structure differently.", category: "Lures", icon: "compass", displayOrder: 14 },
+  { slug: "keep-bottom-contact-intentional", title: "Keep bottom contact intentional", tipText: "When dragging a lure, learn the difference between rock, wood, grass, mud, and an actual bite.", category: "Lures", icon: "anchor", displayOrder: 15 },
+  { slug: "a-falling-lure-catches-many-fish", title: "A falling lure catches many fish", tipText: "Stay alert during the drop. Watch the line for jumps, sideways movement, or an early stop.", category: "Lures", icon: "fish", displayOrder: 16 },
+  { slug: "use-lighter-weight-when-conditions-allow", title: "Use lighter weight when conditions allow", tipText: "A slower, more natural fall often produces more bites, especially in pressured or clear water.", category: "Lures", icon: "lightbulb", displayOrder: 17 },
+  { slug: "use-heavier-weight-when-control-matters", title: "Use heavier weight when control matters", tipText: "Wind, current, deep water, and heavy vegetation may require more weight to maintain contact and detect bites.", category: "Lures", icon: "anchor", displayOrder: 18 },
+  { slug: "do-not-overpower-a-finesse-presentation", title: "Do not overpower a finesse presentation", tipText: "Light line and subtle lures require controlled movements rather than aggressive rod sweeps.", category: "Lures", icon: "lightbulb", displayOrder: 19 },
+  { slug: "make-the-lure-change-direction-near-cover", title: "Make the lure change direction near cover", tipText: "Deflections off rocks, timber, grass, dock posts, and bottom contours often trigger reaction strikes.", category: "Lures", icon: "fish", displayOrder: 20 },
+  { slug: "retie-before-the-knot-fails", title: "Retie before the knot fails", tipText: "Check the first few feet of line after rocks, docks, coral, fish, or heavy vegetation. Any roughness is a reason to retie.", category: "Knots", icon: "anchor", displayOrder: 21 },
+  { slug: "wet-knots-before-tightening-them", title: "Wet knots before tightening them", tipText: "Lubrication reduces friction and heat damage while the knot cinches down.", category: "Knots", icon: "anchor", displayOrder: 22 },
+  { slug: "test-every-knot", title: "Test every knot", tipText: "Pull firmly before casting. A weak knot is easier to discover in your hand than during the best fish of the day.", category: "Knots", icon: "anchor", displayOrder: 23 },
+  { slug: "use-the-right-line-for-the-cover", title: "Use the right line for the cover", tipText: "Braid handles vegetation and heavy cover well, fluorocarbon offers abrasion resistance and lower visibility, and monofilament provides stretch and buoyancy.", category: "Gear", icon: "lightbulb", displayOrder: 24 },
+  { slug: "leader-length-should-match-conditions", title: "Leader length should match conditions", tipText: "Longer leaders can help in clear water, while shorter leaders improve casting control and knot reliability around heavy structure.", category: "Gear", icon: "anchor", displayOrder: 25 },
+  { slug: "check-hook-sharpness-constantly", title: "Check hook sharpness constantly", tipText: "A sharp hook should lightly grab a fingernail instead of sliding across it.", category: "Gear", icon: "anchor", displayOrder: 26 },
+  { slug: "replace-damaged-split-rings", title: "Replace damaged split rings", tipText: "Bent or stretched rings can fail even when the lure and line appear fine.", category: "Gear", icon: "lightbulb", displayOrder: 27 },
+  { slug: "match-hook-size-to-the-bait-not-just-the-fish", title: "Match hook size to the bait, not just the fish", tipText: "An oversized hook can kill a lure's movement, while an undersized hook may not penetrate properly.", category: "Gear", icon: "anchor", displayOrder: 28 },
+  { slug: "set-drag-using-pressure-not-guessing", title: "Set drag using pressure, not guessing", tipText: "A common starting point is roughly one-quarter to one-third of the line's rated breaking strength, then adjust for the situation.", category: "Gear", icon: "lightbulb", displayOrder: 29 },
+  { slug: "back-off-drag-after-fishing", title: "Back off drag after fishing", tipText: "Leaving drag washers compressed for long periods can reduce consistency on some reels.", category: "Gear", icon: "lightbulb", displayOrder: 30 },
+  { slug: "not-every-bite-feels-like-a-hit", title: "Not every bite feels like a hit", tipText: "A bite may feel like extra weight, sudden slack, a soft tick, or the lure simply feeling different.", category: "Fighting Fish", icon: "fish", displayOrder: 31 },
+  { slug: "reel-down-before-setting-the-hook", title: "Reel down before setting the hook", tipText: "Remove slack first so the hookset transfers force into the fish instead of only straightening loose line.", category: "Fighting Fish", icon: "anchor", displayOrder: 32 },
+  { slug: "match-the-hookset-to-the-hook", title: "Match the hookset to the hook", tipText: "Single hooks often need a firmer set, while treble-hook lures usually require steady pressure instead of a violent swing.", category: "Fighting Fish", icon: "anchor", displayOrder: 33 },
+  { slug: "keep-the-rod-loaded-during-the-fight", title: "Keep the rod loaded during the fight", tipText: "A bent rod maintains pressure and absorbs sudden movement. Slack line gives the fish a chance to throw the hook.", category: "Fighting Fish", icon: "fish", displayOrder: 34 },
+  { slug: "do-not-high-stick-the-rod", title: "Do not high-stick the rod", tipText: "Lifting the rod too vertically places excessive stress near the tip and can break it.", category: "Fighting Fish", icon: "lightbulb", displayOrder: 35 },
+  { slug: "use-side-pressure-to-control-fish", title: "Use side pressure to control fish", tipText: "Pulling from changing side angles can turn a fish more effectively than holding the rod straight overhead.", category: "Fighting Fish", icon: "fish", displayOrder: 36 },
+  { slug: "lead-fish-away-from-danger-early", title: "Lead fish away from danger early", tipText: "Apply controlled pressure before the fish reaches pilings, rocks, vegetation, anchor ropes, or sharp structure.", category: "Fighting Fish", icon: "anchor", displayOrder: 37 },
+  { slug: "do-not-tighten-the-drag-during-a-powerful-run", title: "Do not tighten the drag during a powerful run", tipText: "Let the rod and drag work. Sudden drag changes are a common cause of broken line and pulled hooks.", category: "Fighting Fish", icon: "lightbulb", displayOrder: 38 },
+  { slug: "land-the-fish-only-when-it-is-ready", title: "Land the fish only when it is ready", tipText: "Trying to net or grab a green fish creates last-second surges and tangled hooks.", category: "Fighting Fish", icon: "lifebuoy", displayOrder: 39 },
+  { slug: "net-fish-head-first", title: "Net fish head-first", tipText: "Guide the fish into the net rather than chasing it from behind.", category: "Fighting Fish", icon: "lifebuoy", displayOrder: 40 },
+  { slug: "wind-concentrates-food", title: "Wind concentrates food", tipText: "Windblown banks and points can gather plankton, baitfish, and feeding predators, although safety must come first.", category: "Weather", icon: "wind", displayOrder: 41 },
+  { slug: "use-tide-movement-not-just-tide-height", title: "Use tide movement, not just tide height", tipText: "Many saltwater locations are best when water is actively moving. A high or low tide with no current may be less productive.", category: "Saltwater", icon: "waves", displayOrder: 42 },
+  { slug: "learn-the-productive-tide-stage-for-each-spot", title: "Learn the productive tide stage for each spot", tipText: "One location may work on incoming water while another only becomes accessible or active during the outgoing tide.", category: "Saltwater", icon: "waves", displayOrder: 43 },
+  { slug: "cold-fronts-often-require-slower-fishing", title: "Cold fronts often require slower fishing", tipText: "After a major front, fish may hold tighter to cover, move deeper, or respond better to smaller presentations.", category: "Weather", icon: "wind", displayOrder: 44 },
+  { slug: "cloud-cover-expands-the-strike-zone", title: "Cloud cover expands the strike zone", tipText: "Fish may roam farther from cover during low light, while bright sun can push them tighter to shade or deeper structure.", category: "Weather", icon: "wind", displayOrder: 45 },
+  { slug: "seasonal-movement-follows-temperature-and-food", title: "Seasonal movement follows temperature and food", tipText: "Instead of fishing last month's pattern, track where forage and comfortable water conditions are moving now.", category: "Weather", icon: "compass", displayOrder: 46 },
+  { slug: "use-electronics-to-confirm-fish-not-replace-judgment", title: "Use electronics to confirm fish, not replace judgment", tipText: "Sonar and mapping are most useful when combined with knowledge of structure, current, season, and bait movement.", category: "Gear", icon: "ship", displayOrder: 47 },
+  { slug: "mark-every-productive-detail", title: "Mark every productive detail", tipText: "Save the exact depth, tide, temperature, wind direction, lure, retrieve, and time, not just the location.", category: "Beginner", icon: "lightbulb", displayOrder: 48 },
+  { slug: "leave-fish-to-find-fish", title: "Leave fish to find fish", tipText: "When one area stops producing, use the pattern you learned to locate similar structure instead of waiting indefinitely.", category: "Finding Fish", icon: "compass", displayOrder: 49 },
+  { slug: "handle-every-fish-like-it-matters", title: "Handle every fish like it matters", tipText: "Wet your hands, minimize time out of water, support larger fish horizontally, avoid damaging the gills, and release unwanted fish quickly.", category: "Catch Handling", icon: "lifebuoy", displayOrder: 50 },
 ];
