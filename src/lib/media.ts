@@ -54,7 +54,7 @@ export async function storeMedia(input: StoreMediaInput): Promise<MediaAsset> {
     throw new Error("Image is too large (15 MB max).");
   }
   const buf = Buffer.from(await file.arrayBuffer());
-  const processed = await processImage(buf, file.type); // throws on non-image
+  const processed = await processImage(buf, file.type, { square: kind === "profile" }); // throws on non-image
 
   const db = await getDb();
   const mediaId = crypto.randomUUID();

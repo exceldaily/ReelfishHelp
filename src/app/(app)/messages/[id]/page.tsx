@@ -34,7 +34,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
         </Link>
         <Link href={other ? `/u/${other.username}` : "#"} className="flex items-center gap-2.5 group">
           {other?.avatarUrl ? (
-            <div className="relative size-9 rounded-full overflow-hidden bg-tide-100">
+            <div className="relative size-9 shrink-0 rounded-full overflow-hidden bg-tide-100">
               <Image src={other.avatarUrl} alt="" fill sizes="36px" className="object-cover" unoptimized={other.avatarUrl.startsWith("/api/")} />
             </div>
           ) : (

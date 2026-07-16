@@ -26,9 +26,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 function Avatar({ url, className = "size-8" }: { url: string | null | undefined; className?: string }) {
   if (url) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={url} alt="" className={`${className} rounded-full object-cover`} />;
+    return <img src={url} alt="" className={`${className} shrink-0 rounded-full object-cover`} />;
   }
-  return <UserCircle2 className={`${className} text-ink-300`} />;
+  return <UserCircle2 className={`${className} shrink-0 text-ink-300`} />;
 }
 
 function PrivateGate({ crew, loggedIn }: { crew: Crew; loggedIn: boolean }) {

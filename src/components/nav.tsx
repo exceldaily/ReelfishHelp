@@ -236,7 +236,7 @@ export function TopNav({
               >
                 {user.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={user.avatarUrl} alt="" className="size-7 rounded-full object-cover" />
+                  <img src={user.avatarUrl} alt="" className="size-7 shrink-0 rounded-full object-cover" />
                 ) : (
                   <UserCircle2 className="size-7 text-slate-300" />
                 )}

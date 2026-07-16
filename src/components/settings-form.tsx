@@ -75,11 +75,11 @@ export function SettingsForm({
         {/* avatar */}
         <div className="flex items-center gap-4">
           {profile.avatarUrl ? (
-            <div className="relative size-16 rounded-full overflow-hidden bg-tide-100">
+            <div className="relative size-16 shrink-0 rounded-full overflow-hidden bg-tide-100">
               <Image src={profile.avatarUrl} alt="" fill sizes="64px" className="object-cover" unoptimized={profile.avatarUrl.startsWith("/api/")} />
             </div>
           ) : (
-            <div className="size-16 rounded-full bg-tide-100 grid place-items-center">
+            <div className="size-16 shrink-0 rounded-full bg-tide-100 grid place-items-center">
               <UserCircle2 className="size-9 text-tide-500" />
             </div>
           )}

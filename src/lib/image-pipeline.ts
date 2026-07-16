@@ -50,7 +50,11 @@ export function isAcceptedImageType(mime: string): boolean {
  * Validate + transform an uploaded image into a set of optimized, metadata-free
  * WebP variants. Throws on non-images, corrupt files, or absurd dimensions.
  */
-export async function processImage(input: Buffer, mime: string): Promise<ProcessedImage> {
+export async function processImage(
+  input: Buffer,
+  mime: string,
+  opts: { square?: boolean } = {}
+): Promise<ProcessedImage> {
   if (!isAcceptedImageType(mime)) {
     throw new Error("Unsupported image type. Use JPG, PNG, WEBP, HEIC, or AVIF.");
   }
@@ -66,14 +70,26 @@ export async function processImage(input: Buffer, mime: string): Promise<Process
     throw new Error("Image resolution is too large.");
   }
 
-  const srcW = meta.width;
-  const srcH = meta.height;
+  // avatars are center-cropped square at ingest so no layout can distort them
+  // (done as its own pass — sharp only applies the last resize in a chain)
+  let working = input;
+  let srcW = meta.width;
+  let srcH = meta.height;
+  if (opts.square && meta.width !== meta.height) {
+    const edge = Math.min(meta.width, meta.height);
+    working = await sharp(input, { failOn: "error" })
+      .rotate()
+      .resize({ width: edge, height: edge, fit: "cover", position: "attention" })
+      .toBuffer();
+    srcW = edge;
+    srcH = edge;
+  }
 
   const variants: ProcessedVariant[] = [];
   for (const spec of VARIANT_SPECS) {
     // never upscale
     const fits = Math.max(srcW, srcH) <= spec.maxDim;
-    const pipeline = sharp(input)
+    const pipeline = sharp(working)
       .rotate()
       .resize({
         width: fits ? srcW : undefined,
