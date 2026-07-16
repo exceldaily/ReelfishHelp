@@ -46,7 +46,7 @@ export function SaveGuideButton({
       ) : (
         <Bookmark className="size-4 transition-transform group-hover:-translate-y-0.5" />
       )}
-      {saved ? "Saved to your guides" : "Save this guide"}
+      {saved ? "Guide saved" : "Save guide"}
     </button>
   );
 }
