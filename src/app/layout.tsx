@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Bricolage_Grotesque } from "next/font/google";
+import { SwRegistrar } from "@/components/sw-registrar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -48,6 +49,7 @@ export default function RootLayout({
           name="impact-site-verification"
           {...{ value: "072a5cba-8378-4ade-b12e-a6cd53870c20" }}
         />
+        <SwRegistrar />
         {children}
       </body>
     </html>
