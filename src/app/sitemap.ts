@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { allSpecies } from "@/data/species";
 import { starterBiteBoards } from "@/data/bite-boards";
+import { starterTips } from "@/data/tips";
 
 const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://reelfishhelp.vercel.app").replace(/\/$/, "");
 
@@ -10,7 +11,7 @@ const RETIRED = new Set(["tuna", "snapper", "grouper"]);
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const staticRoutes = ["", "/fish", "/boards", "/terms", "/privacy"].map((path) => ({
+  const staticRoutes = ["", "/fish", "/boards", "/tips", "/terms", "/privacy"].map((path) => ({
     url: `${base}${path}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
@@ -33,5 +34,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...fish, ...boards];
+  const tipPages = starterTips.map((t) => ({
+    url: `${base}/tips/${t.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+
+  return [...staticRoutes, ...tipPages, ...fish, ...boards];
 }

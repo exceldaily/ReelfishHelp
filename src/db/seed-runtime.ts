@@ -1,10 +1,11 @@
 import { count, inArray, eq, and, ne, like, isNull } from "drizzle-orm";
 import type { Db } from "./index";
-import { species, regulationLinks, biteBoards, gearArticles, knots, gearSetups, gearBrands, fishGearRequirements, users, userBadges } from "./schema";
+import { species, regulationLinks, biteBoards, gearArticles, knots, gearSetups, gearBrands, fishGearRequirements, users, userBadges, anglerTips } from "./schema";
 import { allSpecies } from "@/data/species";
 import { stateRegulations } from "@/data/regulations";
 import { retiredStarterBiteBoardSlugs, starterBiteBoards, starterBiteBoardSlugs } from "@/data/bite-boards";
 import { allGearArticles, knotData, setupData, brandData, fishRequirementData } from "@/data/gear";
+import { starterTips } from "@/data/tips";
 
 /**
  * Slugs that were split into individual species and should be hidden from the
@@ -96,6 +97,9 @@ export async function ensureSeed(db: Db) {
   for (const su of setupData) await db.insert(gearSetups).values(su).onConflictDoNothing();
   for (const b of brandData) await db.insert(gearBrands).values(b).onConflictDoNothing();
   for (const r of fishRequirementData) await db.insert(fishGearRequirements).values(r).onConflictDoNothing();
+
+  // daily angler tips — additive; admins manage the live set at /admin/tips
+  for (const t of starterTips) await db.insert(anglerTips).values(t).onConflictDoNothing();
 
   // give each knot a default "how to tie it" video link where none is set yet.
   // YouTube search URLs never 404 and return relevant tutorials; admins can

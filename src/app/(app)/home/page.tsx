@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { InstallAppBanner } from "@/components/install-app-banner";
+import { DailyTipCard } from "@/components/daily-tip-card";
+import { getDailyTip } from "@/lib/tips";
 import { PushPrompt } from "@/components/push-prompt";
 import { redirect } from "next/navigation";
 import { and, desc, eq, inArray } from "drizzle-orm";
@@ -91,6 +93,12 @@ export default async function HomePage() {
         })
       : [];
 
+  // daily tip: a failed fetch must never take down the home page
+  const dailyTip = await getDailyTip(db, user.id).catch((e) => {
+    console.error("[daily-tip] fetch failed:", e instanceof Error ? e.message : e);
+    return null;
+  });
+
   const followedIds = followingRows.map((f) => f.followingId);
   const friendActivity =
     followedIds.length > 0
@@ -118,6 +126,25 @@ export default async function HomePage() {
           </p>
         )}
       </div>
+
+      {dailyTip && (
+        <div className="mb-6">
+          <DailyTipCard
+            tip={{
+              id: dailyTip.id,
+              slug: dailyTip.slug,
+              title: dailyTip.title,
+              tipText: dailyTip.tipText,
+              category: dailyTip.category,
+              icon: dailyTip.icon,
+              helpfulCount: dailyTip.helpfulCount,
+              viewerHelpful: dailyTip.viewerHelpful,
+              viewerSaved: dailyTip.viewerSaved,
+            }}
+            signedIn
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-5 gap-2 sm:gap-3 mb-7">
         {quickActions(fishIdEnabled()).map(({ href, label, icon: Icon }) => (

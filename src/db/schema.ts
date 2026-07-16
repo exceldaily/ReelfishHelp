@@ -1105,6 +1105,73 @@ export const pushSubscriptions = pgTable(
 
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 
+/* -------------------------------- angler tips -------------------------------- */
+
+/**
+ * Daily Angler Tips shown on the home screen and browsable at /tips.
+ * One shared tip per calendar day (UTC): a tip scheduled for today via
+ * `publishDate` wins; otherwise the active unscheduled pool rotates
+ * deterministically (see src/lib/tips.ts). Counts are denormalized the same
+ * way the forum does helpfulCount; per-user state lives in the join tables.
+ */
+export const anglerTips = pgTable(
+  "angler_tips",
+  {
+    id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    tipText: text("tip_text").notNull(),
+    category: text("category").notNull(),
+    icon: text("icon"), // key into the card's icon map; falls back to a lightbulb
+    imageUrl: text("image_url"),
+    isActive: boolean("is_active").notNull().default(true),
+    publishDate: text("publish_date"), // YYYY-MM-DD — show exactly on this day
+    expirationDate: text("expiration_date"), // YYYY-MM-DD — hidden after this day
+    displayOrder: integer("display_order").notNull().default(0),
+    helpfulCount: integer("helpful_count").notNull().default(0),
+    saveCount: integer("save_count").notNull().default(0),
+    shareCount: integer("share_count").notNull().default(0),
+    createdBy: text("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("angler_tips_active_idx").on(t.isActive),
+    index("angler_tips_publish_idx").on(t.publishDate),
+  ]
+);
+
+export const tipHelpful = pgTable(
+  "tip_helpful",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tipId: text("tip_id")
+      .notNull()
+      .references(() => anglerTips.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.tipId] })]
+);
+
+export const savedTips = pgTable(
+  "saved_tips",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tipId: text("tip_id")
+      .notNull()
+      .references(() => anglerTips.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.tipId] })]
+);
+
+export type AnglerTip = typeof anglerTips.$inferSelect;
+export type NewAnglerTip = typeof anglerTips.$inferInsert;
+
 /* --------------------------------- relations --------------------------------- */
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -1249,6 +1316,20 @@ export const userBadgesRelations = relations(userBadges, ({ one }) => ({
 
 export const notificationsRelations = relations(notifications, ({ one }) => ({
   user: one(users, { fields: [notifications.userId], references: [users.id] }),
+}));
+
+export const anglerTipsRelations = relations(anglerTips, ({ one }) => ({
+  author: one(users, { fields: [anglerTips.createdBy], references: [users.id] }),
+}));
+
+export const tipHelpfulRelations = relations(tipHelpful, ({ one }) => ({
+  tip: one(anglerTips, { fields: [tipHelpful.tipId], references: [anglerTips.id] }),
+  user: one(users, { fields: [tipHelpful.userId], references: [users.id] }),
+}));
+
+export const savedTipsRelations = relations(savedTips, ({ one }) => ({
+  tip: one(anglerTips, { fields: [savedTips.tipId], references: [anglerTips.id] }),
+  user: one(users, { fields: [savedTips.userId], references: [users.id] }),
 }));
 
 export type User = typeof users.$inferSelect;

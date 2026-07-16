@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { count, desc, eq } from "drizzle-orm";
-import { Shield, Fish, Flag, Users as UsersIcon, Trophy, Scale, HardDrive, Wrench } from "lucide-react";
+import { Shield, Fish, Flag, Users as UsersIcon, Trophy, Scale, HardDrive, Wrench, Lightbulb } from "lucide-react";
 import { getDb, species, reports, users, catches } from "@/db";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { PageHeader, Card, Badge } from "@/components/ui";
@@ -73,6 +73,16 @@ export default async function AdminPage() {
             </h3>
             <p className="mt-1 text-sm text-ink-500">
               Manage gear articles, knots (incl. images/videos), setups, brands, and fish gear requirements — with draft/review/published status.
+            </p>
+          </Card>
+        </Link>
+        <Link href="/admin/tips" className="block">
+          <Card className="p-5 hover:shadow-lift transition-shadow">
+            <h3 className="font-display font-bold text-ink-900 flex items-center gap-2">
+              <Lightbulb className="size-5 text-tide-600" /> Angler Tips
+            </h3>
+            <p className="mt-1 text-sm text-ink-500">
+              Manage the Daily Angler Tip: create, schedule, activate, reorder, and see helpful/save/share counts.
             </p>
           </Card>
         </Link>
