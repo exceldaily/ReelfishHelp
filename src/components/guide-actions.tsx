@@ -15,6 +15,7 @@ export function SaveGuideButton({
   signedIn: boolean;
 }) {
   const [saved, setSaved] = useState(initialSaved);
+  const [justSaved, setJustSaved] = useState(false);
   const [pending, start] = useTransition();
   const router = useRouter();
 
@@ -25,17 +26,27 @@ export function SaveGuideButton({
         start(async () => {
           const res = await toggleSavedGuide(speciesId);
           setSaved(res.saved);
+          if (res.saved) {
+            setJustSaved(true);
+            setTimeout(() => setJustSaved(false), 700);
+          }
         });
       }}
       disabled={pending}
-      className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 min-h-11 text-sm font-bold transition-colors ${
+      aria-pressed={saved}
+      title={saved ? "Remove from your saved guides" : "Save to your guides"}
+      className={`group inline-flex items-center gap-2 rounded-xl px-4 py-2.5 min-h-11 text-sm font-bold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-500 ${
         saved
-          ? "bg-tide-100 text-tide-800"
-          : "border border-sand-300 bg-white text-ink-700 hover:bg-sand-100"
-      }`}
+          ? "bg-tide-700 text-white shadow-card hover:bg-tide-600"
+          : "border border-tide-200 bg-tide-50 text-tide-800 hover:border-tide-300 hover:bg-tide-100 hover:shadow-card"
+      } ${pending ? "opacity-70" : ""}`}
     >
-      {saved ? <BookmarkCheck className="size-4" /> : <Bookmark className="size-4" />}
-      {saved ? "Guide saved" : "Save this guide"}
+      {saved ? (
+        <BookmarkCheck className={`size-4 ${justSaved ? "guide-save-pop" : ""}`} />
+      ) : (
+        <Bookmark className="size-4 transition-transform group-hover:-translate-y-0.5" />
+      )}
+      {saved ? "Saved to your guides" : "Save this guide"}
     </button>
   );
 }
