@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { notifications, type Db, type NotificationType } from "@/db";
 import { earnedBadges } from "@/lib/badges";
+import { sendPushToUser } from "@/lib/push";
 
 /**
  * Insert an in-app notification. Never throws — a failed notification must
@@ -20,7 +21,7 @@ export async function notify(
   }
 ): Promise<void> {
   try {
-    await db
+    const inserted = await db
       .insert(notifications)
       .values({
         userId: input.userId,
@@ -31,7 +32,18 @@ export async function notify(
         image: input.image ?? null,
         dedupeKey: input.dedupeKey ?? null,
       })
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning();
+    // mirror to the device as a real push (skipped when deduped away or unconfigured)
+    if (inserted.length > 0) {
+      await sendPushToUser(db, input.userId, {
+        title: input.title,
+        body: input.body,
+        href: input.href,
+        image: input.image,
+        tag: input.dedupeKey,
+      });
+    }
   } catch (e) {
     console.error("[notify] failed:", e instanceof Error ? e.message : e);
   }
