@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { InstallAppBanner } from "@/components/install-app-banner";
 import { redirect } from "next/navigation";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import {
@@ -102,6 +103,7 @@ export default async function HomePage() {
 
   return (
     <div>
+      <InstallAppBanner />
       {/* greeting + quick actions */}
       <div className="mb-6">
         <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink-900">
