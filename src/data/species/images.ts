@@ -55,6 +55,10 @@ export const speciesImages: Record<string, { url: string; credit: string; source
   "hogfish": { url: "/species/hogfish.jpg", credit: "Wikipedia — Hogfish", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/7/75/A_hogfish_is_a_large_wrasse%2C_Lachnolaimus_maximus.jpg" },
   // ── Snapper + grouper individual species — added July 8 2026 ──
   "red-snapper": { url: "/species/red-snapper.jpg", credit: "NOAA Fisheries", sourceUrl: "https://www.fisheries.noaa.gov/species/red-snapper" },
+  // ── July 2026 additions ──
+  "greater-amberjack": { url: "/species/greater-amberjack.jpg", credit: "NOAA Fisheries", sourceUrl: "https://www.fisheries.noaa.gov/species/greater-amberjack" },
+  "black-sea-bass": { url: "/species/black-sea-bass.jpg", credit: "NOAA Fisheries", sourceUrl: "https://www.fisheries.noaa.gov/species/black-sea-bass" },
+  "bowfin": { url: "/species/bowfin.jpg", credit: "Wikipedia — Bowfin", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/2/22/Amia_calva.png" },
   "mangrove-snapper": { url: "/species/mangrove-snapper.jpg", credit: "Wikipedia — Mangrove snapper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/6/6b/Grey_snapper_-_Lutjanus_griseus.jpg" },
   "yellowtail-snapper": { url: "/species/yellowtail-snapper.jpg", credit: "iNaturalist — CC0", sourceUrl: "https://www.inaturalist.org/observations/67778237" },
   "mutton-snapper": { url: "/species/mutton-snapper.jpg", credit: "Wikipedia — Mutton snapper", sourceUrl: "https://upload.wikimedia.org/wikipedia/commons/1/1d/Lutjanus_analis_SI.jpg" },
