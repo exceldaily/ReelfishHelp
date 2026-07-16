@@ -111,7 +111,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
                 <Badge key={s} variant="outline">{s}</Badge>
               ))}
             </div>
-            {profile.bio && <p className="mt-3 text-sm text-ink-700 leading-relaxed max-w-xl">{profile.bio}</p>}
           </div>
           <div className="flex flex-col items-end gap-2.5">
             {!isOwner && (
@@ -124,6 +123,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
             {isOwner && <ButtonLink href="/settings" variant="outline" size="sm">Edit profile</ButtonLink>}
           </div>
         </div>
+
+        {/* bio spans the full card so it never gets squeezed beside the avatar on phones */}
+        {profile.bio && <p className="mt-4 text-sm text-ink-700 leading-relaxed max-w-2xl">{profile.bio}</p>}
 
         {/* earned badges — hover or focus one to see what it's for */}
         {earned.length > 0 && (
