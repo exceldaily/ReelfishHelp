@@ -38,8 +38,8 @@ export type NavUser = {
 
 type NavItemDef = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
 
-/** Bite-mark icon for bite Reports — a circle with a chomp out of it (lucide has no bite/tooth). */
-function BiteMark({ className }: { className?: string }) {
+/** Shark-tooth icon for bite Reports (lucide has no tooth glyph). */
+function SharkTooth({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -52,8 +52,8 @@ function BiteMark({ className }: { className?: string }) {
       className={className}
       aria-hidden="true"
     >
-      <path d="M21 12a9 9 0 1 1-9-9" />
-      <path d="M12 3a2.12 2.12 0 0 1 3 3 2.12 2.12 0 0 1 3 3 2.12 2.12 0 0 1 3 3" />
+      <path d="M4.5 5h15c-1.7 6-4.8 11.3-7.5 14.6C9.3 16.3 6.2 11 4.5 5Z" />
+      <path d="M6 8.5h12" />
     </svg>
   );
 }
@@ -63,7 +63,7 @@ const primaryMain: NavItemDef[] = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/fish", label: "Find Fish", icon: Fish },
   { href: "/conditions", label: "Conditions", icon: CloudSun },
-  { href: "/boards", label: "Reports", icon: BiteMark },
+  { href: "/boards", label: "Reports", icon: SharkTooth },
   { href: "/gear", label: "Gear", icon: Backpack },
 ];
 
