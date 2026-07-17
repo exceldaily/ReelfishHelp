@@ -31,6 +31,11 @@ export function NewsFeedCard() {
           </a>
         ))}
       </div>
+      <p className="mt-3 border-t border-sand-100 pt-2.5 text-[10px] leading-relaxed text-ink-400">
+        ReelFishHelp is an independent fishing community and is not affiliated with, sponsored by, or
+        endorsed by ICAST or the American Sportfishing Association. ICAST is a trademark of the
+        American Sportfishing Association.
+      </p>
     </Card>
   );
 }
