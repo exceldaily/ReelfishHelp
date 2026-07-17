@@ -32,6 +32,7 @@ import { getConditions, type ConditionsBundle } from "@/lib/conditions";
 import { fishIdEnabled } from "@/lib/flags";
 import { Card, Badge, ButtonLink, SectionTitle, WaterBadge } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
+import { NewsFeedCard } from "@/components/news-feed";
 
 export const metadata = { title: "Home" };
 
@@ -303,6 +304,9 @@ export default async function HomePage() {
 
         {/* right rail */}
         <div className="space-y-5">
+          {/* industry news */}
+          <NewsFeedCard />
+
           {/* upcoming trips */}
           <Card className="p-5">
             <div className="flex items-center justify-between mb-3">
