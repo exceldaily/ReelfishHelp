@@ -133,7 +133,7 @@ export function BiteReportForm({
 
         <FieldError>{state?.error}</FieldError>
         <Button size="lg" className="w-full" disabled={pending}>
-          {pending ? "Posting report..." : "Report a bite"}
+          {pending ? "Posting report..." : "Post Bite Report"}
         </Button>
       </form>
     </Card>

@@ -129,7 +129,7 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
                 icon={<Fish />}
                 title="No bite reports yet"
                 body="Post broad, useful intel for this board without giving away exact spots."
-                action={<ButtonLink href={`/report-a-bite?board=${board.slug}`}>Report a bite</ButtonLink>}
+                action={<ButtonLink href={`/report-a-bite?board=${board.slug}`}>Post Bite Report</ButtonLink>}
               />
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">

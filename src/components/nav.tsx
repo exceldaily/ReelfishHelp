@@ -19,6 +19,7 @@ import {
   LogOut,
   UserCircle2,
   Menu,
+  Radar,
   Search,
   MessageCircle,
   MessagesSquare,
@@ -36,34 +37,20 @@ export type NavUser = {
   avatarUrl: string | null;
 } | null;
 
-type NavItemDef = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
-
-/** Shark-tooth icon for bite Reports (lucide has no tooth glyph). */
-function SharkTooth({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M4.5 5h15c-1.7 6-4.8 11.3-7.5 14.6C9.3 16.3 6.2 11 4.5 5Z" />
-      <path d="M6 8.5h12" />
-    </svg>
-  );
-}
+type NavItemDef = {
+  href: string;
+  label: string;
+  /** Compact label for the tight lg..1399px desktop band. */
+  shortLabel?: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
 
 /** Always visible on desktop (>= lg). Order matters. */
 const primaryMain: NavItemDef[] = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/fish", label: "Find Fish", icon: Fish },
   { href: "/conditions", label: "Conditions", icon: CloudSun },
-  { href: "/boards", label: "Reports", icon: SharkTooth },
+  { href: "/boards", label: "Bite Reports", shortLabel: "Bites", icon: Radar },
   { href: "/gear", label: "Gear", icon: Backpack },
 ];
 
@@ -93,9 +80,11 @@ function isActive(pathname: string, href: string) {
 
 /** Shared desktop nav-item styling: one metric for every link. */
 const navItemBase =
-  "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-300";
+  "relative flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-300";
 const navItemIdle = "text-slate-200 hover:text-white hover:bg-slate-800/80";
-const navItemActive = "bg-blue-900 text-white";
+/** Active: white text, teal icon + underline, faint navy wash — no filled pill. */
+const navItemActive =
+  "text-white bg-blue-950/50 after:content-[''] after:absolute after:inset-x-3 after:bottom-0 after:h-[2.5px] after:rounded-full after:bg-tide-400";
 
 function DesktopNavLink({
   item,
@@ -114,8 +103,16 @@ function DesktopNavLink({
       aria-current={active ? "page" : undefined}
       className={`${navItemBase} ${active ? navItemActive : navItemIdle} ${className}`}
     >
-      <Icon className="size-[18px]" />
-      {item.label}
+      <Icon className={`size-[18px] ${active ? "text-tide-300" : ""}`} />
+      {/* the full row is width-critical below ~1400px — fall back to the short label there */}
+      {item.shortLabel ? (
+        <>
+          <span className="hidden min-[1400px]:inline">{item.label}</span>
+          <span className="min-[1400px]:hidden">{item.shortLabel}</span>
+        </>
+      ) : (
+        item.label
+      )}
     </Link>
   );
 }
@@ -224,7 +221,7 @@ export function TopNav({
                 href="/search"
                 aria-label="Find anglers"
                 className={`hidden sm:grid place-items-center size-10 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-300 ${
-                  isActive(pathname, "/search") ? "bg-blue-900 text-white" : "text-slate-200 hover:text-white hover:bg-slate-800/80"
+                  isActive(pathname, "/search") ? "bg-blue-950/50 text-tide-300" : "text-slate-200 hover:text-white hover:bg-slate-800/80"
                 }`}
               >
                 <Search className="size-5" />
@@ -234,7 +231,7 @@ export function TopNav({
                 href="/messages"
                 aria-label="Messages"
                 className={`relative grid place-items-center size-10 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-300 ${
-                  isActive(pathname, "/messages") ? "bg-blue-900 text-white" : "text-slate-200 hover:text-white hover:bg-slate-800/80"
+                  isActive(pathname, "/messages") ? "bg-blue-950/50 text-tide-300" : "text-slate-200 hover:text-white hover:bg-slate-800/80"
                 }`}
               >
                 <MessageCircle className="size-5" />

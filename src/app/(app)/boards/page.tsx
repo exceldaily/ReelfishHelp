@@ -46,7 +46,7 @@ export default async function BoardsPage() {
         subtitle="Broad local fishing intel: what people are seeing, catching, and using without exposing exact spots."
         action={
           <ButtonLink href="/report-a-bite">
-            <PlusCircle className="size-4" /> Report a bite
+            <PlusCircle className="size-4" /> Post Bite Report
           </ButtonLink>
         }
       />
