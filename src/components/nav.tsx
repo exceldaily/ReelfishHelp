@@ -8,7 +8,6 @@ import {
   Fish,
   Camera,
   CloudSun,
-  Activity,
   Route,
   UsersRound,
   Backpack,
@@ -39,12 +38,32 @@ export type NavUser = {
 
 type NavItemDef = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
 
+/** Bite-mark icon for bite Reports — a circle with a chomp out of it (lucide has no bite/tooth). */
+function BiteMark({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M21 12a9 9 0 1 1-9-9" />
+      <path d="M12 3a2.12 2.12 0 0 1 3 3 2.12 2.12 0 0 1 3 3 2.12 2.12 0 0 1 3 3" />
+    </svg>
+  );
+}
+
 /** Always visible on desktop (>= lg). Order matters. */
 const primaryMain: NavItemDef[] = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/fish", label: "Find Fish", icon: Fish },
   { href: "/conditions", label: "Conditions", icon: CloudSun },
-  { href: "/boards", label: "Reports", icon: Activity },
+  { href: "/boards", label: "Reports", icon: BiteMark },
   { href: "/gear", label: "Gear", icon: Backpack },
 ];
 
