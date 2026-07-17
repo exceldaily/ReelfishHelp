@@ -234,7 +234,7 @@ export default async function HomePage() {
 
           {/* recent catches */}
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-baseline gap-3 mb-3">
               <SectionTitle className="mb-0">Recent catches</SectionTitle>
               <Link href="/catches" className="text-sm font-bold text-tide-700 hover:underline">All catches →</Link>
             </div>
