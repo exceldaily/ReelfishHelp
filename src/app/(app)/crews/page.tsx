@@ -16,7 +16,7 @@ function CrewCard({ crew, mine }: { crew: Crew; mine?: boolean }) {
   return (
     <Link
       href={`/crews/${crew.slug}`}
-      className="group bg-white rounded-2xl border border-sand-200 shadow-card overflow-hidden hover:shadow-lift transition-shadow"
+      className="group bg-card rounded-2xl border border-edge shadow-card overflow-hidden hover:shadow-lift transition-shadow"
     >
       <div className="relative h-28 bg-gradient-to-br from-tide-800 to-tide-950">
         {crew.avatarUrl ? (

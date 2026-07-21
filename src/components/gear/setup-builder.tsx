@@ -92,7 +92,7 @@ export function SetupBuilder({ initialSpecies }: { initialSpecies?: string }) {
       </div>
 
       {mode === "scratch" ? (
-        <form onSubmit={onScratch} className="bg-white rounded-2xl border border-sand-200 shadow-card p-5 sm:p-6 space-y-5">
+        <form onSubmit={onScratch} className="bg-card rounded-2xl border border-edge shadow-card p-5 sm:p-6 space-y-5">
           <Step n={1} title="What kind of fishing are you doing?">
             <select name="water" aria-label="Water type" className={selCls} defaultValue="saltwater">
               {WATER_TYPES.map((w) => <option key={w} value={w}>{w}</option>)}
@@ -136,7 +136,7 @@ export function SetupBuilder({ initialSpecies }: { initialSpecies?: string }) {
           </div>
         </form>
       ) : (
-        <form onSubmit={onHelp} className="bg-white rounded-2xl border border-sand-200 shadow-card p-5 sm:p-6 space-y-5">
+        <form onSubmit={onHelp} className="bg-card rounded-2xl border border-edge shadow-card p-5 sm:p-6 space-y-5">
           <div>
             <label className={labelCls}>What fish are you targeting? (optional)</label>
             <input name="species" defaultValue={initialSpecies ?? ""} placeholder="e.g. redfish, bass, grouper" className={numCls} />

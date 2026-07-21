@@ -93,7 +93,7 @@ export function KnotBrowser({ knots }: { knots: KnotLite[] }) {
                     <Link
                       key={k.slug}
                       href={`/gear/knots/${k.slug}`}
-                      className="group bg-white rounded-2xl border border-sand-200 shadow-card p-4 hover:shadow-lift transition-shadow"
+                      className="group bg-card rounded-2xl border border-edge shadow-card p-4 hover:shadow-lift transition-shadow"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <h3 className="font-display font-bold text-ink-900 group-hover:text-tide-700 transition-colors">{k.name}</h3>

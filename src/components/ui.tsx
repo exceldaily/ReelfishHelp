@@ -8,7 +8,7 @@ function cx(...parts: (string | false | null | undefined)[]) {
 /* ------------------------------- buttons ------------------------------- */
 
 const btnBase =
-  "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-500 disabled:opacity-50 disabled:pointer-events-none select-none";
+  "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-500 disabled:opacity-50 disabled:pointer-events-none select-none";
 const btnSizes = {
   sm: "text-sm px-3 py-1.5 min-h-10",
   md: "text-sm px-4 py-2.5 min-h-11",
@@ -58,7 +58,7 @@ export function Card({
 }: ComponentProps<"div">) {
   return (
     <div
-      className={cx("bg-white rounded-2xl shadow-card border border-sand-200/70", className)}
+      className={cx("bg-card rounded-2xl shadow-card border border-edge", className)}
       {...props}
     />
   );
@@ -178,7 +178,9 @@ export function PageHeader({
 
 export function SectionTitle({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <h2 className={cx("font-display text-lg font-bold text-ink-900 mb-3", className)}>{children}</h2>
+    <h2 className={cx("font-display text-lg sm:text-xl font-bold tracking-tight text-ink-900 mb-3", className)}>
+      {children}
+    </h2>
   );
 }
 

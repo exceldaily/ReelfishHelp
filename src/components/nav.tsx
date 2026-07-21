@@ -81,10 +81,10 @@ function isActive(pathname: string, href: string) {
 /** Shared desktop nav-item styling: one metric for every link. */
 const navItemBase =
   "relative flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-300";
-const navItemIdle = "text-slate-200 hover:text-white hover:bg-slate-800/80";
+const navItemIdle = "text-tide-100/90 hover:text-white hover:bg-white/10";
 /** Active: white text, teal icon + underline, faint navy wash — no filled pill. */
 const navItemActive =
-  "text-white bg-blue-950/50 after:content-[''] after:absolute after:inset-x-3 after:bottom-0 after:h-[2.5px] after:rounded-full after:bg-tide-400";
+  "text-white bg-white/10 after:content-[''] after:absolute after:inset-x-3 after:bottom-0 after:h-[2.5px] after:rounded-full after:bg-reef-300 after:shadow-[0_0_8px_rgba(143,189,190,0.9)]";
 
 function DesktopNavLink({
   item,
@@ -103,7 +103,7 @@ function DesktopNavLink({
       aria-current={active ? "page" : undefined}
       className={`${navItemBase} ${active ? navItemActive : navItemIdle} ${className}`}
     >
-      <Icon className={`size-[18px] ${active ? "text-tide-300" : ""}`} />
+      <Icon className={`size-[18px] ${active ? "text-reef-300" : ""}`} />
       {/* the full row is width-critical below ~1400px — fall back to the short label there */}
       {item.shortLabel ? (
         <>
@@ -199,7 +199,7 @@ export function TopNav({
   const secondary = primarySecondary(fishId);
 
   return (
-    <header className="sticky top-0 z-40 bg-black border-b border-neutral-800">
+    <header className="sticky top-0 z-40 bg-tide-950 border-b border-white/10">
       <div className="mx-auto max-w-6xl px-4 h-20 flex items-center gap-4">
         <Logo dark />
         {/* >= 1360px: all eight items inline (the full row + header controls need
@@ -221,7 +221,7 @@ export function TopNav({
                 href="/search"
                 aria-label="Find anglers"
                 className={`hidden sm:grid place-items-center size-10 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-300 ${
-                  isActive(pathname, "/search") ? "bg-blue-950/50 text-tide-300" : "text-slate-200 hover:text-white hover:bg-slate-800/80"
+                  isActive(pathname, "/search") ? "bg-white/10 text-reef-300" : "text-tide-100/90 hover:text-white hover:bg-white/10"
                 }`}
               >
                 <Search className="size-5" />
@@ -231,7 +231,7 @@ export function TopNav({
                 href="/messages"
                 aria-label="Messages"
                 className={`relative grid place-items-center size-10 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-300 ${
-                  isActive(pathname, "/messages") ? "bg-blue-950/50 text-tide-300" : "text-slate-200 hover:text-white hover:bg-slate-800/80"
+                  isActive(pathname, "/messages") ? "bg-white/10 text-reef-300" : "text-tide-100/90 hover:text-white hover:bg-white/10"
                 }`}
               >
                 <MessageCircle className="size-5" />
@@ -346,7 +346,7 @@ export function MobileTabs({ user, fishId = false }: { user: NavUser; fishId?: b
       : { href: "/login", label: "Profile", icon: UserCircle2 },
   ];
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-black border-t border-neutral-800 pb-[env(safe-area-inset-bottom)]">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-tide-950 border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
       <div className="grid grid-cols-5">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);

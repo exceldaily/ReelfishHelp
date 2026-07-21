@@ -46,7 +46,7 @@ function TypeCard({ a }: { a: GearArticle }) {
   const b = a.body;
   const facts = [b.power, b.action, b.lineRange, b.underwaterVisibility, b.stretch].filter(Boolean).slice(0, 2) as string[];
   return (
-    <Link href={`/gear/article/${a.slug}`} className="group bg-white rounded-2xl border border-sand-200 shadow-card p-5 hover:shadow-lift transition-shadow flex flex-col">
+    <Link href={`/gear/article/${a.slug}`} className="group bg-card rounded-2xl border border-edge shadow-card p-5 hover:shadow-lift transition-shadow flex flex-col">
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-display font-bold text-ink-900 group-hover:text-tide-700 transition-colors">{a.name}</h3>
         {a.difficulty ? <Badge variant="outline">{["", "Easy", "Easy", "Moderate", "Advanced", "Expert"][a.difficulty]}</Badge> : null}
@@ -105,7 +105,7 @@ export default async function GearAreaPage({ params }: { params: Promise<{ area:
       {concepts.length > 0 && (
         <section className="mb-8 space-y-3">
           {concepts.map((c) => (
-            <details key={c.id} className="group bg-white rounded-2xl border border-sand-200 shadow-card overflow-hidden">
+            <details key={c.id} className="group bg-card rounded-2xl border border-edge shadow-card overflow-hidden">
               <summary className="flex items-center justify-between gap-3 cursor-pointer list-none p-5">
                 <div>
                   <h3 className="font-display font-bold text-ink-900">{c.name}</h3>

@@ -72,7 +72,7 @@ export default async function SetupsPage({ searchParams }: { searchParams: Promi
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {results.map((s) => (
-            <Link key={s.id} href={`/gear/setups/${s.slug}`} className="group bg-white rounded-2xl border border-sand-200 shadow-card p-5 hover:shadow-lift transition-shadow flex flex-col">
+            <Link key={s.id} href={`/gear/setups/${s.slug}`} className="group bg-card rounded-2xl border border-edge shadow-card p-5 hover:shadow-lift transition-shadow flex flex-col">
               <div className="flex items-start justify-between gap-2">
                 <h3 className="font-display font-bold text-ink-900 group-hover:text-tide-700 transition-colors">{s.name}</h3>
               </div>

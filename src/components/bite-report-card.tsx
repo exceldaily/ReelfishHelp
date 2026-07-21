@@ -20,7 +20,7 @@ export type BiteReportCardData = {
 
 export function BiteReportCard({ report }: { report: BiteReportCardData }) {
   return (
-    <article className="bg-white rounded-2xl border border-sand-200 shadow-card overflow-hidden">
+    <article className="bg-card rounded-2xl border border-edge shadow-card overflow-hidden">
       {report.photoUrl ? (
         <div className="relative h-44 bg-tide-950">
           <Image

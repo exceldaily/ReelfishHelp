@@ -121,14 +121,15 @@ export default async function HomePage() {
           Ready to Fish, {profile.displayName.split(" ")[0]}?
         </h1>
         <span className="mt-2 flex items-center gap-1" aria-hidden="true">
-          <span className="h-1 w-14 -skew-x-[24deg] rounded-sm bg-gradient-to-r from-tide-600 to-tide-400" />
-          <span className="h-1 w-4 -skew-x-[24deg] rounded-sm bg-bait-400" />
-          <span className="h-1 w-1.5 -skew-x-[24deg] rounded-sm bg-bait-400/60" />
+          <span className="h-1 w-14 -skew-x-[24deg] rounded-sm bg-gradient-to-r from-reef-600 to-reef-300" />
+          <span className="h-1 w-4 -skew-x-[24deg] rounded-sm bg-sand-400" />
+          <span className="h-1 w-1.5 -skew-x-[24deg] rounded-sm bg-bait-500" />
         </span>
         {profile.lastLocationLabel && (
-          <p className="text-ink-500 mt-1 flex items-center gap-1.5 text-sm">
-            <MapPin className="size-4" /> Fishing near {profile.lastLocationLabel}
-            <Link href="/settings" className="text-tide-700 font-semibold hover:underline">change</Link>
+          <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-edge bg-card/80 px-3 py-1 text-sm text-ink-500 shadow-card">
+            <MapPin className="size-4 text-reef-600" /> Fishing near{" "}
+            <span className="font-semibold text-ink-900">{profile.lastLocationLabel}</span>
+            <Link href="/settings" className="text-tide-600 font-semibold hover:underline">change</Link>
           </p>
         )}
       </div>
@@ -157,9 +158,9 @@ export default async function HomePage() {
           <Link
             key={href}
             href={href}
-            className="group flex flex-col items-center gap-2 rounded-2xl bg-white border border-sand-200 shadow-card py-4 transition-all hover:-translate-y-0.5 hover:shadow-lift hover:border-tide-300"
+            className="group flex flex-col items-center gap-2 rounded-2xl bg-card border border-edge shadow-card py-4 transition-all hover:-translate-y-0.5 hover:shadow-lift hover:border-tide-300 active:translate-y-0"
           >
-            <span className="size-10 rounded-xl bg-gradient-to-br from-tide-600 to-tide-400 grid place-items-center shadow-sm transition-transform group-hover:scale-110">
+            <span className="size-10 rounded-xl bg-gradient-to-br from-tide-700 to-reef-500 grid place-items-center shadow-sm transition-transform group-hover:scale-110">
               <Icon className="size-5 text-white" />
             </span>
             <span className="text-[11px] sm:text-xs font-bold text-ink-700 text-center leading-tight px-1">{label}</span>
@@ -208,7 +209,15 @@ export default async function HomePage() {
                   >
                     {conditions.rating.label}
                   </div>
-                  <div className="text-xs text-ink-500">{conditions.rating.score}/100 activity indicator</div>
+                  <div className="ml-auto mt-1 h-1.5 w-28 overflow-hidden rounded-full bg-sand-100">
+                    <div
+                      className={`h-full rounded-full ${
+                        conditions.rating.score >= 60 ? "bg-moss-500" : conditions.rating.score >= 42 ? "bg-bait-500" : "bg-red-600"
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(4, conditions.rating.score))}%` }}
+                    />
+                  </div>
+                  <div className="mt-1 text-xs text-ink-500">{conditions.rating.score}/100 activity indicator</div>
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-sand-100">
@@ -218,10 +227,10 @@ export default async function HomePage() {
                     <Link
                       key={s.id}
                       href={`/fish/${s.slug}`}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-sand-200 bg-sand-50 hover:border-tide-400 px-3.5 py-1.5 text-sm font-semibold text-ink-900 transition-colors"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-tide-200 bg-tide-50 px-3.5 py-1.5 text-sm font-semibold text-tide-800 transition-colors hover:border-reef-500 hover:bg-reef-100/60"
                     >
                       {s.commonName}
-                      <ArrowRight className="size-3.5 text-tide-600" />
+                      <ArrowRight className="size-3.5 text-reef-600" />
                     </Link>
                   ))}
                 </div>

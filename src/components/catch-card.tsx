@@ -24,7 +24,7 @@ export function CatchCard({ c }: { c: CatchCardData }) {
   return (
     <Link
       href={`/catch/${c.id}`}
-      className="group bg-white rounded-2xl border border-sand-200 shadow-card overflow-hidden hover:shadow-lift transition-shadow"
+      className="group bg-card rounded-2xl border border-edge shadow-card overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lift"
     >
       <div className="relative h-52 bg-gradient-to-br from-tide-800 to-tide-950">
         {c.photoUrl ? (
@@ -33,7 +33,7 @@ export function CatchCard({ c }: { c: CatchCardData }) {
             alt={c.speciesName}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             unoptimized={c.photoUrl.startsWith("/api/")}
           />
         ) : (

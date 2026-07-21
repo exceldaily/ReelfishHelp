@@ -32,7 +32,7 @@ export default async function AdminGearPage() {
       />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {counts.map(([k, n]) => (
-          <Link key={k} href={`/admin/gear/${k}`} className="group bg-white rounded-2xl border border-sand-200 shadow-card p-5 hover:shadow-lift transition-shadow">
+          <Link key={k} href={`/admin/gear/${k}`} className="group bg-card rounded-2xl border border-edge shadow-card p-5 hover:shadow-lift transition-shadow">
             <div className="flex items-center justify-between">
               <h3 className="font-display font-bold text-ink-900 group-hover:text-tide-700 transition-colors">{TYPE_CFG[k].label}</h3>
               <span className="text-2xl font-display font-extrabold text-tide-700">{n}</span>

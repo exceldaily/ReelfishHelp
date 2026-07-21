@@ -50,7 +50,7 @@ export default function GearHubPage() {
           <Link
             key={href}
             href={href}
-            className="group bg-white rounded-2xl border border-sand-200 shadow-card p-5 hover:shadow-lift transition-shadow"
+            className="group bg-card rounded-2xl border border-edge shadow-card p-5 hover:shadow-lift transition-shadow"
           >
             <div className="flex items-center gap-3">
               <div className="grid place-items-center size-11 rounded-xl bg-tide-100 text-tide-700 shrink-0">

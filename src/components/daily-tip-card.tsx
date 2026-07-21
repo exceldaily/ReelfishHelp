@@ -110,14 +110,15 @@ export function DailyTipCard({
     "inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tide-500";
 
   return (
-    <Card className="p-4 sm:p-5">
+    <Card className="relative overflow-hidden p-4 sm:p-5">
+      <span className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-reef-500 to-tide-600" aria-hidden />
       <div className="flex items-start gap-3.5">
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-tide-100">
-          <Icon className="size-5 text-tide-700" aria-hidden />
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-tide-800 to-tide-600 shadow-sm">
+          <Icon className="size-5 text-reef-300" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-tide-700">{heading}</span>
+            <span className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-tide-600">{heading}</span>
             <Badge variant="neutral">{tip.category}</Badge>
           </div>
           <h2 className="mt-1 font-display font-bold text-ink-900 leading-snug">{tip.title}</h2>
