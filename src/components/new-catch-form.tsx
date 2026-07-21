@@ -172,19 +172,19 @@ export function NewCatchForm({
           </label>
           <div className="flex items-center gap-2 ml-auto">
             <Label htmlFor="visibility" className="mb-0">Visibility</Label>
-            <Select id="visibility" name="visibility" defaultValue="private" className="w-40">
-              <option value="private">Private</option>
-              <option value="followers">Followers only</option>
+            <Select id="visibility" name="visibility" defaultValue="public" className="w-40">
               <option value="public">Public</option>
+              <option value="followers">Followers only</option>
+              <option value="private">Private</option>
             </Select>
           </div>
           <div className="flex items-center gap-2">
             <Label htmlFor="shareDelay" className="mb-0">Share</Label>
-            <Select id="shareDelay" name="shareDelay" defaultValue="never" className="w-44">
-              <option value="never">Do not share</option>
+            <Select id="shareDelay" name="shareDelay" defaultValue="now" className="w-44">
               <option value="now">Now</option>
               <option value="12h">After 12 hours</option>
               <option value="24h">After 24 hours</option>
+              <option value="never">Do not share</option>
             </Select>
           </div>
         </div>
