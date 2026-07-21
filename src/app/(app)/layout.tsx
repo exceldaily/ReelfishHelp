@@ -28,7 +28,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const fishId = fishIdEnabled();
 
   return (
-    <div className="min-h-dvh flex flex-col bg-[#e7f7fb]">
+    <div className="min-h-dvh flex flex-col app-bg">
       <TopNav user={user} fishId={fishId} unread={unread} unreadNotifications={unreadNotifs} />
       {localDb && (
         <div className="bg-bait-100 text-bait-700 text-center text-xs font-semibold py-1.5 px-4">

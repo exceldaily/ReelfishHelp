@@ -117,9 +117,14 @@ export default async function HomePage() {
       <PushPrompt />
       {/* greeting + quick actions */}
       <div className="mb-6">
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink-900">
+        <h1 className="font-display text-2xl sm:text-3xl font-extrabold italic tracking-tight text-ink-900">
           Ready to Fish, {profile.displayName.split(" ")[0]}?
         </h1>
+        <span className="mt-2 flex items-center gap-1" aria-hidden="true">
+          <span className="h-1 w-14 -skew-x-[24deg] rounded-sm bg-gradient-to-r from-tide-600 to-tide-400" />
+          <span className="h-1 w-4 -skew-x-[24deg] rounded-sm bg-bait-400" />
+          <span className="h-1 w-1.5 -skew-x-[24deg] rounded-sm bg-bait-400/60" />
+        </span>
         {profile.lastLocationLabel && (
           <p className="text-ink-500 mt-1 flex items-center gap-1.5 text-sm">
             <MapPin className="size-4" /> Fishing near {profile.lastLocationLabel}
@@ -152,10 +157,10 @@ export default async function HomePage() {
           <Link
             key={href}
             href={href}
-            className="flex flex-col items-center gap-2 rounded-2xl bg-white border border-sand-200 shadow-card py-4 hover:shadow-lift hover:border-tide-300 transition-all"
+            className="group flex flex-col items-center gap-2 rounded-2xl bg-white border border-sand-200 shadow-card py-4 transition-all hover:-translate-y-0.5 hover:shadow-lift hover:border-tide-300"
           >
-            <span className="size-10 rounded-xl bg-tide-100 grid place-items-center">
-              <Icon className="size-5 text-tide-700" />
+            <span className="size-10 rounded-xl bg-gradient-to-br from-tide-600 to-tide-400 grid place-items-center shadow-sm transition-transform group-hover:scale-110">
+              <Icon className="size-5 text-white" />
             </span>
             <span className="text-[11px] sm:text-xs font-bold text-ink-700 text-center leading-tight px-1">{label}</span>
           </Link>
