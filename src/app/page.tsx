@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 import {
   Camera,
@@ -19,7 +20,6 @@ import { eq } from "drizzle-orm";
 import { resolveManyImages } from "@/lib/wiki-images";
 import { fishIdEnabled } from "@/lib/flags";
 import { Logo } from "@/components/logo";
-import { HeroScene } from "@/components/hero-scene";
 import { FishImage } from "@/components/fish-image";
 import { WaterBadge, Badge } from "@/components/ui";
 
@@ -54,7 +54,18 @@ export default async function LandingPage() {
     <div className="flex-1">
       {/* ───────────────────────────── hero ───────────────────────────── */}
       <div className="water-gradient text-white relative">
-        <HeroScene />
+        {/* marsh sunset photo with a left scrim so the white headline stays legible */}
+        <div className="absolute inset-0 overflow-hidden" aria-hidden>
+          <Image
+            src="/brand/hero-marsh.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[70%_center]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-tide-950/85 via-tide-950/50 to-tide-950/10" />
+        </div>
         <header className="relative bg-black border-b border-neutral-800">
           <div className="mx-auto max-w-6xl px-4 h-20 flex items-center justify-between">
             <Logo dark />
