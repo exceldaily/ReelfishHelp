@@ -57,7 +57,7 @@ export default async function LandingPage() {
         {/* marsh sunset photo with a left scrim so the white headline stays legible */}
         <div className="absolute inset-0 overflow-hidden" aria-hidden>
           <Image
-            src="/brand/hero-marsh-2.jpg"
+            src="/brand/hero-boat.jpg"
             alt=""
             fill
             priority
