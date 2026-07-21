@@ -19,6 +19,7 @@ import {
   LogOut,
   UserCircle2,
   Menu,
+  Radar,
   Search,
   MessageCircle,
   MessagesSquare,
@@ -44,32 +45,12 @@ type NavItemDef = {
   icon: React.ComponentType<{ className?: string }>;
 };
 
-/** Shark-tooth icon for Bite Reports (lucide has no tooth glyph). */
-function SharkTooth({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M4.5 5h15c-1.7 6-4.8 11.3-7.5 14.6C9.3 16.3 6.2 11 4.5 5Z" />
-      <path d="M6 8.5h12" />
-    </svg>
-  );
-}
-
 /** Always visible on desktop (>= lg). Order matters. */
 const primaryMain: NavItemDef[] = [
   { href: "/home", label: "Home", icon: Home },
   { href: "/fish", label: "Find Fish", icon: Fish },
   { href: "/conditions", label: "Conditions", icon: CloudSun },
-  { href: "/boards", label: "Bite Reports", shortLabel: "Bites", icon: SharkTooth },
+  { href: "/boards", label: "Bite Reports", shortLabel: "Bites", icon: Radar },
   { href: "/gear", label: "Gear", icon: Backpack },
 ];
 
