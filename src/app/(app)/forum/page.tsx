@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { and, desc, eq } from "drizzle-orm";
-import { CheckCircle2, MessageCircle, PlusCircle, ThumbsUp } from "lucide-react";
+import { MessageCircle, PlusCircle, ThumbsUp } from "lucide-react";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { biteBoards, forumQuestions } from "@/db/schema";
@@ -103,10 +103,6 @@ export default async function ForumPage({
                 className="block rounded-2xl border border-sand-200 bg-white p-4 shadow-card transition-shadow hover:shadow-lift"
               >
                 <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-ink-500">
-                  <Badge variant={q.status === "resolved" ? "fresh" : "outline"}>
-                    {q.status === "resolved" && <CheckCircle2 className="size-3" />}
-                    {q.status}
-                  </Badge>
                   <Badge variant="salt">{forumTopicLabel(q.topic)}</Badge>
                   {q.board && <Badge variant="neutral">{q.board.regionLabel}</Badge>}
                   <span>{shortDate(q.updatedAt)}</span>

@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb } from "@/db";
 import { biteBoards, forumAnswers, forumAnswerVotes, forumQuestions, profiles } from "@/db/schema";
-import { requireUser } from "@/lib/auth-helpers";
+import { requireAdmin, requireUser } from "@/lib/auth-helpers";
 import { notify, notifyBadges } from "@/lib/notify";
 import { DEFAULT_FORUM_TOPIC, isForumTopic } from "@/data/forum-topics";
 
@@ -133,35 +133,24 @@ export async function toggleAnswerHelpful(formData: FormData) {
   revalidatePath(`/forum/${answer.questionId}`);
 }
 
-export async function acceptForumAnswer(formData: FormData) {
-  const user = await requireUser();
+/** Admin moderation: remove an answer entirely (votes cascade). */
+export async function deleteForumAnswer(formData: FormData) {
+  await requireAdmin();
   const db = await getDb();
-  const questionId = cleanText(formData.get("questionId"), 80);
   const answerId = cleanText(formData.get("answerId"), 80);
-  const question = questionId ? await db.query.forumQuestions.findFirst({ where: eq(forumQuestions.id, questionId) }) : null;
-  if (!question || question.userId !== user.id) redirect(questionId ? `/forum/${questionId}` : "/forum");
+  const answer = answerId ? await db.query.forumAnswers.findFirst({ where: eq(forumAnswers.id, answerId) }) : null;
+  if (!answer) redirect("/forum");
 
-  await db.update(forumAnswers).set({ accepted: false }).where(eq(forumAnswers.questionId, questionId));
+  await db.delete(forumAnswers).where(eq(forumAnswers.id, answer.id));
   await db
-    .update(forumAnswers)
-    .set({ accepted: true })
-    .where(and(eq(forumAnswers.id, answerId), eq(forumAnswers.questionId, questionId)));
-  await db.update(forumQuestions).set({ status: "resolved", updatedAt: new Date() }).where(eq(forumQuestions.id, questionId));
-
-  const accepted = answerId
-    ? await db.query.forumAnswers.findFirst({ where: eq(forumAnswers.id, answerId) })
-    : null;
-  if (accepted && accepted.userId !== user.id) {
-    await notify(db, {
-      userId: accepted.userId,
-      type: "accepted",
-      title: "Your answer was accepted as the solution",
-      body: question.title.slice(0, 140),
-      href: `/forum/${questionId}`,
-    });
-    await notifyBadges(db, accepted.userId); // helpful-angler check
-  }
+    .update(forumQuestions)
+    .set({
+      answerCount: sql`greatest(${forumQuestions.answerCount} - 1, 0)`,
+      helpfulCount: sql`greatest(${forumQuestions.helpfulCount} - ${answer.helpfulCount}, 0)`,
+      updatedAt: new Date(),
+    })
+    .where(eq(forumQuestions.id, answer.questionId));
 
   revalidatePath("/forum");
-  revalidatePath(`/forum/${questionId}`);
+  revalidatePath(`/forum/${answer.questionId}`);
 }

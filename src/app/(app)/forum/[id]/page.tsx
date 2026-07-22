@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { desc, eq } from "drizzle-orm";
-import { CheckCircle2, MessageCircle, ThumbsUp } from "lucide-react";
+import { eq } from "drizzle-orm";
+import { MessageCircle, ThumbsUp, Trash2 } from "lucide-react";
 import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { forumAnswers, forumQuestions } from "@/db/schema";
-import { acceptForumAnswer, createForumAnswer, toggleAnswerHelpful } from "@/lib/actions/forum-actions";
+import { createForumAnswer, deleteForumAnswer, toggleAnswerHelpful } from "@/lib/actions/forum-actions";
 import { forumTopicLabel } from "@/data/forum-topics";
 import { Badge, Button, ButtonLink, Card, EmptyState, Label, PageHeader, Textarea } from "@/components/ui";
 
@@ -34,13 +34,14 @@ export default async function ForumQuestionPage({
   });
   if (!question) notFound();
 
+  // plain conversation order — replies post instantly for everyone
   const answers = await db.query.forumAnswers.findMany({
     where: eq(forumAnswers.questionId, question.id),
-    orderBy: [desc(forumAnswers.accepted), desc(forumAnswers.helpfulCount), forumAnswers.createdAt],
+    orderBy: [forumAnswers.createdAt],
     with: { user: { with: { profile: true } }, votes: true },
   });
   const viewerId = session?.user?.id ?? null;
-  const owner = viewerId === question.userId;
+  const isAdmin = session?.user?.role === "admin";
 
   return (
     <div className="max-w-4xl">
@@ -56,7 +57,6 @@ export default async function ForumQuestionPage({
                 <Badge variant="neutral">{question.board.regionLabel}</Badge>
               </Link>
             )}
-            <Badge variant={question.status === "resolved" ? "fresh" : "outline"}>{question.status}</Badge>
             <span>Asked by {question.user.profile?.displayName ?? "Angler"} on {stamp(question.createdAt)}</span>
           </span>
         }
@@ -82,29 +82,13 @@ export default async function ForumQuestionPage({
           answers.map((answer) => {
             const voted = viewerId ? answer.votes.some((vote) => vote.userId === viewerId) : false;
             return (
-              <Card key={answer.id} className={`p-5 ${answer.accepted ? "border-moss-300 bg-moss-50/60" : ""}`}>
+              <Card key={answer.id} className="p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-ink-500">
-                    {answer.accepted && (
-                      <Badge variant="fresh">
-                        <CheckCircle2 className="size-3.5" />
-                        Accepted
-                      </Badge>
-                    )}
                     <span>{answer.user.profile?.displayName ?? "Angler"}</span>
                     <span>{stamp(answer.createdAt)}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    {owner && !answer.accepted && (
-                      <form action={acceptForumAnswer}>
-                        <input type="hidden" name="questionId" value={question.id} />
-                        <input type="hidden" name="answerId" value={answer.id} />
-                        <Button variant="outline" size="sm">
-                          <CheckCircle2 className="size-4" />
-                          Accept
-                        </Button>
-                      </form>
-                    )}
                     <form action={toggleAnswerHelpful}>
                       <input type="hidden" name="answerId" value={answer.id} />
                       <Button variant={voted ? "secondary" : "outline"} size="sm">
@@ -112,6 +96,14 @@ export default async function ForumQuestionPage({
                         {answer.helpfulCount}
                       </Button>
                     </form>
+                    {isAdmin && (
+                      <form action={deleteForumAnswer}>
+                        <input type="hidden" name="answerId" value={answer.id} />
+                        <Button variant="outline" size="sm" aria-label="Delete answer (admin)" title="Delete answer (admin)">
+                          <Trash2 className="size-4 text-red-700" />
+                        </Button>
+                      </form>
+                    )}
                   </div>
                 </div>
                 <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-ink-700">{answer.body}</p>
