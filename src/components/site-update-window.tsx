@@ -59,8 +59,8 @@ export function SiteUpdateWindow() {
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-white/90">
             <Sparkles className="size-3.5" /> Just added
           </span>
-          <h2 id="site-update-title" className="mt-4 font-display text-3xl font-extrabold italic tracking-tight">
-            A few fresh things for your tackle box
+          <h2 id="site-update-title" className="mt-4 font-sans text-3xl font-extrabold leading-tight tracking-tight">
+            New gear and community updates
           </h2>
           <p className="mt-2 max-w-md text-sm leading-6 text-white/80">
             We have made it easier to show your fishing style, plan a rig, and find trusted local insight.
