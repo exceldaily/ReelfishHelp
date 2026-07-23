@@ -132,6 +132,19 @@ body {
   );
 }
 
+/* Keep the water backdrop when the topo texture is layered on a panel. */
+.water-gradient.topo-lines {
+  background-image:
+    repeating-radial-gradient(
+      circle at 20% 120%,
+      transparent 0,
+      transparent 38px,
+      rgb(255 255 255 / 0.035) 39px,
+      transparent 40px
+    ),
+    linear-gradient(130deg, #0a2430 0%, #123847 30%, #175468 60%, #14586e 80%, #0f3345 100%);
+}
+
 input[type="date"],
 input[type="time"] {
   min-height: 2.5rem;
