@@ -159,6 +159,20 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           )}
         </div>
 
+        {/* favorite brands the angler swears by, one chip per gear category */}
+        {Object.values(profile.favoriteBrands).some(Boolean) && (
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {([["rods", "Rods"], ["reels", "Reels"], ["lures", "Lures"], ["clothes", "Clothes"]] as const).map(([key, label]) =>
+              profile.favoriteBrands[key] ? (
+                <span key={key} className="inline-flex items-center gap-1.5 rounded-full border border-sand-200 bg-sand-50 px-2.5 py-1 text-xs">
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-ink-300">{label}</span>
+                  <span className="font-semibold text-ink-700">{profile.favoriteBrands[key]}</span>
+                </span>
+              ) : null
+            )}
+          </div>
+        )}
+
         {/* bio spans the full card so it never gets squeezed beside the avatar on phones */}
         {profile.bio && <p className="mt-4 text-sm text-ink-700 leading-relaxed max-w-2xl">{profile.bio}</p>}
 

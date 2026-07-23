@@ -31,6 +31,8 @@ export type WaterPref = "freshwater" | "saltwater" | "both";
 export type Visibility = "public" | "followers" | "private";
 export type LocationMode = "precise" | "approximate" | "off";
 export type LocationPrecision = "exact_private" | "approx_private" | "shared_broad_area" | "hidden";
+/** Favorite brand per gear category — free-text brand names the angler swears by. */
+export type FavoriteBrands = { rods?: string; reels?: string; lures?: string; clothes?: string };
 
 export const profiles = pgTable("profiles", {
   userId: text("user_id")
@@ -49,6 +51,7 @@ export const profiles = pgTable("profiles", {
     .default("casual"),
   fishingStyles: jsonb("fishing_styles").$type<string[]>().notNull().default([]),
   favoriteSpecies: jsonb("favorite_species").$type<string[]>().notNull().default([]),
+  favoriteBrands: jsonb("favorite_brands").$type<FavoriteBrands>().notNull().default({}),
   visibility: text("visibility").$type<Visibility>().notNull().default("public"),
   locationMode: text("location_mode").$type<LocationMode>().notNull().default("approximate"),
   // manual location fallback + last approximate fix (rounded, never exact)
@@ -998,6 +1001,8 @@ export const userSetups = pgTable(
     method: text("method"),
     notes: text("notes"),
     visibility: text("visibility").$type<Visibility>().notNull().default("private"),
+    // one "go-to" setup per angler, spotlighted on My Gear and the builder
+    favorite: boolean("favorite").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

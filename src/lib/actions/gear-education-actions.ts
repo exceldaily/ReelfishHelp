@@ -88,6 +88,24 @@ export async function saveUserSetup(formData: FormData): Promise<void> {
   redirect("/gear/builder?saved=1");
 }
 
+/** Mark a saved setup as the caller's one go-to setup (or unmark it). */
+export async function toggleFavoriteSetup(formData: FormData): Promise<void> {
+  const user = await requireUser();
+  const db = await getDb();
+  const id = String(formData.get("id") ?? "");
+  const setup = await db.query.userSetups.findFirst({
+    where: and(eq(userSetups.id, id), eq(userSetups.ownerId, user.id)),
+  });
+  if (!setup) return;
+  // only one go-to setup at a time
+  await db.update(userSetups).set({ favorite: false }).where(eq(userSetups.ownerId, user.id));
+  if (!setup.favorite) {
+    await db.update(userSetups).set({ favorite: true }).where(eq(userSetups.id, id));
+  }
+  revalidatePath("/gear/builder");
+  revalidatePath("/my-gear");
+}
+
 /** Delete one of the caller's saved setups. */
 export async function deleteUserSetup(formData: FormData): Promise<void> {
   const user = await requireUser();

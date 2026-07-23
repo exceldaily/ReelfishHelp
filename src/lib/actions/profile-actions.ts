@@ -104,6 +104,13 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
   const locationMode = String(formData.get("locationMode") ?? "approximate") as LocationMode;
   const fishingStyles = formData.getAll("fishingStyles").map(String).slice(0, 10);
   const favoriteSpecies = formData.getAll("favoriteSpecies").map(String).slice(0, 12);
+  const brand = (k: string) => String(formData.get(k) ?? "").trim().slice(0, 60) || undefined;
+  const favoriteBrands = {
+    rods: brand("brandRods"),
+    reels: brand("brandReels"),
+    lures: brand("brandLures"),
+    clothes: brand("brandClothes"),
+  };
 
   let avatarUrl: string | undefined;
   const avatar = formData.get("avatar");
@@ -133,6 +140,7 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
       locationMode,
       fishingStyles,
       favoriteSpecies,
+      favoriteBrands,
       ...(avatarUrl ? { avatarUrl } : {}),
     })
     .where(eq(profiles.userId, user.id));

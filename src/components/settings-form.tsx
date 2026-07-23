@@ -26,6 +26,7 @@ export function SettingsForm({
     locationMode: string;
     fishingStyles: string[];
     favoriteSpecies: string[];
+    favoriteBrands: { rods?: string; reels?: string; lures?: string; clothes?: string };
     avatarUrl: string | null;
     lastLocationLabel: string | null;
   };
@@ -151,6 +152,28 @@ export function SettingsForm({
                 {s}
               </label>
             ))}
+          </div>
+        </div>
+
+        <div>
+          <Label>Favorite brands (shown on your profile)</Label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <Label htmlFor="brandRods" className="text-xs text-ink-500">Rods</Label>
+              <Input id="brandRods" name="brandRods" maxLength={60} defaultValue={profile.favoriteBrands.rods ?? ""} placeholder="St. Croix" />
+            </div>
+            <div>
+              <Label htmlFor="brandReels" className="text-xs text-ink-500">Reels</Label>
+              <Input id="brandReels" name="brandReels" maxLength={60} defaultValue={profile.favoriteBrands.reels ?? ""} placeholder="Shimano" />
+            </div>
+            <div>
+              <Label htmlFor="brandLures" className="text-xs text-ink-500">Lures</Label>
+              <Input id="brandLures" name="brandLures" maxLength={60} defaultValue={profile.favoriteBrands.lures ?? ""} placeholder="Z-Man" />
+            </div>
+            <div>
+              <Label htmlFor="brandClothes" className="text-xs text-ink-500">Clothes</Label>
+              <Input id="brandClothes" name="brandClothes" maxLength={60} defaultValue={profile.favoriteBrands.clothes ?? ""} placeholder="AFTCO" />
+            </div>
           </div>
         </div>
 

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { asc, desc, eq, inArray } from "drizzle-orm";
-import { ArrowLeft, CheckCircle2, AlertTriangle, ThumbsUp, ThumbsDown, Lightbulb, Anchor, Fish, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, AlertTriangle, ThumbsUp, ThumbsDown, Lightbulb, Anchor, Fish, ShoppingBag, Star, Trash2 } from "lucide-react";
 import { getDb, fishGearRequirements, species, knots, userSetups } from "@/db";
 import { currentUser } from "@/lib/auth-helpers";
 import { PageHeader, Card, Badge, Button, ButtonLink } from "@/components/ui";
 import { SetupBuilder } from "@/components/gear/setup-builder";
-import { saveUserSetup, deleteUserSetup } from "@/lib/actions/gear-education-actions";
+import { saveUserSetup, deleteUserSetup, toggleFavoriteSetup } from "@/lib/actions/gear-education-actions";
 import { scoreSetup, type SetupInput, type SpeciesReq, type SpeciesScore } from "@/lib/gear/scoring";
 
 export const metadata = {
@@ -45,7 +45,7 @@ export default async function BuilderPage({ searchParams }: { searchParams: Prom
   if (!built) {
     // builder home
     const saved = user
-      ? await db.query.userSetups.findMany({ where: eq(userSetups.ownerId, user.id), orderBy: [desc(userSetups.createdAt)], limit: 20 })
+      ? await db.query.userSetups.findMany({ where: eq(userSetups.ownerId, user.id), orderBy: [desc(userSetups.favorite), desc(userSetups.createdAt)], limit: 20 })
       : [];
     return (
       <div>
@@ -68,11 +68,24 @@ export default async function BuilderPage({ searchParams }: { searchParams: Prom
             <h2 className="font-display text-lg font-bold text-ink-900 mb-3">Your saved setups</h2>
             <div className="grid gap-3 sm:grid-cols-2">
               {saved.map((s) => (
-                <Card key={s.id} className="p-4 flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="font-bold text-sm text-ink-900 truncate">{s.name}</div>
+                <Card key={s.id} className={`p-4 flex items-start gap-3 ${s.favorite ? "ring-2 ring-bait-400/70 bg-gradient-to-r from-bait-100/50 to-card" : ""}`}>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-bold text-sm text-ink-900 truncate">{s.name}</span>
+                      {s.favorite && <Badge variant="orange">Go-to</Badge>}
+                    </div>
                     <div className="text-xs text-ink-500 capitalize">{[s.water, (s.line as { lb?: number })?.lb ? `${(s.line as { lb?: number }).lb} lb` : null, s.method].filter(Boolean).join(" · ")}</div>
                   </div>
+                  <form action={toggleFavoriteSetup}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <button
+                      type="submit"
+                      aria-label={s.favorite ? "Remove go-to setup" : "Make this my go-to setup"}
+                      title={s.favorite ? "Remove go-to setup" : "Make this my go-to setup"}
+                    >
+                      <Star className={`size-4 ${s.favorite ? "fill-bait-400 text-bait-400" : "text-sand-300 hover:text-bait-400"}`} />
+                    </button>
+                  </form>
                   <form action={deleteUserSetup}>
                     <input type="hidden" name="id" value={s.id} />
                     <button type="submit" aria-label="Delete setup" className="text-ink-300 hover:text-red-600"><Trash2 className="size-4" /></button>

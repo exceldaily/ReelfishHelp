@@ -80,6 +80,7 @@ export default async function SettingsPage() {
           locationMode: profile.locationMode,
           fishingStyles: profile.fishingStyles,
           favoriteSpecies: profile.favoriteSpecies,
+          favoriteBrands: profile.favoriteBrands,
           avatarUrl: profile.avatarUrl,
           lastLocationLabel: profile.lastLocationLabel,
         }}
