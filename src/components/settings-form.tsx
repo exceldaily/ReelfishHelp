@@ -157,7 +157,7 @@ export function SettingsForm({
         </div>
 
         <div>
-          <Label>Brands you swear by (shown on your profile)</Label>
+          <Label>Tackle Favorites (brands shown on your profile)</Label>
           <p className="mb-2 -mt-0.5 text-xs text-ink-300">Up to 4 per category, separated by commas.</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>

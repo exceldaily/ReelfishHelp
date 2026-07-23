@@ -168,7 +168,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
         {brandEntries.length > 0 && (
           <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-ink-500">
             <span className="inline-flex items-center gap-1 rounded-full bg-bait-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-bait-700">
-              <Star className="size-3 fill-bait-500 text-bait-500" /> Swears by
+              <Star className="size-3 fill-bait-500 text-bait-500" /> Tackle Favorites
             </span>
             {brandEntries.map(([label, list], i) => (
               <span key={label} className="inline-flex items-center gap-1.5">
