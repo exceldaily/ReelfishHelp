@@ -164,19 +164,20 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           )}
         </div>
 
-        {/* brands the angler swears by — one flowing line so it matches the meta line above */}
+        {/* Tackle Favorites — a tackle-box style card with the label riding the top border */}
         {brandEntries.length > 0 && (
-          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-ink-500">
-            <span className="inline-flex items-center gap-1 rounded-full bg-bait-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-bait-700">
+          <div className="relative mt-5 rounded-2xl border border-sand-300/80 bg-gradient-to-br from-sand-50/90 to-card px-4 pb-3.5 pt-4">
+            <span className="absolute -top-3 left-3.5 inline-flex items-center gap-1 rounded-full border border-sand-300/80 bg-bait-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-bait-700 shadow-sm">
               <Star className="size-3 fill-bait-500 text-bait-500" /> Tackle Favorites
             </span>
-            {brandEntries.map(([label, list], i) => (
-              <span key={label} className="inline-flex items-center gap-1.5">
-                {i > 0 && <span aria-hidden className="text-sand-400">•</span>}
-                <span className="text-[10px] font-bold uppercase tracking-wide text-ink-300">{label}</span>
-                <span className="text-ink-700">{list.join(" + ")}</span>
-              </span>
-            ))}
+            <dl className="grid grid-cols-1 gap-x-6 gap-y-2.5 sm:grid-cols-2">
+              {brandEntries.map(([label, list]) => (
+                <div key={label} className="min-w-0">
+                  <dt className="text-[10px] font-bold uppercase tracking-wide text-bait-700/80">{label}</dt>
+                  <dd className="text-[13px] font-semibold leading-snug text-ink-800">{list.join("  ·  ")}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         )}
 
