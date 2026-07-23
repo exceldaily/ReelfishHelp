@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { VerifiedTitleBadge } from "@/components/verified-badge";
 import Image from "next/image";
 import { Fish, Heart, MessageCircle, MapPin, Ruler, Weight } from "lucide-react";
 import { Badge } from "@/components/ui";
@@ -16,6 +17,7 @@ export type CatchCardData = {
   locationLabel: string | null;
   showLocation: boolean;
   author?: { username: string; displayName: string; avatarUrl: string | null } | null;
+  verifiedTitle?: string | null;
   likeCount?: number;
   commentCount?: number;
 };
@@ -59,7 +61,7 @@ export function CatchCard({ c }: { c: CatchCardData }) {
         </div>
         {c.author && (
           <div className="mt-1 text-xs text-ink-500">
-            by <span className="font-semibold">{c.author.displayName}</span> @{c.author.username}
+            by <span className="font-semibold">{c.author.displayName}</span> <VerifiedTitleBadge slug={c.verifiedTitle} compact /> @{c.author.username}
           </div>
         )}
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-500">

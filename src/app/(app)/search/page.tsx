@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { verifiedTitleMap, primaryTitle } from "@/lib/verified";
+import { VerifiedTitleBadge } from "@/components/verified-badge";
 import Image from "next/image";
 import { ilike, or, ne, and, eq } from "drizzle-orm";
 import { Search, UserCircle2, Users } from "lucide-react";
@@ -30,6 +32,8 @@ export default async function SearchPage({
       limit: 30,
     });
   }
+
+  const titleMap = await verifiedTitleMap(db, results.map((r) => r.userId));
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -66,7 +70,10 @@ export default async function SearchPage({
                   <UserCircle2 className="size-11 text-tide-300 shrink-0" />
                 )}
                 <div className="min-w-0 flex-1">
-                  <div className="font-bold text-sm text-ink-900 truncate">{p.displayName}</div>
+                  <div className="font-bold text-sm text-ink-900 truncate inline-flex items-center gap-1.5">
+                    {p.displayName}
+                    <VerifiedTitleBadge slug={primaryTitle(titleMap.get(p.userId))} compact />
+                  </div>
                   <div className="text-xs text-ink-500">@{p.username}</div>
                 </div>
                 <div className="flex gap-1.5 shrink-0">

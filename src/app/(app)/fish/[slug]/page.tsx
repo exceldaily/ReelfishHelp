@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { latestVerifiedReports } from "@/lib/verified";
+import { VerifiedReportCard } from "@/components/verified-report-card";
 import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
 import {
@@ -149,6 +151,8 @@ export default async function CatchGuidePage({
         where: and(eq(savedGuides.userId, session.user.id), eq(savedGuides.speciesId, s.id)),
       }))
     : false;
+
+  const proReports = await latestVerifiedReports(db, { speciesId: s.id, limit: 3 });
 
   const season = seasonForMonth(new Date().getMonth());
   const inSeason = s.seasons.includes(season);
@@ -324,6 +328,17 @@ export default async function CatchGuidePage({
         </Section>
 
         {/* techniques */}
+        {proReports.length > 0 && (
+          <div className="mb-8">
+            <h2 className="mb-3 font-display text-xl font-bold text-ink-900">Pro Reports</h2>
+            <div className="space-y-3">
+              {proReports.map((r) => (
+                <VerifiedReportCard key={r.id} report={r} compact />
+              ))}
+            </div>
+          </div>
+        )}
+
         <Section id="techniques" icon={Waves} title="Techniques">
           <dl>
             <Row label="Presentation" value={g.techniques.presentation} />

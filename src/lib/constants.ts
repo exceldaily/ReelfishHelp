@@ -13,6 +13,9 @@ export const CATCH_METHODS = ["shore", "boat", "kayak", "pier", "surf", "wading"
 export const REPORT_REASONS = [
   "Spam or advertising",
   "Harassment or abuse",
+  "Fake or misleading professional title",
+  "Unsafe advice",
+  "Stolen photos",
   "Illegal fish harvest",
   "Exposes someone's private spot",
   "Inappropriate content",

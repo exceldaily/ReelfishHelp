@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { verifiedTitleMap, primaryTitle, latestVerifiedReports } from "@/lib/verified";
+import { VerifiedReportCard } from "@/components/verified-report-card";
 import { InstallAppBanner } from "@/components/install-app-banner";
 import { DailyTipCard } from "@/components/daily-tip-card";
 import { getDailyTip } from "@/lib/tips";
@@ -110,6 +112,9 @@ export default async function HomePage() {
           with: { species: true, photos: true, user: { with: { profile: true } } },
         })
       : [];
+
+  const titleMap = await verifiedTitleMap(db, friendActivity.map((c) => c.userId));
+  const proReports = await latestVerifiedReports(db, { limit: 2 });
 
   return (
     <div>
@@ -305,6 +310,7 @@ export default async function HomePage() {
                       visibility: c.visibility,
                       locationLabel: c.locationLabel,
                       showLocation: c.showLocation,
+                      verifiedTitle: primaryTitle(titleMap.get(c.userId)),
                       author: c.user.profile
                         ? { username: c.user.profile.username, displayName: c.user.profile.displayName, avatarUrl: c.user.profile.avatarUrl }
                         : null,
@@ -320,6 +326,13 @@ export default async function HomePage() {
         <div className="space-y-5">
           {/* industry news */}
           <NewsFeedCard />
+          {proReports.length > 0 && (
+            <div className="space-y-3">
+              {proReports.map((r) => (
+                <VerifiedReportCard key={r.id} report={r} compact />
+              ))}
+            </div>
+          )}
 
           {/* upcoming trips */}
           <Card className="p-5">

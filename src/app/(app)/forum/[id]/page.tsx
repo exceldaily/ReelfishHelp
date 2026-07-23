@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { verifiedTitleMap, primaryTitle } from "@/lib/verified";
+import { VerifiedTitleBadge } from "@/components/verified-badge";
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { MessageCircle, ThumbsUp, Trash2 } from "lucide-react";
@@ -40,6 +42,7 @@ export default async function ForumQuestionPage({
     orderBy: [forumAnswers.createdAt],
     with: { user: { with: { profile: true } }, votes: true },
   });
+  const titleMap = await verifiedTitleMap(db, [question.userId, ...answers.map((a) => a.userId)]);
   const viewerId = session?.user?.id ?? null;
   const isAdmin = session?.user?.role === "admin";
 
@@ -57,7 +60,10 @@ export default async function ForumQuestionPage({
                 <Badge variant="neutral">{question.board.regionLabel}</Badge>
               </Link>
             )}
-            <span>Asked by {question.user.profile?.displayName ?? "Angler"} on {stamp(question.createdAt)}</span>
+            <span className="inline-flex items-center gap-1.5">
+              Asked by {question.user.profile?.displayName ?? "Angler"}
+              <VerifiedTitleBadge slug={primaryTitle(titleMap.get(question.userId))} compact /> on {stamp(question.createdAt)}
+            </span>
           </span>
         }
         action={<ButtonLink href="/forum" variant="secondary">Forum</ButtonLink>}
@@ -85,7 +91,10 @@ export default async function ForumQuestionPage({
               <Card key={answer.id} className="p-5">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-ink-500">
-                    <span>{answer.user.profile?.displayName ?? "Angler"}</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      {answer.user.profile?.displayName ?? "Angler"}
+                      <VerifiedTitleBadge slug={primaryTitle(titleMap.get(answer.userId))} compact />
+                    </span>
                     <span>{stamp(answer.createdAt)}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">

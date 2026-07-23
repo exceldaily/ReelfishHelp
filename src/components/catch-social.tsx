@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { VerifiedTitleBadge } from "@/components/verified-badge";
 import { useRouter } from "next/navigation";
 import { Heart, Bookmark, Flag, Send, Trash2 } from "lucide-react";
 import {
@@ -121,7 +122,7 @@ export function CommentSection({
   isAdmin,
 }: {
   catchId: string;
-  comments: { id: string; body: string; createdAt: string; userId: string; author: string; username: string | null }[];
+  comments: { id: string; body: string; createdAt: string; userId: string; author: string; username: string | null; verifiedTitle?: string | null }[];
   signedIn: boolean;
   currentUserId: string | null;
   catchOwnerId: string;
@@ -161,7 +162,7 @@ export function CommentSection({
         {items.map((c) => (
           <div key={c.id} className="rounded-xl bg-sand-100/60 px-4 py-3">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-bold text-ink-900">{c.author}</span>
+              <span className="inline-flex items-center gap-1.5 text-sm font-bold text-ink-900">{c.author} <VerifiedTitleBadge slug={c.verifiedTitle} compact /></span>
               <span className="text-xs text-ink-300">
                 {new Date(c.createdAt).toLocaleDateString([], { month: "short", day: "numeric" })}
                 {(c.userId === currentUserId || catchOwnerId === currentUserId || isAdmin) && !c.id.startsWith("tmp-") && (

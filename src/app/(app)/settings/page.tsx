@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BadgeCheck } from "lucide-react";
 import { eq } from "drizzle-orm";
 import { ImageIcon } from "lucide-react";
 import { requireUser, getProfile } from "@/lib/auth-helpers";
@@ -30,6 +31,20 @@ export default async function SettingsPage() {
         title="Profile & Settings"
         subtitle="Your public profile, fishing preferences, and privacy controls."
       />
+
+      <Link href="/verified" className="block mb-4">
+        <Card className="p-4 hover:shadow-lift transition-shadow flex items-center gap-4">
+          <span className="size-10 rounded-xl bg-tide-100 grid place-items-center shrink-0">
+            <BadgeCheck className="size-5 text-reef-500" />
+          </span>
+          <div className="flex-1 min-w-0">
+            <span className="font-display font-bold text-ink-900">Request Verified Title</span>
+            <p className="text-sm text-ink-500">
+              Fishing guide, tackle shop, tournament angler, or charter captain? Get verified so the community knows who you are.
+            </p>
+          </div>
+        </Card>
+      </Link>
 
       <Link href="/settings/photos" className="block mb-6">
         <Card className="p-4 hover:shadow-lift transition-shadow flex items-center gap-4">

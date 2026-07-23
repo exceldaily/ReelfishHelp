@@ -1,4 +1,5 @@
 import { desc, eq, isNull, lte, or } from "drizzle-orm";
+import { verifiedTitleMap, primaryTitle } from "@/lib/verified";
 import { Map, PlusCircle, Users } from "lucide-react";
 import { getDb } from "@/db";
 import { catches, userBlocks } from "@/db/schema";
@@ -35,6 +36,8 @@ export default async function CommunityPage({
       user: { with: { profile: true } },
     },
   });
+
+  const titleMap = await verifiedTitleMap(db, rows.map((r) => r.userId));
 
   const filtered = water
     ? rows.filter((c) => !blockedIds.has(c.userId) && (water === "saltwater" ? c.species?.water === "saltwater" : c.species?.water === "freshwater"))
@@ -97,6 +100,7 @@ export default async function CommunityPage({
                 visibility: c.visibility,
                 locationLabel: c.broadAreaLabel ?? c.locationLabel,
                 showLocation: !!(c.broadAreaLabel ?? (c.showLocation ? c.locationLabel : null)),
+                verifiedTitle: primaryTitle(titleMap.get(c.userId)),
                 author: c.user.profile
                   ? {
                       username: c.user.profile.username,

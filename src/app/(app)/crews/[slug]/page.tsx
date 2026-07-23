@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { verifiedTitleMap, primaryTitle } from "@/lib/verified";
+import { VerifiedTitleBadge } from "@/components/verified-badge";
 import { notFound } from "next/navigation";
 import { and, desc, eq } from "drizzle-orm";
 import { UsersRound, Lock, MapPin, Settings, Trash2, UserCircle2 } from "lucide-react";
@@ -97,6 +99,11 @@ export default async function CrewDetailPage({ params }: { params: Promise<{ slu
     label: `${c.species?.commonName ?? c.customSpeciesName ?? "Catch"} — ${new Date(c.caughtAt).toLocaleDateString()}`,
   }));
 
+  const titleMap = await verifiedTitleMap(db, [
+    ...posts.map((p) => p.userId),
+    ...crew.members.map((m) => m.userId),
+  ]);
+
   const members = [...crew.members].sort(
     (a, b) =>
       (roleRank[a.role] - roleRank[b.role]) ||
@@ -173,7 +180,7 @@ export default async function CrewDetailPage({ params }: { params: Promise<{ slu
                       <div className="flex items-center gap-2">
                         <Avatar url={p.user.profile?.avatarUrl} />
                         <div>
-                          <div className="text-sm font-semibold text-ink-900">{p.user.profile?.displayName ?? "Angler"}</div>
+                          <div className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink-900">{p.user.profile?.displayName ?? "Angler"} <VerifiedTitleBadge slug={primaryTitle(titleMap.get(p.userId))} compact /></div>
                           <div className="text-xs text-ink-400">
                             {new Date(p.createdAt).toLocaleDateString([], { month: "short", day: "numeric" })}
                           </div>
@@ -241,7 +248,7 @@ export default async function CrewDetailPage({ params }: { params: Promise<{ slu
                       <div className="min-w-0">
                         {prof ? (
                           <Link href={`/u/${prof.username}`} className="text-sm font-semibold text-ink-900 hover:text-tide-700 truncate block">
-                            {prof.displayName}
+                            <span className="inline-flex items-center gap-1.5">{prof.displayName} <VerifiedTitleBadge slug={primaryTitle(titleMap.get(m.userId))} compact /></span>
                           </Link>
                         ) : (
                           <span className="text-sm font-semibold text-ink-900">Angler</span>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { verifiedTitleMap, primaryTitle } from "@/lib/verified";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, eq } from "drizzle-orm";
@@ -52,6 +53,7 @@ export default async function CatchDetailPage({ params }: { params: Promise<{ id
       }))
     : false;
 
+  const titleMap = await verifiedTitleMap(db, [c.userId, ...c.comments.map((cm) => cm.userId)]);
   const speciesName = c.species?.commonName ?? c.customSpeciesName ?? "Unknown species";
   const authorProfile = c.user.profile;
   const showLocation = isOwner || c.showLocation;
@@ -164,6 +166,7 @@ export default async function CatchDetailPage({ params }: { params: Promise<{ id
               body: cm.body,
               createdAt: cm.createdAt.toISOString(),
               userId: cm.userId,
+              verifiedTitle: primaryTitle(titleMap.get(cm.userId)),
               author: cm.user.profile?.displayName ?? "Angler",
               username: cm.user.profile?.username ?? null,
             }))}

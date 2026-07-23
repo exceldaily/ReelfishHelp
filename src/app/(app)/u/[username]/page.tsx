@@ -11,6 +11,12 @@ import { FollowButton } from "@/components/follow-button";
 import { MessageButton } from "@/components/message-button";
 import { ReportButton } from "@/components/report-button";
 import { BadgeRow } from "@/components/badge-row";
+import { VerifiedTitleRow } from "@/components/verified-badge";
+import { VerifiedReportCard } from "@/components/verified-report-card";
+import { activeTitlesFor, latestVerifiedReports } from "@/lib/verified";
+import { professionalProfiles } from "@/db/schema";
+import { titleDef } from "@/data/verified-titles";
+import { Globe, Phone, CalendarCheck } from "lucide-react";
 import { earnedBadges } from "@/lib/badges";
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
@@ -40,6 +46,12 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     );
   }
   const followerGated = !isOwner && profile.visibility === "followers" && !isFollowing;
+
+  const [verifiedSlugs, proProfile, verifiedReports] = await Promise.all([
+    activeTitlesFor(db, profile.userId),
+    db.query.professionalProfiles.findFirst({ where: eq(professionalProfiles.userId, profile.userId) }),
+    latestVerifiedReports(db, { userId: profile.userId, limit: 3 }),
+  ]);
 
   const [allCatches, followerRows, followingRows, gear, sharedSpots, saved] = await Promise.all([
     db.query.catches.findMany({
@@ -101,6 +113,11 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           <div className="min-w-0 flex-1">
             <h1 className="font-display text-2xl font-bold text-ink-900">{profile.displayName}</h1>
             <div className="text-sm text-ink-500">@{profile.username}</div>
+            {verifiedSlugs.length > 0 && (
+              <div className="mt-1.5">
+                <VerifiedTitleRow slugs={verifiedSlugs} />
+              </div>
+            )}
             <div className="mt-2 flex flex-wrap gap-1.5">
               <WaterBadge water={profile.waterPref} />
               <Badge variant="neutral" className="capitalize">{profile.experience} angler</Badge>
@@ -169,6 +186,57 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           </div>
         )}
       </Card>
+
+      {/* professional profile — public fields unlocked by an approved title */}
+      {verifiedSlugs.length > 0 && proProfile && (
+        <Card className="mb-6 p-5 sm:p-6">
+          <h2 className="font-display text-lg font-bold text-ink-900 mb-3 flex items-center gap-2">
+            <CalendarCheck className="size-5 text-reef-500" />
+            {proProfile.businessName ?? titleDef(verifiedSlugs[0])?.label}
+          </h2>
+          {proProfile.publicBio && <p className="text-sm leading-relaxed text-ink-700">{proProfile.publicBio}</p>}
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-ink-700">
+            {proProfile.serviceArea && <span className="inline-flex items-center gap-1.5"><MapPin className="size-4 text-tide-600" /> {proProfile.serviceArea}</span>}
+            {proProfile.address && <span className="inline-flex items-center gap-1.5"><MapPin className="size-4 text-tide-600" /> {proProfile.address}</span>}
+            {proProfile.phone && <span className="inline-flex items-center gap-1.5"><Phone className="size-4 text-tide-600" /> {proProfile.phone}</span>}
+            {proProfile.website && (
+              <a href={proProfile.website} target="_blank" rel="noopener noreferrer nofollow" className="inline-flex items-center gap-1.5 font-semibold text-tide-700 hover:underline">
+                <Globe className="size-4" /> Website
+              </a>
+            )}
+            {proProfile.hours && <span className="text-ink-500">{proProfile.hours}</span>}
+          </div>
+          {Object.keys(proProfile.details).length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {Object.entries(proProfile.details).map(([k, v]) => (
+                <Badge key={k} variant="neutral">{v}</Badge>
+              ))}
+            </div>
+          )}
+          {proProfile.bookingLink && (
+            <a
+              href={proProfile.bookingLink}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="mt-4 inline-flex min-h-10 items-center rounded-xl bg-bait-500 px-4 text-sm font-bold text-white hover:bg-bait-600"
+            >
+              Book a trip
+            </a>
+          )}
+        </Card>
+      )}
+
+      {/* latest verified reports by this pro */}
+      {verifiedReports.length > 0 && (
+        <div className="mb-6 space-y-3">
+          <h2 className="font-display text-lg font-bold text-ink-900 flex items-center gap-2">
+            <CalendarCheck className="size-5 text-tide-600" /> Latest reports
+          </h2>
+          {verifiedReports.map((r) => (
+            <VerifiedReportCard key={r.id} report={r} compact />
+          ))}
+        </div>
+      )}
 
       {followerGated ? (
         <EmptyState

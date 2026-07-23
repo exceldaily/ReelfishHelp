@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { verifiedTitleMap, primaryTitle, latestVerifiedReports } from "@/lib/verified";
+import { VerifiedReportCard } from "@/components/verified-report-card";
 import { notFound } from "next/navigation";
 import { and, desc, eq, inArray, or, isNull, lte } from "drizzle-orm";
 import { CalendarDays, Fish, MessageCircle, PlusCircle, TrendingUp } from "lucide-react";
@@ -90,6 +92,12 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
     return label.includes(board.regionLabel.toLowerCase()) || label.includes(board.name.toLowerCase());
   });
 
+  const titleMap = await verifiedTitleMap(db, [
+    ...reports.map((r) => r.userId),
+    ...boardCatches.map((c) => c.userId),
+  ]);
+  const verifiedReports = await latestVerifiedReports(db, { boardId: board.id, limit: 4 });
+
   return (
     <div>
       <PageHeader
@@ -123,6 +131,16 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
           </Card>
 
           <section>
+            {verifiedReports.length > 0 && (
+              <div className="mb-6">
+                <h2 className="mb-3 font-display text-lg font-bold text-ink-900">Pro Reports</h2>
+                <div className="space-y-3">
+                  {verifiedReports.map((r) => (
+                    <VerifiedReportCard key={r.id} report={r} />
+                  ))}
+                </div>
+              </div>
+            )}
             <h2 className="mb-3 font-display text-lg font-bold text-ink-900">Recent Bite Reports</h2>
             {reports.length === 0 ? (
               <EmptyState
@@ -148,6 +166,7 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
                       broadAreaLabel: r.visibility === "public_area" || r.userId === session?.user?.id ? r.broadAreaLabel : null,
                       createdAt: r.createdAt,
                       board: { slug: board.slug, name: board.name },
+                      verifiedTitle: primaryTitle(titleMap.get(r.userId)),
                       author: r.user.profile ? { username: r.user.profile.username, displayName: r.user.profile.displayName } : null,
                     }}
                   />
@@ -177,6 +196,7 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
                       visibility: c.visibility,
                       locationLabel: c.broadAreaLabel ?? c.locationLabel,
                       showLocation: !!(c.broadAreaLabel ?? (c.showLocation ? c.locationLabel : null)),
+                      verifiedTitle: primaryTitle(titleMap.get(c.userId)),
                       author: c.user.profile
                         ? { username: c.user.profile.username, displayName: c.user.profile.displayName, avatarUrl: c.user.profile.avatarUrl }
                         : null,

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { VerifiedTitleBadge } from "@/components/verified-badge";
 import { Clock, Fish, MapPin, MessageSquareText, Waves } from "lucide-react";
 import { Badge } from "@/components/ui";
 
@@ -16,6 +17,7 @@ export type BiteReportCardData = {
   createdAt: Date | string;
   board?: { slug: string; name: string } | null;
   author?: { username: string; displayName: string } | null;
+  verifiedTitle?: string | null;
 };
 
 export function BiteReportCard({ report }: { report: BiteReportCardData }) {
@@ -43,7 +45,7 @@ export function BiteReportCard({ report }: { report: BiteReportCardData }) {
             <h3 className="font-display font-bold text-ink-900">{report.speciesName}</h3>
             {report.author && (
               <p className="text-xs text-ink-500">
-                by <span className="font-semibold">{report.author.displayName}</span> @{report.author.username}
+                by <span className="font-semibold">{report.author.displayName}</span> <VerifiedTitleBadge slug={report.verifiedTitle} compact /> @{report.author.username}
               </p>
             )}
           </div>

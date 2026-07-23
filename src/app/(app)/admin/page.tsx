@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { count, desc, eq } from "drizzle-orm";
-import { Shield, Fish, Flag, Users as UsersIcon, Trophy, Scale, HardDrive, Wrench, Lightbulb } from "lucide-react";
+import { Shield, Fish, Flag, Users as UsersIcon, Trophy, Scale, HardDrive, Wrench, Lightbulb, BadgeCheck } from "lucide-react";
 import { getDb, species, reports, users, catches } from "@/db";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { PageHeader, Card, Badge } from "@/components/ui";
@@ -83,6 +83,16 @@ export default async function AdminPage() {
             </h3>
             <p className="mt-1 text-sm text-ink-500">
               Manage the Daily Angler Tip: create, schedule, activate, reorder, and see helpful/save/share counts.
+            </p>
+          </Card>
+        </Link>
+        <Link href="/admin/verified" className="block">
+          <Card className="p-5 hover:shadow-lift transition-shadow">
+            <h3 className="font-display font-bold text-ink-900 flex items-center gap-2">
+              <BadgeCheck className="size-5 text-tide-600" /> Verified Title Requests
+            </h3>
+            <p className="mt-1 text-sm text-ink-500">
+              Review guide, shop, tournament, and captain applications; approve, reject, or revoke titles.
             </p>
           </Card>
         </Link>

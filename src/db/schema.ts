@@ -460,7 +460,7 @@ export const reports = pgTable("reports", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   targetType: text("target_type", {
-    enum: ["catch", "comment", "profile", "spot", "message", "bite_report"],
+    enum: ["catch", "comment", "profile", "spot", "message", "bite_report", "verified_report"],
   }).notNull(),
   targetId: text("target_id").notNull(),
   reason: text("reason").notNull(),
@@ -1042,6 +1042,7 @@ export type UserBadge = typeof userBadges.$inferSelect;
 /* ------------------------------- notifications ------------------------------- */
 
 export type NotificationType =
+  | "verified_title"
   | "badge"
   | "follow"
   | "like"
@@ -1343,3 +1344,218 @@ export type ForumAnswer = typeof forumAnswers.$inferSelect;
 export type GearItem = typeof gearItems.$inferSelect;
 export type Spot = typeof spots.$inferSelect;
 export type Trip = typeof trips.$inferSelect;
+
+/* ─────────────────────────── verified titles ─────────────────────────── */
+
+/** Catalog of the four supported titles — seeded, never user-extended. */
+export const verifiedTitles = pgTable("verified_titles", {
+  slug: text("slug").primaryKey(), // fishing_guide | tackle_shop | tournament_angler | charter_captain
+  label: text("label").notNull(),
+  description: text("description").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const userVerifiedTitles = pgTable(
+  "user_verified_titles",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    titleSlug: text("title_slug")
+      .notNull()
+      .references(() => verifiedTitles.slug, { onDelete: "cascade" }),
+    status: text("status", { enum: ["active", "revoked"] }).notNull().default("active"),
+    grantedById: text("granted_by_id").references(() => users.id, { onDelete: "set null" }),
+    grantedAt: timestamp("granted_at", { withTimezone: true }).notNull().defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    revokedReason: text("revoked_reason"),
+  },
+  (t) => [
+    uniqueIndex("user_titles_user_title_uq").on(t.userId, t.titleSlug),
+    index("user_titles_user_idx").on(t.userId),
+    index("user_titles_status_idx").on(t.status),
+  ]
+);
+
+export const verifiedTitleRequests = pgTable(
+  "verified_title_requests",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    titleSlug: text("title_slug")
+      .notNull()
+      .references(() => verifiedTitles.slug, { onDelete: "cascade" }),
+    status: text("status", {
+      enum: ["draft", "submitted", "under_review", "needs_more_info", "approved", "rejected"],
+    })
+      .notNull()
+      .default("draft"),
+    fullName: text("full_name").notNull().default(""),
+    displayName: text("display_name").notNull().default(""),
+    businessName: text("business_name"),
+    website: text("website"),
+    bookingLink: text("booking_link"),
+    socialLinks: jsonb("social_links").$type<string[]>().notNull().default([]),
+    serviceArea: text("service_area"),
+    state: text("state"),
+    bio: text("bio"),
+    reason: text("reason"),
+    contactEmail: text("contact_email").notNull().default(""),
+    contactPhone: text("contact_phone"),
+    /** title-specific answers keyed by field id from src/data/verified-titles.ts */
+    details: jsonb("details").$type<Record<string, string>>().notNull().default({}),
+    /** internal admin notes — never shown to the applicant */
+    adminNotes: jsonb("admin_notes")
+      .$type<{ by: string; at: string; note: string }[]>()
+      .notNull()
+      .default([]),
+    /** message shown to the applicant when more info is requested */
+    moreInfoMessage: text("more_info_message"),
+    decidedById: text("decided_by_id").references(() => users.id, { onDelete: "set null" }),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("title_requests_user_idx").on(t.userId), index("title_requests_status_idx").on(t.status, t.createdAt)]
+);
+
+/** Private proof uploads — visible only to the applicant and admins via the media proxy. */
+export const verificationDocuments = pgTable(
+  "verification_documents",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    requestId: text("request_id")
+      .notNull()
+      .references(() => verifiedTitleRequests.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    mediaId: text("media_id")
+      .notNull()
+      .references(() => mediaAssets.id, { onDelete: "cascade" }),
+    label: text("label").notNull().default("Proof"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("verification_docs_request_idx").on(t.requestId)]
+);
+
+/** Optional public professional fields unlocked after approval. */
+export const professionalProfiles = pgTable(
+  "professional_profiles",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    titleSlug: text("title_slug")
+      .notNull()
+      .references(() => verifiedTitles.slug, { onDelete: "cascade" }),
+    businessName: text("business_name"),
+    serviceArea: text("service_area"),
+    address: text("address"),
+    phone: text("phone"),
+    website: text("website"),
+    bookingLink: text("booking_link"),
+    hours: text("hours"),
+    publicBio: text("public_bio"),
+    socialLinks: jsonb("social_links").$type<string[]>().notNull().default([]),
+    /** per-title extras: species, styles, trip types, brands, circuits, sponsors… */
+    details: jsonb("details").$type<Record<string, string>>().notNull().default({}),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("pro_profiles_user_uq").on(t.userId)]
+);
+
+/** Special reports from verified users: Guide/Captain/Shop/Tournament. */
+export const verifiedUserReports = pgTable(
+  "verified_user_reports",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    titleSlug: text("title_slug")
+      .notNull()
+      .references(() => verifiedTitles.slug, { onDelete: "cascade" }),
+    boardId: text("board_id").references(() => biteBoards.id, { onDelete: "set null" }),
+    speciesId: text("species_id").references(() => species.id, { onDelete: "set null" }),
+    generalArea: text("general_area").notNull().default(""),
+    speciesText: text("species_text").notNull().default(""),
+    body: text("body").notNull(),
+    /** structured extras per report kind: method, bait, conditions, tideNotes,
+     *  gearSetup, techniqueNotes, tournamentInsight, baitAvailability,
+     *  gearRecommendations, localBiteNotes, shopNote, bookingCta */
+    fields: jsonb("fields").$type<Record<string, string>>().notNull().default({}),
+    reportDate: timestamp("report_date", { withTimezone: true }).notNull().defaultNow(),
+    visibility: text("visibility", { enum: ["public", "unlisted"] }).notNull().default("public"),
+    moderationStatus: text("moderation_status", { enum: ["visible", "hidden"] }).notNull().default("visible"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("verified_reports_board_idx").on(t.boardId, t.createdAt),
+    index("verified_reports_species_idx").on(t.speciesId, t.createdAt),
+    index("verified_reports_user_idx").on(t.userId, t.createdAt),
+    index("verified_reports_visible_idx").on(t.moderationStatus, t.createdAt),
+  ]
+);
+
+/** Audit trail for every title decision and admin note. */
+export const badgeAuditLogs = pgTable(
+  "badge_audit_logs",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()`),
+    subjectUserId: text("subject_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    actorId: text("actor_id").references(() => users.id, { onDelete: "set null" }),
+    action: text("action").notNull(), // request_submitted | approved | rejected | needs_more_info | revoked | note_added | status_changed
+    detail: jsonb("detail").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("badge_audit_subject_idx").on(t.subjectUserId, t.createdAt)]
+);
+
+export const userVerifiedTitlesRelations = relations(userVerifiedTitles, ({ one }) => ({
+  user: one(users, { fields: [userVerifiedTitles.userId], references: [users.id] }),
+  title: one(verifiedTitles, { fields: [userVerifiedTitles.titleSlug], references: [verifiedTitles.slug] }),
+}));
+
+export const verifiedTitleRequestsRelations = relations(verifiedTitleRequests, ({ one, many }) => ({
+  user: one(users, { fields: [verifiedTitleRequests.userId], references: [users.id] }),
+  documents: many(verificationDocuments),
+}));
+
+export const verificationDocumentsRelations = relations(verificationDocuments, ({ one }) => ({
+  request: one(verifiedTitleRequests, { fields: [verificationDocuments.requestId], references: [verifiedTitleRequests.id] }),
+  media: one(mediaAssets, { fields: [verificationDocuments.mediaId], references: [mediaAssets.id] }),
+}));
+
+export const professionalProfilesRelations = relations(professionalProfiles, ({ one }) => ({
+  user: one(users, { fields: [professionalProfiles.userId], references: [users.id] }),
+}));
+
+export const verifiedUserReportsRelations = relations(verifiedUserReports, ({ one }) => ({
+  user: one(users, { fields: [verifiedUserReports.userId], references: [users.id] }),
+  board: one(biteBoards, { fields: [verifiedUserReports.boardId], references: [biteBoards.id] }),
+  species: one(species, { fields: [verifiedUserReports.speciesId], references: [species.id] }),
+}));
+
+export type VerifiedTitleRequest = typeof verifiedTitleRequests.$inferSelect;
+export type UserVerifiedTitle = typeof userVerifiedTitles.$inferSelect;
+export type ProfessionalProfile = typeof professionalProfiles.$inferSelect;
+export type VerifiedUserReport = typeof verifiedUserReports.$inferSelect;

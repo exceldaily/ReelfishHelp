@@ -87,6 +87,14 @@ export async function ensureSeed(db: Db) {
   }
   if (adminRows.length > 0) console.log(`[seed] founder badges ensured for ${adminRows.length} admin account(s)`);
 
+  // verified-title catalog — exactly the four supported titles, additive
+  const { VERIFIED_TITLES } = await import("@/data/verified-titles");
+  const { verifiedTitles } = await import("./schema");
+  await db
+    .insert(verifiedTitles)
+    .values(VERIFIED_TITLES.map((t) => ({ slug: t.slug, label: t.label, description: t.description })))
+    .onConflictDoNothing();
+
   await db.insert(biteBoards).values(starterBiteBoards).onConflictDoNothing();
   await db.update(biteBoards).set({ active: true }).where(inArray(biteBoards.slug, starterBiteBoardSlugs));
   await db.update(biteBoards).set({ active: false }).where(inArray(biteBoards.slug, retiredStarterBiteBoardSlugs));
