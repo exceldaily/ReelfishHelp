@@ -64,6 +64,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     db.query.follows.findMany({ where: eq(follows.followerId, profile.userId) }),
     db.query.gearItems.findMany({
       where: and(eq(gearItems.userId, profile.userId), eq(gearItems.isPublic, true)),
+      orderBy: [desc(gearItems.favorite), desc(gearItems.createdAt)],
     }),
     db.query.spots.findMany({
       where: and(eq(spots.userId, profile.userId), inArray(spots.privacy, ["shared_area", "public_broad"])),
@@ -326,7 +327,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-8">
                 {gear.map((g) => (
                   <Card key={g.id} className="p-4">
-                    <div className="font-bold text-sm text-ink-900">{g.name}</div>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="font-bold text-sm text-ink-900">{g.name}</div>
+                      {g.favorite && (
+                        <Badge variant="orange" className="shrink-0">
+                          <Star className="size-3 fill-bait-500 text-bait-500" /> Favorite gear
+                        </Badge>
+                      )}
+                    </div>
                     <div className="text-xs text-ink-500 mt-0.5">
                       {[g.brand, g.model].filter(Boolean).join(" · ") || g.category}
                     </div>
