@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, desc, eq, inArray } from "drizzle-orm";
-import { UserCircle2, MapPin, Award, Fish, Backpack } from "lucide-react";
+import { UserCircle2, MapPin, Award, Fish, Backpack, Waves } from "lucide-react";
 import { getDb, profiles, catches, follows, gearItems, spots, savedGuides } from "@/db";
 import { auth } from "@/auth";
-import { Card, Badge, WaterBadge, EmptyState, ButtonLink } from "@/components/ui";
+import { Card, Badge, EmptyState, ButtonLink } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
 import { FollowButton } from "@/components/follow-button";
 import { MessageButton } from "@/components/message-button";
@@ -118,16 +118,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
                 <VerifiedTitleRow slugs={verifiedSlugs} />
               </div>
             )}
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              <WaterBadge water={profile.waterPref} />
-              <Badge variant="neutral" className="capitalize">{profile.experience} angler</Badge>
-              {profile.homeState && (
-                <Badge variant="outline"><MapPin className="size-3" /> {profile.homeState}</Badge>
-              )}
-              {profile.fishingStyles.slice(0, 4).map((s) => (
-                <Badge key={s} variant="outline">{s}</Badge>
-              ))}
-            </div>
           </div>
           <div className="flex flex-col items-end gap-2.5">
             {!isOwner && (
@@ -139,6 +129,34 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
             )}
             {isOwner && <ButtonLink href="/settings" variant="outline" size="sm">Edit profile</ButtonLink>}
           </div>
+        </div>
+
+        {/* meta line spans the full card (like the bio) so it never gets squeezed beside the avatar on phones */}
+        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-ink-500">
+          <span
+            className={`inline-flex items-center gap-1 ${
+              profile.waterPref === "saltwater" ? "text-tide-700" : profile.waterPref === "freshwater" ? "text-moss-600" : "text-reef-600"
+            }`}
+          >
+            <Waves className="size-3.5" />
+            {profile.waterPref === "both" ? "Fresh + Salt" : profile.waterPref === "saltwater" ? "Saltwater" : "Freshwater"}
+          </span>
+          <span aria-hidden className="text-sand-400">•</span>
+          <span>{profile.experience.charAt(0).toUpperCase() + profile.experience.slice(1)} angler</span>
+          {profile.homeState && (
+            <>
+              <span aria-hidden className="text-sand-400">•</span>
+              <span className="inline-flex items-center gap-1">
+                <MapPin className="size-3.5" /> {profile.homeState}
+              </span>
+            </>
+          )}
+          {profile.fishingStyles.length > 0 && (
+            <>
+              <span aria-hidden className="text-sand-400">•</span>
+              <span className="font-medium">{profile.fishingStyles.slice(0, 4).join(" · ")}</span>
+            </>
+          )}
         </div>
 
         {/* bio spans the full card so it never gets squeezed beside the avatar on phones */}
