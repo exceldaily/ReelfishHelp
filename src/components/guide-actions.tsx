@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Bookmark, BookmarkCheck, Plus, Check } from "lucide-react";
-import { toggleSavedGuide, saveSetupToGear } from "@/lib/actions/species-actions";
+import { Bookmark, BookmarkCheck } from "lucide-react";
+import { toggleSavedGuide } from "@/lib/actions/species-actions";
 
 export function SaveGuideButton({
   speciesId,
@@ -51,32 +51,3 @@ export function SaveGuideButton({
   );
 }
 
-export function SaveSetupButton({
-  speciesId,
-  tier,
-  signedIn,
-}: {
-  speciesId: string;
-  tier: "beginner" | "budget" | "serious";
-  signedIn: boolean;
-}) {
-  const [done, setDone] = useState(false);
-  const [pending, start] = useTransition();
-  const router = useRouter();
-  return (
-    <button
-      onClick={() => {
-        if (!signedIn) return router.push("/login");
-        start(async () => {
-          const res = await saveSetupToGear(speciesId, tier);
-          if (!("error" in res)) setDone(true);
-        });
-      }}
-      disabled={pending || done}
-      className="inline-flex items-center gap-1.5 text-xs font-bold text-tide-700 hover:text-tide-900 disabled:opacity-70"
-    >
-      {done ? <Check className="size-3.5" /> : <Plus className="size-3.5" />}
-      {done ? "Added to gear wishlist" : "Save to gear wishlist"}
-    </button>
-  );
-}

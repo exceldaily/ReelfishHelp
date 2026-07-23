@@ -22,21 +22,3 @@ export async function toggleSavedGuide(speciesId: string) {
   return { saved: !existing };
 }
 
-/** Copies a guide's recommended setup into the user's gear wishlist. */
-export async function saveSetupToGear(speciesId: string, tier: "beginner" | "budget" | "serious") {
-  const user = await requireUser();
-  const db = await getDb();
-  const s = await db.query.species.findFirst({ where: eq(species.id, speciesId) });
-  if (!s) return { error: "Species not found" };
-  const label = { beginner: "Beginner", budget: "Budget", serious: "Serious angler" }[tier];
-  await db.insert(gearItems).values({
-    userId: user.id,
-    category: "combo",
-    name: `${label} ${s.commonName} setup`,
-    notes: `${s.guide.gear.setups[tier]}\n\nRod: ${s.guide.gear.rod}\nReel: ${s.guide.gear.reel}\nLine: ${s.guide.gear.mainLine}\nLeader: ${s.guide.gear.leader}`,
-    wishlist: true,
-    condition: "new",
-  });
-  revalidatePath("/my-gear");
-  return { ok: true };
-}

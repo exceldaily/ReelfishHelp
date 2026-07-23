@@ -1,0 +1,21 @@
+{
+	"appId": "com.reelfishhelp.app",
+	"appName": "ReelFishHelp",
+	"webDir": "public",
+	"server": {
+		"url": "https://reelfishhelp.com",
+		"cleartext": false,
+		"allowNavigation": [
+			"reelfishhelp.com",
+			"*.reelfishhelp.com"
+		]
+	},
+	"ios": {
+		"contentInset": "always",
+		"scrollEnabled": true,
+		"preferredContentMode": "mobile"
+	},
+	"packageClassList": [
+		"GeolocationPlugin"
+	]
+}
