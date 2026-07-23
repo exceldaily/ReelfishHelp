@@ -8,6 +8,7 @@ import { updateProfile, saveLocation } from "@/lib/actions/profile-actions";
 import { Button, Card, Input, Label, Select, Textarea, FieldError } from "@/components/ui";
 import { ImageInput } from "@/components/image-input";
 import { US_STATES } from "@/data/regulations";
+import { brandList } from "@/lib/favorite-brands";
 
 const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"];
 
@@ -26,7 +27,7 @@ export function SettingsForm({
     locationMode: string;
     fishingStyles: string[];
     favoriteSpecies: string[];
-    favoriteBrands: { rods?: string; reels?: string; lures?: string; clothes?: string };
+    favoriteBrands: { rods?: string[] | string; reels?: string[] | string; lures?: string[] | string; clothes?: string[] | string };
     avatarUrl: string | null;
     lastLocationLabel: string | null;
   };
@@ -156,23 +157,24 @@ export function SettingsForm({
         </div>
 
         <div>
-          <Label>Favorite brands (shown on your profile)</Label>
+          <Label>Brands you swear by (shown on your profile)</Label>
+          <p className="mb-2 -mt-0.5 text-xs text-ink-300">Up to 4 per category, separated by commas.</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
               <Label htmlFor="brandRods" className="text-xs text-ink-500">Rods</Label>
-              <Input id="brandRods" name="brandRods" maxLength={60} defaultValue={profile.favoriteBrands.rods ?? ""} placeholder="St. Croix" />
+              <Input id="brandRods" name="brandRods" maxLength={180} defaultValue={brandList(profile.favoriteBrands.rods).join(", ")} placeholder="St. Croix, Ugly Stik" />
             </div>
             <div>
               <Label htmlFor="brandReels" className="text-xs text-ink-500">Reels</Label>
-              <Input id="brandReels" name="brandReels" maxLength={60} defaultValue={profile.favoriteBrands.reels ?? ""} placeholder="Shimano" />
+              <Input id="brandReels" name="brandReels" maxLength={180} defaultValue={brandList(profile.favoriteBrands.reels).join(", ")} placeholder="Shimano, Penn" />
             </div>
             <div>
               <Label htmlFor="brandLures" className="text-xs text-ink-500">Lures</Label>
-              <Input id="brandLures" name="brandLures" maxLength={60} defaultValue={profile.favoriteBrands.lures ?? ""} placeholder="Z-Man" />
+              <Input id="brandLures" name="brandLures" maxLength={180} defaultValue={brandList(profile.favoriteBrands.lures).join(", ")} placeholder="Z-Man, Rapala" />
             </div>
             <div>
               <Label htmlFor="brandClothes" className="text-xs text-ink-500">Clothes</Label>
-              <Input id="brandClothes" name="brandClothes" maxLength={60} defaultValue={profile.favoriteBrands.clothes ?? ""} placeholder="AFTCO" />
+              <Input id="brandClothes" name="brandClothes" maxLength={180} defaultValue={brandList(profile.favoriteBrands.clothes).join(", ")} placeholder="AFTCO, Huk" />
             </div>
           </div>
         </div>

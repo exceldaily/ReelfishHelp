@@ -31,8 +31,13 @@ export type WaterPref = "freshwater" | "saltwater" | "both";
 export type Visibility = "public" | "followers" | "private";
 export type LocationMode = "precise" | "approximate" | "off";
 export type LocationPrecision = "exact_private" | "approx_private" | "shared_broad_area" | "hidden";
-/** Favorite brand per gear category — free-text brand names the angler swears by. */
-export type FavoriteBrands = { rods?: string; reels?: string; lures?: string; clothes?: string };
+/** Favorite brands per gear category — the names the angler swears by. Early profiles stored a single string; newer ones store arrays. */
+export type FavoriteBrands = {
+  rods?: string[] | string;
+  reels?: string[] | string;
+  lures?: string[] | string;
+  clothes?: string[] | string;
+};
 
 export const profiles = pgTable("profiles", {
   userId: text("user_id")

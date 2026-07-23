@@ -104,12 +104,20 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
   const locationMode = String(formData.get("locationMode") ?? "approximate") as LocationMode;
   const fishingStyles = formData.getAll("fishingStyles").map(String).slice(0, 10);
   const favoriteSpecies = formData.getAll("favoriteSpecies").map(String).slice(0, 12);
-  const brand = (k: string) => String(formData.get(k) ?? "").trim().slice(0, 60) || undefined;
+  // comma-separated brands per category, up to 4 each
+  const brands = (k: string) => {
+    const list = String(formData.get(k) ?? "")
+      .split(",")
+      .map((s) => s.trim().slice(0, 40))
+      .filter(Boolean)
+      .slice(0, 4);
+    return list.length > 0 ? list : undefined;
+  };
   const favoriteBrands = {
-    rods: brand("brandRods"),
-    reels: brand("brandReels"),
-    lures: brand("brandLures"),
-    clothes: brand("brandClothes"),
+    rods: brands("brandRods"),
+    reels: brands("brandReels"),
+    lures: brands("brandLures"),
+    clothes: brands("brandClothes"),
   };
 
   let avatarUrl: string | undefined;

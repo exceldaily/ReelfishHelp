@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { and, desc, eq, inArray } from "drizzle-orm";
-import { UserCircle2, MapPin, Award, Fish, Backpack, Waves } from "lucide-react";
+import { UserCircle2, MapPin, Award, Fish, Backpack, Star, Waves } from "lucide-react";
+import { BRAND_CATEGORIES, brandList } from "@/lib/favorite-brands";
 import { getDb, profiles, catches, follows, gearItems, spots, savedGuides } from "@/db";
 import { auth } from "@/auth";
 import { Card, Badge, EmptyState, ButtonLink } from "@/components/ui";
@@ -96,6 +97,10 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
   const followerIds = new Set(followerRows.map((f) => f.followerId));
   const friendsCount = followingRows.filter((f) => followerIds.has(f.followingId)).length;
 
+  const brandEntries = BRAND_CATEGORIES.map(
+    ([key, label]) => [label, brandList(profile.favoriteBrands[key])] as const
+  ).filter(([, list]) => list.length > 0);
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* header */}
@@ -159,17 +164,19 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
           )}
         </div>
 
-        {/* favorite brands the angler swears by, one chip per gear category */}
-        {Object.values(profile.favoriteBrands).some(Boolean) && (
-          <div className="mt-2.5 flex flex-wrap gap-1.5">
-            {([["rods", "Rods"], ["reels", "Reels"], ["lures", "Lures"], ["clothes", "Clothes"]] as const).map(([key, label]) =>
-              profile.favoriteBrands[key] ? (
-                <span key={key} className="inline-flex items-center gap-1.5 rounded-full border border-sand-200 bg-sand-50 px-2.5 py-1 text-xs">
-                  <span className="text-[10px] font-bold uppercase tracking-wide text-ink-300">{label}</span>
-                  <span className="font-semibold text-ink-700">{profile.favoriteBrands[key]}</span>
-                </span>
-              ) : null
-            )}
+        {/* brands the angler swears by — one flowing line so it matches the meta line above */}
+        {brandEntries.length > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-ink-500">
+            <span className="inline-flex items-center gap-1 rounded-full bg-bait-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-bait-700">
+              <Star className="size-3 fill-bait-500 text-bait-500" /> Swears by
+            </span>
+            {brandEntries.map(([label, list], i) => (
+              <span key={label} className="inline-flex items-center gap-1.5">
+                {i > 0 && <span aria-hidden className="text-sand-400">•</span>}
+                <span className="text-[10px] font-bold uppercase tracking-wide text-ink-300">{label}</span>
+                <span className="text-ink-700">{list.join(" + ")}</span>
+              </span>
+            ))}
           </div>
         )}
 
