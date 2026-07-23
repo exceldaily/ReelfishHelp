@@ -5,6 +5,7 @@ import { dbMode } from "@/db";
 import { fishIdEnabled } from "@/lib/flags";
 import { unreadConversationCount } from "@/lib/actions/message-actions";
 import { unreadNotificationCount } from "@/lib/actions/notification-actions";
+import { SiteUpdateWindow } from "@/components/site-update-window";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -29,6 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-dvh flex flex-col app-bg">
+      {user && <SiteUpdateWindow />}
       <TopNav user={user} fishId={fishId} unread={unread} unreadNotifications={unreadNotifs} />
       {localDb && (
         <div className="bg-bait-100 text-bait-700 text-center text-xs font-semibold py-1.5 px-4">
