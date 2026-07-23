@@ -12,7 +12,8 @@ export function SiteUpdateWindow() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem(SEEN_KEY)) return;
+    const preview = new URLSearchParams(window.location.search).get("show-update") === "1";
+    if (!preview && localStorage.getItem(SEEN_KEY)) return;
     const frame = window.requestAnimationFrame(() => setOpen(true));
     return () => window.cancelAnimationFrame(frame);
   }, []);
