@@ -7,7 +7,9 @@ import { getProfile } from "@/lib/auth-helpers";
 import { resolveManyImages } from "@/lib/wiki-images";
 import { regionsForState, seasonForMonth } from "@/lib/suggestions";
 import { US_STATES } from "@/data/regulations";
-import { toRegion, regionMeta } from "@/lib/regions";
+import { toRegion } from "@/lib/regions";
+import { toLanguage } from "@/lib/languages";
+import { t } from "@/lib/i18n";
 import { FishImage } from "@/components/fish-image";
 import { PageHeader, WaterBadge, Badge, DifficultyDots, EmptyState, ButtonLink } from "@/components/ui";
 
@@ -63,7 +65,7 @@ export default async function FishFinderPage({
   const session = await auth();
   const profile = session?.user ? await getProfile(session.user.id) : null;
   const region = toRegion(profile?.region);
-  const meta = regionMeta(region);
+  const lang = toLanguage(profile?.language);
   const userState = region === "us" ? profile?.manualState ?? profile?.homeState ?? null : null;
 
   const db = await getDb();
@@ -85,12 +87,8 @@ export default async function FishFinderPage({
   return (
     <div>
       <PageHeader
-        title="Fish Finder"
-        subtitle={
-          region === "us"
-            ? "Search US fresh and saltwater species and open the full catch guide for any of them."
-            : `Search ${meta.name} species and open the full catch guide for any of them.`
-        }
+        title={t(lang, "page.fishTitle")}
+        subtitle={region === "us" ? t(lang, "page.fishSubtitleUs") : t(lang, "page.fishSubtitleSea")}
       />
 
       {/* filters */}

@@ -1,7 +1,8 @@
 import { desc, eq } from "drizzle-orm";
 import { Trophy } from "lucide-react";
 import { getDb, catches } from "@/db";
-import { requireUser, getViewerUnits } from "@/lib/auth-helpers";
+import { requireUser, getViewerUnits, getViewerLang } from "@/lib/auth-helpers";
+import { t } from "@/lib/i18n";
 import { PageHeader, ButtonLink, EmptyState } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
 
@@ -10,6 +11,7 @@ export const metadata = { title: "My Catches" };
 export default async function MyCatchesPage() {
   const user = await requireUser();
   const units = await getViewerUnits();
+  const lang = await getViewerLang();
   const db = await getDb();
   const rows = await db.query.catches.findMany({
     where: eq(catches.userId, user.id),
@@ -20,9 +22,9 @@ export default async function MyCatchesPage() {
   return (
     <div>
       <PageHeader
-        title="My Catches"
+        title={t(lang, "page.catchesTitle")}
         subtitle={`${rows.length} logged catch${rows.length === 1 ? "" : "es"} — your personal fishing record.`}
-        action={<ButtonLink href="/catches/new"><Trophy className="size-4" /> Log a catch</ButtonLink>}
+        action={<ButtonLink href="/catches/new"><Trophy className="size-4" /> {t(lang, "common.logACatch")}</ButtonLink>}
       />
       {rows.length === 0 ? (
         <EmptyState

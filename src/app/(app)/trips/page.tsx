@@ -2,13 +2,15 @@ import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { CalendarDays, MapPin, Plus, CheckCircle2 } from "lucide-react";
 import { getDb, trips } from "@/db";
-import { requireUser } from "@/lib/auth-helpers";
+import { requireUser, getViewerLang } from "@/lib/auth-helpers";
+import { t } from "@/lib/i18n";
 import { PageHeader, ButtonLink, EmptyState, Badge, Card } from "@/components/ui";
 
 export const metadata = { title: "My Trips" };
 
 export default async function TripsPage() {
   const user = await requireUser();
+  const lang = await getViewerLang();
   const db = await getDb();
   const rows = await db.query.trips.findMany({
     where: eq(trips.userId, user.id),
@@ -54,7 +56,7 @@ export default async function TripsPage() {
   return (
     <div>
       <PageHeader
-        title="Trips"
+        title={t(lang, "page.tripsTitle")}
         subtitle="Plan around the conditions, pack from the checklist, and turn finished trips into catch logs."
         action={<ButtonLink href="/trips/new"><Plus className="size-4" /> Plan a trip</ButtonLink>}
       />

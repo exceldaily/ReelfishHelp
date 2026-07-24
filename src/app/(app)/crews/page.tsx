@@ -2,7 +2,8 @@ import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { UsersRound, PlusCircle, Lock, MapPin } from "lucide-react";
 import { getDb, crews, crewMembers, type Crew } from "@/db";
-import { currentUser } from "@/lib/auth-helpers";
+import { currentUser, getViewerLang } from "@/lib/auth-helpers";
+import { t } from "@/lib/i18n";
 import { US_STATES } from "@/data/regulations";
 import { PageHeader, Card, Badge, ButtonLink, EmptyState, SectionTitle } from "@/components/ui";
 import { InviteJoin } from "@/components/invite-join";
@@ -53,6 +54,7 @@ function CrewCard({ crew, mine }: { crew: Crew; mine?: boolean }) {
 export default async function CrewsPage() {
   const db = await getDb();
   const user = await currentUser();
+  const lang = await getViewerLang();
 
   const myMemberships = user
     ? await db.query.crewMembers.findMany({
@@ -76,7 +78,7 @@ export default async function CrewsPage() {
   return (
     <div>
       <PageHeader
-        title="Crews"
+        title={t(lang, "page.crewsTitle")}
         subtitle="Team up with other anglers. Crews are open (anyone can join) or private (invite-only) — each has its own members-only feed of posts and shared catches."
         action={
           <ButtonLink href="/crews/new">

@@ -7,6 +7,8 @@ import { getDb } from "@/db";
 import { biteBoards, biteReports, catches } from "@/db/schema";
 import { getProfile } from "@/lib/auth-helpers";
 import { toRegion } from "@/lib/regions";
+import { toLanguage } from "@/lib/languages";
+import { t } from "@/lib/i18n";
 import { PageHeader, ButtonLink, Card } from "@/components/ui";
 import { UsaBiteMap, type StateBoardStat } from "@/components/usa-bite-map";
 import { SeaBiteMap } from "@/components/sea-bite-map";
@@ -17,6 +19,7 @@ export default async function BoardsPage() {
   const session = await auth();
   const profile = session?.user ? await getProfile(session.user.id) : null;
   const region = toRegion(profile?.region);
+  const lang = toLanguage(profile?.language);
   const db = await getDb();
   const [boards, recentReports, recentCatches] = await Promise.all([
     db.query.biteBoards.findMany({
@@ -54,11 +57,11 @@ export default async function BoardsPage() {
   return (
     <div>
       <PageHeader
-        title="Bite Boards"
-        subtitle="Broad local fishing intel: what people are seeing, catching, and using without exposing exact spots."
+        title={t(lang, "page.boardsTitle")}
+        subtitle={t(lang, "page.boardsSubtitle")}
         action={
           <ButtonLink href="/report-a-bite">
-            <PlusCircle className="size-4" /> Post Bite Report
+            <PlusCircle className="size-4" /> {t(lang, "common.postBiteReport")}
           </ButtonLink>
         }
       />
@@ -69,7 +72,7 @@ export default async function BoardsPage() {
           <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
             <h2 className="font-display font-bold text-ink-900 flex items-center gap-2">
               <Map className="size-5 text-tide-700" />{" "}
-              {region === "us" ? "What's biting across the country" : "What's biting across Southeast Asia"}
+              {region === "us" ? t(lang, "page.boardsMapUs") : t(lang, "page.boardsMapSea")}
             </h2>
             <span className="text-xs font-semibold text-ink-500">{totalPublic} public reports</span>
           </div>

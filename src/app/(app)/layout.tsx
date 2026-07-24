@@ -7,6 +7,7 @@ import { unreadConversationCount } from "@/lib/actions/message-actions";
 import { unreadNotificationCount } from "@/lib/actions/notification-actions";
 import { SiteUpdateWindow } from "@/components/site-update-window";
 import { toRegion } from "@/lib/regions";
+import { toLanguage } from "@/lib/languages";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -22,6 +23,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       role: session.user.role,
       avatarUrl: profile?.avatarUrl ?? null,
       region: toRegion(profile?.region),
+      language: toLanguage(profile?.language),
     };
     unread = await unreadConversationCount(session.user.id).catch(() => 0);
     unreadNotifs = await unreadNotificationCount(session.user.id).catch(() => 0);

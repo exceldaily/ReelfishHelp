@@ -12,8 +12,9 @@ import { brandList } from "@/lib/favorite-brands";
 import { REGION_LIST, type Region } from "@/lib/regions";
 import { RegionFlag } from "@/components/region-flag";
 import { LANGUAGES, type LanguageCode } from "@/lib/languages";
+import { t } from "@/lib/i18n";
 
-const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"];
+const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"] as const;
 
 export function SettingsForm({
   profile,
@@ -43,6 +44,8 @@ export function SettingsForm({
   const [saved, setSaved] = useState(false);
   const [locMsg, setLocMsg] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  // live-follow the language select so the form switches as soon as it changes
+  const [lang, setLang] = useState<LanguageCode>(profile.language);
 
   function submit(formData: FormData) {
     setSaved(false);
@@ -91,30 +94,30 @@ export function SettingsForm({
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <Label htmlFor="avatar">Profile photo</Label>
+            <Label htmlFor="avatar">{t(lang, "set.photo")}</Label>
             <ImageInput id="avatar" name="avatar" className="text-sm" />
           </div>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="displayName">Display name</Label>
+            <Label htmlFor="displayName">{t(lang, "set.displayName")}</Label>
             <Input id="displayName" name="displayName" defaultValue={profile.displayName} required maxLength={40} />
           </div>
           <div>
-            <Label>Username</Label>
+            <Label>{t(lang, "set.username")}</Label>
             <Input value={`@${profile.username}`} disabled className="opacity-60" />
           </div>
         </div>
 
         <div>
-          <Label htmlFor="bio">Bio</Label>
+          <Label htmlFor="bio">{t(lang, "set.bio")}</Label>
           <Textarea id="bio" name="bio" defaultValue={profile.bio ?? ""} maxLength={500} className="min-h-20" placeholder="Weekend wade fisherman chasing gator trout…" />
         </div>
 
         <div>
-          <Label>Region</Label>
-          <p className="mb-2 -mt-0.5 text-xs text-ink-300">Sets which fish, units, and local info you see across the app.</p>
+          <Label>{t(lang, "set.region")}</Label>
+          <p className="mb-2 -mt-0.5 text-xs text-ink-300">{t(lang, "set.regionHint")}</p>
           <div className="grid grid-cols-2 gap-2.5">
             {REGION_LIST.map((r) => (
               <label
@@ -132,8 +135,8 @@ export function SettingsForm({
             ))}
           </div>
           <div className="mt-3 max-w-56">
-            <Label htmlFor="language">Language</Label>
-            <Select id="language" name="language" defaultValue={profile.language}>
+            <Label htmlFor="language">{t(lang, "common.language")}</Label>
+            <Select id="language" name="language" value={lang} onChange={(e) => setLang(e.target.value as LanguageCode)}>
               {LANGUAGES.map((l) => (
                 <option key={l.code} value={l.code}>
                   {l.native}{l.code !== "en" ? ` (${l.label})` : ""}
@@ -145,7 +148,7 @@ export function SettingsForm({
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div>
-            <Label htmlFor="homeState">Home state</Label>
+            <Label htmlFor="homeState">{t(lang, "set.homeState")}</Label>
             <Select id="homeState" name="homeState" defaultValue={profile.homeState ?? ""}>
               <option value="">—</option>
               {US_STATES.map((s) => (
@@ -154,39 +157,39 @@ export function SettingsForm({
             </Select>
           </div>
           <div>
-            <Label htmlFor="waterPref">Water</Label>
+            <Label htmlFor="waterPref">{t(lang, "set.water")}</Label>
             <Select id="waterPref" name="waterPref" defaultValue={profile.waterPref}>
-              <option value="freshwater">Freshwater</option>
-              <option value="saltwater">Saltwater</option>
-              <option value="both">Both</option>
+              <option value="freshwater">{t(lang, "onb.freshwater")}</option>
+              <option value="saltwater">{t(lang, "onb.saltwater")}</option>
+              <option value="both">{t(lang, "onb.both")}</option>
             </Select>
           </div>
           <div>
-            <Label htmlFor="experience">Experience</Label>
+            <Label htmlFor="experience">{t(lang, "set.experience")}</Label>
             <Select id="experience" name="experience" defaultValue={profile.experience}>
-              <option value="new">Brand new</option>
-              <option value="casual">Casual</option>
-              <option value="regular">Regular</option>
-              <option value="serious">Serious</option>
+              <option value="new">{t(lang, "onb.expNew")}</option>
+              <option value="casual">{t(lang, "onb.expCasual")}</option>
+              <option value="regular">{t(lang, "onb.expRegular")}</option>
+              <option value="serious">{t(lang, "onb.expSerious")}</option>
             </Select>
           </div>
           <div>
-            <Label htmlFor="visibility">Profile privacy</Label>
+            <Label htmlFor="visibility">{t(lang, "set.privacy")}</Label>
             <Select id="visibility" name="visibility" defaultValue={profile.visibility}>
-              <option value="public">Public</option>
-              <option value="followers">Followers only</option>
-              <option value="private">Private</option>
+              <option value="public">{t(lang, "set.public")}</option>
+              <option value="followers">{t(lang, "set.followersOnly")}</option>
+              <option value="private">{t(lang, "set.private")}</option>
             </Select>
           </div>
         </div>
 
         <div>
-          <Label>Fishing styles</Label>
+          <Label>{t(lang, "set.styles")}</Label>
           <div className="flex flex-wrap gap-2">
             {STYLES.map((s) => (
               <label key={s} className="inline-flex items-center gap-1.5 rounded-full border border-sand-300 px-3.5 py-1.5 text-sm font-semibold cursor-pointer has-checked:border-bait-500 has-checked:bg-bait-100 has-checked:text-bait-700">
                 <input type="checkbox" name="fishingStyles" value={s} defaultChecked={profile.fishingStyles.includes(s)} className="sr-only" />
-                {s}
+                {t(lang, `style.${s}`)}
               </label>
             ))}
           </div>
@@ -257,11 +260,11 @@ export function SettingsForm({
         <FieldError>{error}</FieldError>
         {saved && (
           <p className="text-sm font-bold text-moss-600 inline-flex items-center gap-1.5">
-            <Check className="size-4" /> Saved
+            <Check className="size-4" /> {t(lang, "common.saved")}
           </p>
         )}
         <Button size="lg" className="w-full" disabled={pending}>
-          {pending ? "Saving…" : "Save settings"}
+          {pending ? t(lang, "common.saving") : t(lang, "common.save")}
         </Button>
       </form>
     </Card>

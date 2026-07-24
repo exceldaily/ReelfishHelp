@@ -31,6 +31,8 @@ import {
 } from "@/db";
 import { requireUser, getProfile } from "@/lib/auth-helpers";
 import { unitSystemForRegion } from "@/lib/regions";
+import { toLanguage } from "@/lib/languages";
+import { t } from "@/lib/i18n";
 import { getConditions, type ConditionsBundle } from "@/lib/conditions";
 import { fishIdEnabled } from "@/lib/flags";
 import { Card, Badge, ButtonLink, SectionTitle, WaterBadge } from "@/components/ui";
@@ -55,6 +57,7 @@ export default async function HomePage() {
   if (!profile) redirect("/onboarding");
   if (!profile.onboarded) redirect("/onboarding");
   const units = unitSystemForRegion(profile.region);
+  const lang = toLanguage(profile.language);
 
   const db = await getDb();
 
@@ -125,7 +128,7 @@ export default async function HomePage() {
       {/* greeting + quick actions */}
       <div className="mb-6">
         <h1 className="font-display text-2xl sm:text-3xl font-extrabold italic tracking-tight text-ink-900">
-          Ready to Fish, {profile.displayName.split(" ")[0]}?
+          {t(lang, "page.homeGreeting", { name: profile.displayName.split(" ")[0] })}
         </h1>
         <span className="mt-2 flex items-center gap-1" aria-hidden="true">
           <span className="h-1 w-14 -skew-x-[24deg] rounded-sm bg-gradient-to-r from-reef-600 to-reef-300" />

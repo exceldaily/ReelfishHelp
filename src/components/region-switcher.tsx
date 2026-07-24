@@ -6,12 +6,14 @@ import { Check, Globe } from "lucide-react";
 import { setRegion } from "@/lib/actions/profile-actions";
 import { REGION_LIST, type Region } from "@/lib/regions";
 import { RegionFlag } from "@/components/region-flag";
+import { t } from "@/lib/i18n";
+import { DEFAULT_LANGUAGE, type LanguageCode } from "@/lib/languages";
 
 /**
  * Compact region toggle for the nav avatar menu. Switches the whole app between
  * the USA and Southeast Asia versions (different fish, units, tides, regs).
  */
-export function RegionSwitcher({ current }: { current: Region }) {
+export function RegionSwitcher({ current, lang = DEFAULT_LANGUAGE }: { current: Region; lang?: LanguageCode }) {
   const router = useRouter();
   const [pending, start] = useTransition();
 
@@ -26,7 +28,7 @@ export function RegionSwitcher({ current }: { current: Region }) {
   return (
     <div className="px-3 py-2">
       <div className="flex items-center gap-1.5 px-1 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-300">
-        <Globe className="size-3" /> Region
+        <Globe className="size-3" /> {t(lang, "nav.region")}
       </div>
       <div className="grid grid-cols-2 gap-1.5">
         {REGION_LIST.map((r) => {

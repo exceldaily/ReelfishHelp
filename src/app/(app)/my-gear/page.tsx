@@ -3,7 +3,8 @@ import { desc, eq } from "drizzle-orm";
 import { Star, Wrench, Trash2 } from "lucide-react";
 import { getDb, gearItems } from "@/db";
 import { userSetups } from "@/db/schema";
-import { requireUser } from "@/lib/auth-helpers";
+import { requireUser, getViewerLang } from "@/lib/auth-helpers";
+import { t } from "@/lib/i18n";
 import { deleteUserSetup, toggleFavoriteSetup } from "@/lib/actions/gear-education-actions";
 import { setupSummary } from "@/lib/gear/setup-summary";
 import { Badge, Card, PageHeader } from "@/components/ui";
@@ -13,6 +14,7 @@ export const metadata = { title: "My Gear" };
 
 export default async function MyGearPage() {
   const user = await requireUser();
+  const lang = await getViewerLang();
   const db = await getDb();
   const [items, setups] = await Promise.all([
     db.query.gearItems.findMany({
@@ -29,7 +31,7 @@ export default async function MyGearPage() {
   return (
     <div>
       <PageHeader
-        title="My Gear"
+        title={t(lang, "page.myGearTitle")}
         subtitle="Your rods, reels, tackle, and boats — plus a wishlist you can fill straight from the catch guides."
       />
 

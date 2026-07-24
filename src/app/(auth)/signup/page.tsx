@@ -1,28 +1,40 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { register, type AuthResult } from "@/lib/actions/auth-actions";
-import { Button, Input, Label, FieldError } from "@/components/ui";
+import { Button, Input, Label, FieldError, Select } from "@/components/ui";
 import { TurnstileField } from "@/components/turnstile-field";
+import { LANGUAGES, type LanguageCode } from "@/lib/languages";
+import { t } from "@/lib/i18n";
 
 export default function SignupPage() {
   const [state, action, pending] = useActionState<AuthResult, FormData>(register, undefined);
+  // language comes first — the moment it changes, the whole form follows it
+  const [lang, setLang] = useState<LanguageCode>("en");
 
   return (
     <div className="bg-white rounded-3xl shadow-lift p-7 sm:p-9 animate-fade-up">
-      <h1 className="font-display text-2xl font-bold text-ink-900">Join ReelFishHelp</h1>
-      <p className="mt-1 text-sm text-ink-500">
-        Free account — live conditions, catch guides, trip plans, and your own catch log.
-      </p>
+      <h1 className="font-display text-2xl font-bold text-ink-900">{t(lang, "signup.title")}</h1>
+      <p className="mt-1 text-sm text-ink-500">{t(lang, "signup.subtitle")}</p>
       <form action={action} className="mt-6 space-y-4">
+        <div>
+          <Label htmlFor="language">{t(lang, "common.language")}</Label>
+          <Select id="language" name="language" value={lang} onChange={(e) => setLang(e.target.value as LanguageCode)}>
+            {LANGUAGES.map((l) => (
+              <option key={l.code} value={l.code}>
+                {l.native}{l.code !== "en" ? ` (${l.label})` : ""}
+              </option>
+            ))}
+          </Select>
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label htmlFor="displayName">Display name</Label>
+            <Label htmlFor="displayName">{t(lang, "signup.displayName")}</Label>
             <Input id="displayName" name="displayName" required maxLength={40} placeholder="John Doe" />
           </div>
           <div>
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">{t(lang, "signup.username")}</Label>
             <Input
               id="username"
               name="username"
@@ -35,11 +47,11 @@ export default function SignupPage() {
           </div>
         </div>
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t(lang, "signup.email")}</Label>
           <Input id="email" name="email" type="email" required autoComplete="email" placeholder="you@example.com" />
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t(lang, "signup.password")}</Label>
           <Input
             id="password"
             name="password"
@@ -48,7 +60,7 @@ export default function SignupPage() {
             minLength={8}
             maxLength={72}
             autoComplete="new-password"
-            placeholder="8 to 72 characters"
+            placeholder={t(lang, "signup.passwordHint")}
           />
         </div>
         <label className="flex items-start gap-2.5 text-sm text-ink-700 cursor-pointer">
@@ -68,23 +80,23 @@ export default function SignupPage() {
             </span>
           </span>
           <span>
-            I agree to the{" "}
+            {t(lang, "signup.terms")}{" "}
             <Link href="/terms" target="_blank" className="inline-block py-3 -my-3 font-bold text-tide-700 hover:underline">
-              Community Rules &amp; Terms
+              {t(lang, "signup.termsLink")}
             </Link>{" "}
-            — including no hate, harassment, or illegal fishing.
+            {t(lang, "signup.termsTail")}
           </span>
         </label>
         <TurnstileField />
         <FieldError>{state?.error}</FieldError>
         <Button size="lg" className="w-full" disabled={pending}>
-          {pending ? "Creating account…" : "Create account"}
+          {pending ? t(lang, "signup.creating") : t(lang, "signup.create")}
         </Button>
       </form>
       <p className="mt-5 text-sm text-ink-500 text-center">
-        Already fishing with us?{" "}
+        {t(lang, "signup.already")}{" "}
         <Link href="/login" className="inline-block py-3 -my-3 font-bold text-tide-700 hover:underline">
-          Log in
+          {t(lang, "signup.logIn")}
         </Link>
       </p>
     </div>

@@ -3,6 +3,8 @@ import { getProfile } from "@/lib/auth-helpers";
 import { PageHeader } from "@/components/ui";
 import { ConditionsView } from "@/components/conditions-view";
 import { regionMeta, toRegion } from "@/lib/regions";
+import { toLanguage } from "@/lib/languages";
+import { t } from "@/lib/i18n";
 
 export const metadata = { title: "Fishing Conditions" };
 
@@ -10,6 +12,7 @@ export default async function ConditionsPage() {
   const session = await auth();
   const profile = session?.user ? await getProfile(session.user.id) : null;
   const meta = regionMeta(toRegion(profile?.region));
+  const lang = toLanguage(profile?.language);
   const initialCoords =
     profile?.lastLat != null && profile?.lastLng != null
       ? { lat: profile.lastLat, lng: profile.lastLng }
@@ -18,12 +21,8 @@ export default async function ConditionsPage() {
   return (
     <div>
       <PageHeader
-        title="Conditions"
-        subtitle={
-          meta.hasTides
-            ? "Live weather, wind, pressure, moon, and real NOAA tides — rolled into a practical fishing outlook for your water."
-            : "Live weather, wind, pressure, and moon — rolled into a practical fishing outlook for your water. Tide predictions aren't available in your region yet."
-        }
+        title={t(lang, "page.conditionsTitle")}
+        subtitle={meta.hasTides ? t(lang, "page.conditionsSubtitleTides") : t(lang, "page.conditionsSubtitleNoTides")}
       />
       <ConditionsView initialCoords={initialCoords} initialLabel={profile?.lastLocationLabel ?? null} />
     </div>

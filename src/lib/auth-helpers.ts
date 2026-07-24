@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { getDb, profiles, type Profile } from "@/db";
 import { unitSystemForRegion } from "@/lib/regions";
 import type { UnitSystem } from "@/lib/units";
+import { toLanguage, type LanguageCode } from "@/lib/languages";
 
 export async function currentUser() {
   const session = await auth();
@@ -34,4 +35,12 @@ export async function getViewerUnits(): Promise<UnitSystem> {
   if (!session?.user) return "imperial";
   const profile = await getProfile(session.user.id);
   return unitSystemForRegion(profile?.region);
+}
+
+/** The display language of the current viewer (English for signed-out). */
+export async function getViewerLang(): Promise<LanguageCode> {
+  const session = await auth();
+  if (!session?.user) return "en";
+  const profile = await getProfile(session.user.id);
+  return toLanguage(profile?.language);
 }

@@ -3,13 +3,15 @@ import Image from "next/image";
 import { desc, eq, or } from "drizzle-orm";
 import { MessageCircle, UserCircle2 } from "lucide-react";
 import { getDb, conversations, profiles, messages } from "@/db";
-import { requireUser } from "@/lib/auth-helpers";
+import { requireUser, getViewerLang } from "@/lib/auth-helpers";
+import { t } from "@/lib/i18n";
 import { PageHeader, EmptyState, ButtonLink, Card } from "@/components/ui";
 
 export const metadata = { title: "Messages" };
 
 export default async function MessagesPage() {
   const user = await requireUser();
+  const lang = await getViewerLang();
   const db = await getDb();
 
   const convos = await db.query.conversations.findMany({
@@ -32,7 +34,7 @@ export default async function MessagesPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <PageHeader title="Messages" subtitle="Direct messages with other anglers." />
+      <PageHeader title={t(lang, "page.messagesTitle")} subtitle="Direct messages with other anglers." />
       {convos.length === 0 ? (
         <EmptyState
           icon={<MessageCircle />}

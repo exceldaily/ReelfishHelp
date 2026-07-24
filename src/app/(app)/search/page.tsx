@@ -6,6 +6,8 @@ import { ilike, or, ne, and, eq } from "drizzle-orm";
 import { Search, UserCircle2, Users } from "lucide-react";
 import { getDb, profiles } from "@/db";
 import { auth } from "@/auth";
+import { getViewerLang } from "@/lib/auth-helpers";
+import { t } from "@/lib/i18n";
 import { PageHeader, Card, WaterBadge, Badge, EmptyState } from "@/components/ui";
 
 export const metadata = { title: "Find Anglers" };
@@ -16,6 +18,7 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q } = await searchParams;
+  const lang = await getViewerLang();
   const query = (q ?? "").trim();
   const session = await auth();
   const db = await getDb();
@@ -37,7 +40,7 @@ export default async function SearchPage({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <PageHeader title="Find Anglers" subtitle="Search by username or display name." />
+      <PageHeader title={t(lang, "page.searchTitle")} subtitle="Search by username or display name." />
 
       <form method="GET" className="mb-6">
         <div className="relative">

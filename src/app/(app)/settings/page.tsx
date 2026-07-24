@@ -8,6 +8,7 @@ import { getUsage } from "@/lib/media";
 import { formatBytes } from "@/lib/storage-admin";
 import { toRegion } from "@/lib/regions";
 import { toLanguage } from "@/lib/languages";
+import { t } from "@/lib/i18n";
 import { PageHeader, Card } from "@/components/ui";
 import { SettingsForm } from "@/components/settings-form";
 import { AccountDeletion } from "@/components/account-deletion";
@@ -19,6 +20,7 @@ export default async function SettingsPage() {
   const user = await requireUser();
   const profile = await getProfile(user.id);
   if (!profile) redirect("/onboarding");
+  const lang = toLanguage(profile.language);
 
   const db = await getDb();
   const [allSpecies, usage] = await Promise.all([
@@ -29,10 +31,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <PageHeader
-        title="Profile & Settings"
-        subtitle="Your public profile, fishing preferences, and privacy controls."
-      />
+      <PageHeader title={t(lang, "set.title")} subtitle={t(lang, "set.subtitle")} />
 
       <Link href="/verified" className="block mb-4">
         <Card className="p-4 hover:shadow-lift transition-shadow flex items-center gap-4">

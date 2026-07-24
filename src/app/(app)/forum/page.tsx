@@ -8,6 +8,8 @@ import { createForumQuestion } from "@/lib/actions/forum-actions";
 import { FORUM_TOPICS, forumTopicLabel, isForumTopic } from "@/data/forum-topics";
 import { getProfile } from "@/lib/auth-helpers";
 import { toRegion } from "@/lib/regions";
+import { toLanguage } from "@/lib/languages";
+import { t } from "@/lib/i18n";
 import { Badge, Button, Card, EmptyState, Input, Label, PageHeader, Select, Textarea } from "@/components/ui";
 
 export const metadata = { title: "Forum" };
@@ -25,6 +27,7 @@ export default async function ForumPage({
   // US and SEA communities are separate — the viewer only ever sees their region's forum
   const profile = session?.user ? await getProfile(session.user.id) : null;
   const region = toRegion(profile?.region);
+  const lang = toLanguage(profile?.language);
   const activeTopic = isForumTopic(topic) ? topic! : null;
   const activeBoardId = region === "us" && typeof board === "string" && board.length > 0 ? board : null;
 
@@ -49,12 +52,8 @@ export default async function ForumPage({
   return (
     <div>
       <PageHeader
-        title="Forum"
-        subtitle={
-          region === "us"
-            ? "Ask fishing questions and compare notes with the community, by state and by topic."
-            : "Ask fishing questions and compare notes with the Southeast Asia community, by topic."
-        }
+        title={t(lang, "page.forumTitle")}
+        subtitle={region === "us" ? t(lang, "page.forumSubtitleUs") : t(lang, "page.forumSubtitleSea")}
       />
 
       {/* topic sections */}

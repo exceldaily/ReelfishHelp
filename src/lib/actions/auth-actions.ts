@@ -10,6 +10,7 @@ import { AuthError } from "next-auth";
 import { enforceAuthRateLimit, RateLimitError } from "@/lib/auth-rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { sendWelcome } from "@/lib/welcome";
+import { toLanguage } from "@/lib/languages";
 
 const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
@@ -80,6 +81,7 @@ export async function register(_prev: AuthResult, formData: FormData): Promise<A
     userId: user.id,
     username: username.toLowerCase(),
     displayName,
+    language: toLanguage(String(formData.get("language") ?? "en")),
     acceptedTermsAt: new Date(),
   });
 
