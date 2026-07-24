@@ -3,7 +3,7 @@ import fs from "fs";
 import { SEA_MAP_VIEWBOX, SEA_REGION_PATHS } from "../src/data/sea-map-paths";
 
 const OFFSET_LABELS: Record<string, { lx: number; ly: number }> = {
-  "sea-singapore": { lx: 132, ly: 566 },
+  "sea-singapore": { lx: 325, ly: 594 },
   "sea-brunei": { lx: 420, ly: 462 },
 };
 const demo: Record<string, number> = { "sea-thailand": 7, "sea-peninsular-malaysia": 4, "sea-luzon": 2 };
@@ -17,7 +17,7 @@ ${SEA_REGION_PATHS.map((r) => {
   const lx = o?.lx ?? r.x, ly = o?.ly ?? r.y;
   return `<g>
     <path d="${r.d}" fill="${heat(count)}" stroke="#fff" stroke-width="1"/>
-    ${o ? `<line x1="${r.x}" y1="${r.y}" x2="${lx}" y2="${ly - 4}" stroke="#8ba0aa" stroke-width="1"/>` : ""}
+    ${o ? `<line x1="${r.x}" y1="${r.y}" x2="${lx}" y2="${ly - 4}" stroke="#8ba0aa" stroke-width="1"/><circle cx="${r.x}" cy="${r.y}" r="5" fill="${heat(count)}" stroke="#175468" stroke-width="1.5"/>` : ""}
     <text x="${lx}" y="${ly}" text-anchor="middle" paint-order="stroke" stroke="#fff" stroke-width="3">
       <tspan x="${lx}" dy="-2" font-size="11" font-weight="700" fill="#2b3d47">${r.label}</tspan>
       <tspan x="${lx}" dy="14" font-size="13" font-weight="800" fill="#175468">${count}</tspan>

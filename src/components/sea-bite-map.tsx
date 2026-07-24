@@ -18,9 +18,13 @@ function heat(count: number): string {
   return "#e8e1cf"; // sand-200
 }
 
-/** tiny regions: label floats in open water with a leader line back to the land */
+/**
+ * Tiny regions: the landmass is a few pixels, so a marker dot sits on the land
+ * and the label floats in open water with a leader line — and the label itself
+ * is a click target (transparent hit rectangle behind it).
+ */
 const OFFSET_LABELS: Record<string, { lx: number; ly: number }> = {
-  "sea-singapore": { lx: 132, ly: 566 },
+  "sea-singapore": { lx: 325, ly: 594 },
   "sea-brunei": { lx: 420, ly: 462 },
 };
 
@@ -59,9 +63,18 @@ export function SeaBiteMap({ stats }: { stats: Record<string, SeaBoardStat> }) {
                 strokeWidth="1"
                 className="transition-[filter] group-hover:brightness-95"
               />
-              {offset && <line x1={r.x} y1={r.y} x2={lx} y2={ly - 4} stroke="#8ba0aa" strokeWidth="1" />}
-              {/* white-halo labels stay readable over land, water, and dark heat fills */}
-              <text x={lx} y={ly} textAnchor="middle" pointerEvents="none" paintOrder="stroke" stroke="#ffffff" strokeWidth="3">
+              {offset && (
+                <>
+                  <line x1={r.x} y1={r.y} x2={lx} y2={ly - 4} stroke="#8ba0aa" strokeWidth="1" />
+                  {/* visible marker on the (tiny) landmass */}
+                  <circle cx={r.x} cy={r.y} r="5" fill={heat(count)} stroke="#175468" strokeWidth="1.5" className="transition-[filter] group-hover:brightness-95" />
+                  {/* generous invisible hit area so the floating label is tappable */}
+                  <rect x={lx - 48} y={ly - 18} width="96" height="40" rx="10" fill="transparent" />
+                </>
+              )}
+              {/* white-halo labels stay readable over land, water, and dark heat fills;
+                  offset labels stay clickable — they ARE the region's tap target */}
+              <text x={lx} y={ly} textAnchor="middle" pointerEvents={offset ? undefined : "none"} paintOrder="stroke" stroke="#ffffff" strokeWidth="3">
                 <tspan x={lx} dy="-2" fontSize="11" fontWeight="700" fill="#2b3d47">
                   {r.label}
                 </tspan>
