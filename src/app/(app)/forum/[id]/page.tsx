@@ -17,6 +17,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const db = await getDb();
   const question = await db.query.forumQuestions.findFirst({ where: eq(forumQuestions.id, id) });
+  if (question) {
+    // gate here too: metadata resolves before streaming, so cross-region links
+    // get a real 404 status and never leak the question title
+    const session = await auth();
+    const profile = session?.user ? await getProfile(session.user.id) : null;
+    if (question.region !== toRegion(profile?.region)) notFound();
+  }
   return { title: question?.title ?? "Forum Question" };
 }
 

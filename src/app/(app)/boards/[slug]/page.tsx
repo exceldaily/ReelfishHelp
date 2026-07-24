@@ -18,7 +18,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const db = await getDb();
   const board = await db.query.biteBoards.findFirst({ where: and(eq(biteBoards.slug, slug), eq(biteBoards.active, true)) });
-  return { title: board ? `${board.name} Bite Board` : "Bite Board" };
+  if (board) {
+    // gate here too: metadata resolves before streaming, so cross-region links
+    // get a real 404 status and never leak the board name in the title
+    const session = await auth();
+    const profile = session?.user ? await getProfile(session.user.id) : null;
+    if (board.region !== toRegion(profile?.region)) notFound();
+  }
+  // board names already end in "Bite Board"
+  return { title: board ? board.name : "Bite Board" };
 }
 
 function topValue<T extends string | null>(items: T[]): string | null {
