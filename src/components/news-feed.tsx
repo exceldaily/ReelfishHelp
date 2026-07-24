@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ExternalLink, Newspaper } from "lucide-react";
 import { Card, Badge, SectionTitle } from "@/components/ui";
 import { newsPages } from "@/lib/news";
+import { t } from "@/lib/i18n";
+import { DEFAULT_LANGUAGE, type LanguageCode } from "@/lib/languages";
 
 const AUTO_FLIP_MS = 12000;
 
@@ -12,7 +14,7 @@ const AUTO_FLIP_MS = 12000;
  * src/lib/news.ts. Flips between pages on a timer until the reader touches
  * the pager, then stays put.
  */
-export function NewsFeedCard() {
+export function NewsFeedCard({ lang = DEFAULT_LANGUAGE }: { lang?: LanguageCode } = {}) {
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
   const hoverRef = useRef(false);
@@ -39,7 +41,7 @@ export function NewsFeedCard() {
     >
       <div className="flex items-center justify-between gap-2 mb-1">
         <SectionTitle className="mb-0 flex items-center gap-2">
-          <Newspaper className="size-4 text-tide-600" /> Industry News
+          <Newspaper className="size-4 text-tide-600" /> {t(lang, "news.title")}
         </SectionTitle>
         <Badge variant="orange">{current.label}</Badge>
       </div>

@@ -30,9 +30,10 @@ import {
   species,
 } from "@/db";
 import { requireUser, getProfile } from "@/lib/auth-helpers";
-import { unitSystemForRegion } from "@/lib/regions";
+import { unitSystemForRegion, toRegion } from "@/lib/regions";
 import { toLanguage } from "@/lib/languages";
-import { t } from "@/lib/i18n";
+import { t, tDyn } from "@/lib/i18n";
+import type { LanguageCode } from "@/lib/languages";
 import { getConditions, type ConditionsBundle } from "@/lib/conditions";
 import { fishIdEnabled } from "@/lib/flags";
 import { Card, Badge, ButtonLink, SectionTitle, WaterBadge } from "@/components/ui";
@@ -41,14 +42,14 @@ import { NewsFeedCard } from "@/components/news-feed";
 
 export const metadata = { title: "Home" };
 
-const quickActions = (fishId: boolean) => [
+const quickActions = (fishId: boolean, lang: LanguageCode) => [
   ...(fishId
-    ? [{ href: "/identify", label: "Identify Fish", icon: Camera }]
-    : [{ href: "/spots", label: "My Spots", icon: MapPin }]),
-  { href: "/fish", label: "Find Fish", icon: Fish },
-  { href: "/catches/new", label: "Log Catch", icon: Trophy },
-  { href: "/my-gear", label: "Add Gear", icon: Backpack },
-  { href: "/trips/new", label: "Plan Trip", icon: CalendarDays },
+    ? [{ href: "/identify", label: t(lang, "home.identifyFish"), icon: Camera }]
+    : [{ href: "/spots", label: t(lang, "home.mySpots"), icon: MapPin }]),
+  { href: "/fish", label: t(lang, "nav.findFish"), icon: Fish },
+  { href: "/catches/new", label: t(lang, "home.logCatch"), icon: Trophy },
+  { href: "/my-gear", label: t(lang, "home.addGear"), icon: Backpack },
+  { href: "/trips/new", label: t(lang, "home.planTrip"), icon: CalendarDays },
 ];
 
 export default async function HomePage() {
@@ -64,7 +65,7 @@ export default async function HomePage() {
   let conditions: ConditionsBundle | null = null;
   if (profile.lastLat != null && profile.lastLng != null) {
     try {
-      conditions = await getConditions(profile.lastLat, profile.lastLng);
+      conditions = await getConditions(profile.lastLat, profile.lastLng, undefined, toRegion(profile.region));
     } catch {
       conditions = null;
     }
@@ -137,9 +138,9 @@ export default async function HomePage() {
         </span>
         {profile.lastLocationLabel && (
           <p className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-edge bg-card/80 px-3 py-1 text-sm text-ink-500 shadow-card">
-            <MapPin className="size-4 text-reef-600" /> Fishing near{" "}
+            <MapPin className="size-4 text-reef-600" /> {t(lang, "home.fishingNear")}{" "}
             <span className="font-semibold text-ink-900">{profile.lastLocationLabel}</span>
-            <Link href="/settings" className="text-tide-600 font-semibold hover:underline">change</Link>
+            <Link href="/settings" className="text-tide-600 font-semibold hover:underline">{t(lang, "home.change")}</Link>
           </p>
         )}
       </div>
@@ -159,12 +160,13 @@ export default async function HomePage() {
               viewerSaved: dailyTip.viewerSaved,
             }}
             signedIn
+            lang={lang}
           />
         </div>
       )}
 
       <div className="grid grid-cols-5 gap-2 sm:gap-3 mb-7">
-        {quickActions(fishIdEnabled()).map(({ href, label, icon: Icon }) => (
+        {quickActions(fishIdEnabled(), lang).map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
@@ -185,10 +187,10 @@ export default async function HomePage() {
             <Card className="p-5 sm:p-6">
               <div className="flex items-center justify-between mb-3">
                 <SectionTitle className="mb-0 flex items-center gap-2">
-                  <CloudSun className="size-5 text-tide-600" /> Right now on your water
+                  <CloudSun className="size-5 text-tide-600" /> {t(lang, "home.rightNow")}
                 </SectionTitle>
                 <Link href="/conditions" className="text-sm font-bold text-tide-700 hover:underline">
-                  Full conditions →
+                  {t(lang, "home.fullConditions")}
                 </Link>
               </div>
               <div className="flex flex-wrap items-center gap-4">
@@ -196,14 +198,14 @@ export default async function HomePage() {
                   {Math.round(conditions.weather.current.tempF)}°
                 </div>
                 <div className="text-sm text-ink-700">
-                  <div className="font-semibold">{conditions.weather.current.conditionText}</div>
+                  <div className="font-semibold">{tDyn(lang, "wx", conditions.weather.current.conditionText)}</div>
                   <div className="text-ink-500">
-                    Wind {Math.round(conditions.weather.current.windMph)} mph {conditions.weather.current.windDirCompass} ·{" "}
-                    {conditions.moon.emoji} {conditions.moon.name}
+                    {t(lang, "home.wind")} {Math.round(conditions.weather.current.windMph)} mph {conditions.weather.current.windDirCompass} ·{" "}
+                    {conditions.moon.emoji} {tDyn(lang, "moon", conditions.moon.name)}
                     {conditions.tides?.events.find((e) => new Date(e.time) > new Date()) && (
                       <>
-                        {" · next "}
-                        {conditions.tides.events.find((e) => new Date(e.time) > new Date())!.type === "H" ? "high" : "low"}{" "}
+                        {" · "}{t(lang, "home.next")}{" "}
+                        {conditions.tides.events.find((e) => new Date(e.time) > new Date())!.type === "H" ? t(lang, "home.high") : t(lang, "home.low")}{" "}
                         {new Date(
                           conditions.tides.events.find((e) => new Date(e.time) > new Date())!.time
                         ).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
@@ -217,7 +219,7 @@ export default async function HomePage() {
                       conditions.rating.score >= 60 ? "text-moss-600" : conditions.rating.score >= 42 ? "text-bait-600" : "text-red-700"
                     }`}
                   >
-                    {conditions.rating.label}
+                    {tDyn(lang, "cond", conditions.rating.label)}
                   </div>
                   <div className="ml-auto mt-1 h-1.5 w-28 overflow-hidden rounded-full bg-sand-100">
                     <div
@@ -227,11 +229,11 @@ export default async function HomePage() {
                       style={{ width: `${Math.min(100, Math.max(4, conditions.rating.score))}%` }}
                     />
                   </div>
-                  <div className="mt-1 text-xs text-ink-500">{conditions.rating.score}/100 activity indicator</div>
+                  <div className="mt-1 text-xs text-ink-500">{t(lang, "home.activity", { score: String(conditions.rating.score) })}</div>
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-sand-100">
-                <div className="text-xs font-bold uppercase tracking-wide text-ink-500 mb-2">Worth targeting today</div>
+                <div className="text-xs font-bold uppercase tracking-wide text-ink-500 mb-2">{t(lang, "home.worthTargeting")}</div>
                 <div className="flex flex-wrap gap-2">
                   {conditions.suggestions.slice(0, 5).map((s) => (
                     <Link
@@ -248,24 +250,20 @@ export default async function HomePage() {
             </Card>
           ) : (
             <Card className="p-6">
-              <SectionTitle>Set your location for live conditions</SectionTitle>
-              <p className="text-sm text-ink-500 mb-4">
-                Weather, tides, moon, and species suggestions all key off your approximate area.
-              </p>
-              <ButtonLink href="/conditions">Open conditions & set location</ButtonLink>
+              <SectionTitle>{t(lang, "home.setLocationTitle")}</SectionTitle>
+              <p className="text-sm text-ink-500 mb-4">{t(lang, "home.setLocationBody")}</p>
+              <ButtonLink href="/conditions">{t(lang, "home.openConditions")}</ButtonLink>
             </Card>
           )}
 
           {/* recent catches */}
           <div>
             <div className="flex items-baseline gap-3 mb-3">
-              <SectionTitle className="mb-0">Recent catches</SectionTitle>
-              <Link href="/catches" className="text-sm font-bold text-tide-700 hover:underline">All catches →</Link>
+              <SectionTitle className="mb-0">{t(lang, "home.recentCatches")}</SectionTitle>
+              <Link href="/catches" className="text-sm font-bold text-tide-700 hover:underline">{t(lang, "home.allCatches")}</Link>
             </div>
             {myCatches.length === 0 ? (
-              <Card className="p-6 text-sm text-ink-500">
-                Nothing logged yet — your first catch is one tap away with the Log Catch button.
-              </Card>
+              <Card className="p-6 text-sm text-ink-500">{t(lang, "home.noCatches")}</Card>
             ) : (
               <div className="grid gap-4 sm:grid-cols-3">
                 {myCatches.map((c) => (
@@ -296,9 +294,9 @@ export default async function HomePage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <SectionTitle className="mb-0 flex items-center gap-2">
-                  <Users className="size-5 text-tide-600" /> From anglers you follow
+                  <Users className="size-5 text-tide-600" /> {t(lang, "home.fromAnglers")}
                 </SectionTitle>
-                <Link href="/community" className="text-sm font-bold text-tide-700 hover:underline">Community →</Link>
+                <Link href="/community" className="text-sm font-bold text-tide-700 hover:underline">{t(lang, "home.community")}</Link>
               </div>
               <div className="grid gap-4 sm:grid-cols-3">
                 {friendActivity.map((c) => (
@@ -332,7 +330,7 @@ export default async function HomePage() {
         {/* right rail */}
         <div className="space-y-5">
           {/* industry news */}
-          <NewsFeedCard />
+          <NewsFeedCard lang={lang} />
           {proReports.length > 0 && (
             <div className="space-y-3">
               {proReports.map((r) => (
@@ -344,12 +342,12 @@ export default async function HomePage() {
           {/* upcoming trips */}
           <Card className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <SectionTitle className="mb-0">Upcoming trips</SectionTitle>
-              <Link href="/trips" className="text-xs font-bold text-tide-700 hover:underline">All →</Link>
+              <SectionTitle className="mb-0">{t(lang, "home.upcomingTrips")}</SectionTitle>
+              <Link href="/trips" className="text-xs font-bold text-tide-700 hover:underline">{t(lang, "home.all")}</Link>
             </div>
             {upcomingTrips.length === 0 ? (
               <p className="text-sm text-ink-500">
-                Nothing planned. <Link href="/trips/new" className="font-bold text-tide-700 hover:underline">Plan one</Link> around a good tide.
+                {t(lang, "home.nothingPlanned")} <Link href="/trips/new" className="font-bold text-tide-700 hover:underline">{t(lang, "home.planOne")}</Link> {t(lang, "home.aroundTide")}
               </p>
             ) : (
               <div className="space-y-2.5">
@@ -371,12 +369,12 @@ export default async function HomePage() {
           <Card className="p-5">
             <div className="flex items-center justify-between mb-3">
               <SectionTitle className="mb-0 flex items-center gap-2">
-                <BookmarkCheck className="size-4 text-tide-600" /> Saved guides
+                <BookmarkCheck className="size-4 text-tide-600" /> {t(lang, "home.savedGuides")}
               </SectionTitle>
-              <Link href="/fish" className="text-xs font-bold text-tide-700 hover:underline">Find fish →</Link>
+              <Link href="/fish" className="text-xs font-bold text-tide-700 hover:underline">{t(lang, "home.findFishLink")}</Link>
             </div>
             {savedSpecies.length === 0 ? (
-              <p className="text-sm text-ink-500">Save catch guides from the Fish Finder to keep them here.</p>
+              <p className="text-sm text-ink-500">{t(lang, "home.saveGuidesHint")}</p>
             ) : (
               <div className="space-y-1.5">
                 {savedSpecies.map((s) => (
@@ -392,12 +390,12 @@ export default async function HomePage() {
           {/* gear summary */}
           <Card className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <SectionTitle className="mb-0">Gear locker</SectionTitle>
-              <Link href="/my-gear" className="text-xs font-bold text-tide-700 hover:underline">Open →</Link>
+              <SectionTitle className="mb-0">{t(lang, "home.gearLocker")}</SectionTitle>
+              <Link href="/my-gear" className="text-xs font-bold text-tide-700 hover:underline">{t(lang, "home.open")}</Link>
             </div>
             <p className="text-sm text-ink-700">
-              <strong>{gear.filter((g) => !g.wishlist).length}</strong> items ·{" "}
-              <strong>{gear.filter((g) => g.wishlist).length}</strong> on the wishlist
+              <strong>{gear.filter((g) => !g.wishlist).length}</strong> {t(lang, "home.items")} ·{" "}
+              <strong>{gear.filter((g) => g.wishlist).length}</strong> {t(lang, "home.onWishlist")}
             </p>
             {gear.filter((g) => g.favorite).slice(0, 3).map((g) => (
               <div key={g.id} className="mt-2 text-sm text-ink-500">⭐ {g.name}</div>
@@ -407,11 +405,11 @@ export default async function HomePage() {
           {/* favorite spots */}
           <Card className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <SectionTitle className="mb-0">Spots</SectionTitle>
-              <Link href="/spots" className="text-xs font-bold text-tide-700 hover:underline">Map →</Link>
+              <SectionTitle className="mb-0">{t(lang, "home.spots")}</SectionTitle>
+              <Link href="/spots" className="text-xs font-bold text-tide-700 hover:underline">{t(lang, "home.map")}</Link>
             </div>
             {mySpots.length === 0 ? (
-              <p className="text-sm text-ink-500">No saved spots yet — build your private map.</p>
+              <p className="text-sm text-ink-500">{t(lang, "home.noSpots")}</p>
             ) : (
               <div className="space-y-1.5">
                 {mySpots.map((s) => (

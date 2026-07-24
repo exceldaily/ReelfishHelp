@@ -16,10 +16,8 @@ export async function setRegion(region: Region): Promise<{ ok: true } | { error:
   const user = await requireUser();
   const db = await getDb();
   await db.update(profiles).set({ region }).where(eq(profiles.userId, user.id));
-  revalidatePath("/home");
-  revalidatePath("/fish");
-  revalidatePath("/conditions");
-  revalidatePath("/settings");
+  // region changes what nearly every page shows — flush the whole tree
+  revalidatePath("/", "layout");
   return { ok: true };
 }
 
@@ -176,9 +174,7 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
       ...(avatarUrl ? { avatarUrl } : {}),
     })
     .where(eq(profiles.userId, user.id));
-  revalidatePath("/settings");
-  revalidatePath("/home");
-  revalidatePath("/fish");
-  revalidatePath("/conditions");
+  // language/region live here — flush the whole tree so the switch is instant everywhere
+  revalidatePath("/", "layout");
   return { ok: true };
 }

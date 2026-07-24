@@ -26,3 +26,13 @@ export function t(lang: LanguageCode, key: MessageKey, vars?: Record<string, str
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, v);
   return s;
 }
+
+/**
+ * Translate a runtime-computed English string (weather descriptor, moon phase,
+ * rating tier) by looking up `${prefix}.${text}`. Unknown strings pass through
+ * untranslated instead of breaking.
+ */
+export function tDyn(lang: LanguageCode, prefix: "wx" | "moon" | "cond", text: string): string {
+  const dict = DICTS[lang] as Record<string, string>;
+  return dict[`${prefix}.${text}`] ?? text;
+}

@@ -21,7 +21,8 @@ export type ConditionsBundle = {
 export async function getConditions(
   latRaw: number,
   lngRaw: number,
-  at?: Date
+  at?: Date,
+  region: "us" | "sea" = "us"
 ): Promise<ConditionsBundle> {
   const { lat, lng } = approximate(latRaw, lngRaw);
   const [weather, tides, place] = await Promise.all([
@@ -41,6 +42,7 @@ export async function getConditions(
     environment,
     state: place.state,
     month: targetDate.getMonth(),
+    region,
   });
 
   return {

@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { and, eq, inArray } from "drizzle-orm";
 import { MapPin, CloudSun, Waves, Sunrise, Sunset, Fish } from "lucide-react";
 import { getDb, trips, species, catches } from "@/db";
-import { requireUser, getViewerUnits } from "@/lib/auth-helpers";
+import { requireUser, getViewerUnits, getProfile } from "@/lib/auth-helpers";
+import { toRegion } from "@/lib/regions";
 import { getConditions } from "@/lib/conditions";
 import { Card, Badge, PageHeader, Stat, WaterBadge } from "@/components/ui";
 import { TripChecklist, TripActions } from "@/components/trip-checklist";
@@ -33,7 +34,7 @@ export default async function TripDetailPage({ params }: { params: Promise<{ id:
   let conditions: Awaited<ReturnType<typeof getConditions>> | null = null;
   if (trip.lat != null && trip.lng != null && daysOut < 7) {
     try {
-      conditions = await getConditions(trip.lat, trip.lng, daysOut > 0 ? tripDate : undefined);
+      conditions = await getConditions(trip.lat, trip.lng, daysOut > 0 ? tripDate : undefined, toRegion((await getProfile(user.id))?.region));
     } catch {
       conditions = null;
     }

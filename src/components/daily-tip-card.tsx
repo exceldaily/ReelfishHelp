@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { Badge, Card } from "@/components/ui";
 import { toggleTipHelpful, toggleSavedTip, recordTipShare } from "@/lib/actions/tip-actions";
+import { t } from "@/lib/i18n";
+import { DEFAULT_LANGUAGE, type LanguageCode } from "@/lib/languages";
 
 /** Icon keys stored on tips; anything unknown falls back to the lightbulb. */
 const TIP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -49,12 +51,14 @@ export type TipCardData = {
 export function DailyTipCard({
   tip,
   signedIn,
-  heading = "Daily Angler Tip",
+  heading,
+  lang = DEFAULT_LANGUAGE,
   showMoreLink = true,
 }: {
   tip: TipCardData;
   signedIn: boolean;
   heading?: string;
+  lang?: LanguageCode;
   showMoreLink?: boolean;
 }) {
   const router = useRouter();
@@ -118,7 +122,7 @@ export function DailyTipCard({
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-tide-600">{heading}</span>
+            <span className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-tide-600">{heading ?? t(lang, "tip.header")}</span>
             <Badge variant="neutral">{tip.category}</Badge>
           </div>
           <h2 className="mt-1 font-display font-bold text-ink-900 leading-snug">{tip.title}</h2>
@@ -133,7 +137,7 @@ export function DailyTipCard({
               className={`${btn} ${helpful ? "bg-tide-700 text-white" : "bg-tide-50 text-tide-800 hover:bg-tide-100"}`}
             >
               <ThumbsUp className="size-3.5" />
-              Helpful{count > 0 ? ` · ${count}` : ""}
+              {t(lang, "tip.helpful")}{count > 0 ? ` · ${count}` : ""}
             </button>
             <button
               type="button"
@@ -143,7 +147,7 @@ export function DailyTipCard({
               className={`${btn} ${saved ? "bg-tide-700 text-white" : "bg-tide-50 text-tide-800 hover:bg-tide-100"}`}
             >
               {saved ? <BookmarkCheck className="size-3.5" /> : <Bookmark className="size-3.5" />}
-              {saved ? "Saved" : "Save"}
+              {saved ? t(lang, "common.saved") : t(lang, "tip.save")}
             </button>
             <button
               type="button"
@@ -152,7 +156,7 @@ export function DailyTipCard({
               className={`${btn} bg-tide-50 text-tide-800 hover:bg-tide-100`}
             >
               {shared ? <Check className="size-3.5 text-moss-600" /> : <Share2 className="size-3.5" />}
-              {shared ? "Link copied" : "Share"}
+              {shared ? "✓" : t(lang, "tip.share")}
             </button>
             {showMoreLink && (
               <Link
@@ -160,7 +164,7 @@ export function DailyTipCard({
                 className={`${btn} ml-auto text-tide-700 hover:bg-tide-50`}
                 aria-label="Browse all angler tips"
               >
-                More Tips <ArrowRight className="size-3.5" />
+                {t(lang, "tip.more")} <ArrowRight className="size-3.5" />
               </Link>
             )}
           </div>

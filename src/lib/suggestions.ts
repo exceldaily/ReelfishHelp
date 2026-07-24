@@ -55,13 +55,17 @@ export async function suggestSpecies(opts: {
   state: string | null;
   month: number;
   limit?: number;
+  /** app market: "us" (default) or "sea" — never suggest the other region's fish */
+  region?: "us" | "sea";
 }): Promise<SpeciesSuggestion[]> {
   const db = await getDb();
+  const region = opts.region ?? "us";
   const all = await db.query.species.findMany({ where: eq(species.active, true) });
   const season = seasonForMonth(opts.month);
 
   const scored = all
     .map((s) => {
+      if (s.region !== region) return null;
       let score = 0;
       const inWater =
         s.water === "both" ||
@@ -71,9 +75,12 @@ export async function suggestSpecies(opts: {
       else if (opts.environment === "coastal" && s.water === "freshwater") score += 2;
       else return null;
 
-      if (!matchesLocation(s, opts.state)) return null;
-      if (s.states.length > 0 && opts.state && s.states.includes(opts.state)) score += 6;
-      if (s.regions.includes("Nationwide")) score += 2;
+      // states/US-regions only mean anything in the US market
+      if (region === "us") {
+        if (!matchesLocation(s, opts.state)) return null;
+        if (s.states.length > 0 && opts.state && s.states.includes(opts.state)) score += 6;
+        if (s.regions.includes("Nationwide")) score += 2;
+      }
       if (s.seasons.includes(season)) score += 8;
       if (s.beginnerFriendly) score += 3;
       score += 5 - s.difficulty;

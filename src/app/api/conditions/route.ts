@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { getConditions } from "@/lib/conditions";
+import { getProfile } from "@/lib/auth-helpers";
+import { toRegion } from "@/lib/regions";
 
 export async function GET(req: NextRequest) {
   const lat = parseFloat(req.nextUrl.searchParams.get("lat") ?? "");
@@ -13,7 +16,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Invalid 'at' timestamp" }, { status: 400 });
   }
   try {
-    const bundle = await getConditions(lat, lng, at);
+    const viewer = await auth();
+    const viewerProfile = viewer?.user ? await getProfile(viewer.user.id) : null;
+    const bundle = await getConditions(lat, lng, at, toRegion(viewerProfile?.region));
     return NextResponse.json(bundle);
   } catch (err) {
     console.error("[conditions]", err);
