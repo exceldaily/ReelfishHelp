@@ -89,3 +89,43 @@ export const retiredStarterBiteBoardSlugs = [
   "louisiana-marsh",
   "mid-atlantic-canyons",
 ];
+
+/**
+ * Southeast Asia region boards (region "sea"). Country-level, with island
+ * splits where one country spans distinct fisheries. Slugs are prefixed
+ * "sea-" so they can never collide with the two-letter US state slugs.
+ */
+const seaRegions: { key: string; name: string; country: string; blurb: string }[] = [
+  { key: "myanmar", name: "Myanmar", country: "Myanmar", blurb: "Irrawaddy river systems, Bay of Bengal coast, and the Mergui Archipelago" },
+  { key: "thailand", name: "Thailand", country: "Thailand", blurb: "fishing parks, the Gulf of Thailand, and the Andaman coast" },
+  { key: "laos", name: "Laos", country: "Laos", blurb: "the Mekong mainstem, tributaries, and highland reservoirs" },
+  { key: "vietnam", name: "Vietnam", country: "Vietnam", blurb: "the Mekong Delta, central coast, and northern bays" },
+  { key: "cambodia", name: "Cambodia", country: "Cambodia", blurb: "Tonle Sap, the Mekong, and the Gulf coast" },
+  { key: "peninsular-malaysia", name: "Peninsular Malaysia", country: "Malaysia", blurb: "both coasts of the peninsula, jungle rivers, and paylakes" },
+  { key: "malaysian-borneo", name: "Sabah & Sarawak", country: "Malaysia", blurb: "Malaysian Borneo's rivers, estuaries, and offshore reefs" },
+  { key: "singapore", name: "Singapore", country: "Singapore", blurb: "ponds, reservoirs with legal zones, and the Southern Islands" },
+  { key: "brunei", name: "Brunei", country: "Brunei", blurb: "Brunei Bay, mangrove estuaries, and nearshore reefs" },
+  { key: "sumatra", name: "Sumatra", country: "Indonesia", blurb: "Sumatra's rivers, lakes, and both coastlines" },
+  { key: "java", name: "Java", country: "Indonesia", blurb: "Java's ponds, reservoirs, and the south-coast surf" },
+  { key: "kalimantan", name: "Kalimantan", country: "Indonesia", blurb: "Indonesian Borneo's blackwater rivers and coastal flats" },
+  { key: "sulawesi", name: "Sulawesi", country: "Indonesia", blurb: "Sulawesi's deep bays, reefs, and lakes" },
+  { key: "bali-nusa-tenggara", name: "Bali & Nusa Tenggara", country: "Indonesia", blurb: "Bali and the eastern island chain's reefs and bluewater" },
+  { key: "luzon", name: "Luzon", country: "Philippines", blurb: "Luzon's lakes, rivers, and surrounding waters" },
+  { key: "visayas", name: "Visayas", country: "Philippines", blurb: "the central islands' reefs, straits, and municipal waters" },
+  { key: "mindanao", name: "Mindanao", country: "Philippines", blurb: "Mindanao's coasts, deep gulfs, and river systems" },
+];
+
+export const seaBiteBoards = seaRegions.map((r) => ({
+  id: `sea-${r.key}`,
+  slug: `sea-${r.key}`,
+  name: `${r.name} Bite Board`,
+  kind: "region",
+  region: "sea",
+  regionLabel: r.country,
+  state: null,
+  water: "both",
+  active: true,
+  description: `Bite reports and fishing questions for ${r.name}: ${r.blurb}. What is biting, what is working, and broad local conditions.`,
+})) satisfies NewBiteBoard[];
+
+export const seaBiteBoardSlugs = seaBiteBoards.map((board) => board.slug);

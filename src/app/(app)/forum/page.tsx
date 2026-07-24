@@ -35,7 +35,7 @@ export default async function ForumPage({
   ].filter(Boolean) as ReturnType<typeof eq>[];
 
   const [boards, questions] = await Promise.all([
-    db.query.biteBoards.findMany({ where: eq(biteBoards.active, true), orderBy: [biteBoards.name] }),
+    db.query.biteBoards.findMany({ where: and(eq(biteBoards.active, true), eq(biteBoards.region, "us")), orderBy: [biteBoards.name] }),
     db.query.forumQuestions.findMany({
       where: filters.length === 0 ? undefined : filters.length === 1 ? filters[0] : and(...filters),
       orderBy: [desc(forumQuestions.updatedAt)],

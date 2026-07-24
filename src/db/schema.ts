@@ -606,6 +606,8 @@ export const biteBoards = pgTable(
     slug: text("slug").notNull().unique(),
     name: text("name").notNull(),
     kind: text("kind").$type<BiteBoardKind>().notNull(),
+    // App market this board belongs to: "us" (default) or "sea".
+    region: text("region").notNull().default("us"),
     regionLabel: text("region_label").notNull(),
     state: text("state"),
     water: text("water").$type<WaterPref>().notNull().default("both"),

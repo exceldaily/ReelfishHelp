@@ -9,7 +9,8 @@ import { getDb } from "@/db";
 import { biteBoards, biteReports, catches, userBlocks } from "@/db/schema";
 import { BiteReportCard } from "@/components/bite-report-card";
 import { CatchCard } from "@/components/catch-card";
-import { getViewerUnits } from "@/lib/auth-helpers";
+import { getViewerUnits, getProfile } from "@/lib/auth-helpers";
+import { toRegion } from "@/lib/regions";
 import { FORUM_TOPICS } from "@/data/forum-topics";
 import { Badge, ButtonLink, Card, EmptyState, PageHeader } from "@/components/ui";
 
@@ -46,6 +47,10 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
 
   const session = await auth();
   const units = await getViewerUnits();
+
+  // boards belong to one region's community — cross-region links 404
+  const viewerProfile = session?.user ? await getProfile(session.user.id) : null;
+  if (board.region !== toRegion(viewerProfile?.region)) notFound();
   const blockedRows = session?.user
     ? await db
         .select()

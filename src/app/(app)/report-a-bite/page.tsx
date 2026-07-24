@@ -1,6 +1,9 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { auth } from "@/auth";
 import { getDb } from "@/db";
 import { biteBoards, species } from "@/db/schema";
+import { getProfile } from "@/lib/auth-helpers";
+import { toRegion } from "@/lib/regions";
 import { PageHeader } from "@/components/ui";
 import { BiteReportForm } from "@/components/bite-report-form";
 
@@ -12,10 +15,19 @@ export default async function ReportBitePage({
   searchParams: Promise<{ board?: string }>;
 }) {
   const { board: boardSlug } = await searchParams;
+  const session = await auth();
+  const profile = session?.user ? await getProfile(session.user.id) : null;
+  const region = toRegion(profile?.region);
   const db = await getDb();
-  const boards = await db.query.biteBoards.findMany({ where: eq(biteBoards.active, true), orderBy: [biteBoards.name] });
+  const boards = await db.query.biteBoards.findMany({
+    where: and(eq(biteBoards.active, true), eq(biteBoards.region, region)),
+    orderBy: [biteBoards.name],
+  });
   const selected = boardSlug ? boards.find((b) => b.slug === boardSlug) : null;
-  const speciesRows = await db.query.species.findMany({ where: eq(species.active, true), orderBy: [species.commonName] });
+  const speciesRows = await db.query.species.findMany({
+    where: and(eq(species.active, true), eq(species.region, region)),
+    orderBy: [species.commonName],
+  });
 
   return (
     <div className="max-w-3xl mx-auto">

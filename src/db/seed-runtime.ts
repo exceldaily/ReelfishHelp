@@ -3,7 +3,7 @@ import type { Db } from "./index";
 import { species, regulationLinks, biteBoards, gearArticles, knots, gearSetups, gearBrands, fishGearRequirements, users, userBadges, anglerTips } from "./schema";
 import { allSpecies } from "@/data/species";
 import { stateRegulations } from "@/data/regulations";
-import { retiredStarterBiteBoardSlugs, starterBiteBoards, starterBiteBoardSlugs } from "@/data/bite-boards";
+import { retiredStarterBiteBoardSlugs, starterBiteBoards, starterBiteBoardSlugs, seaBiteBoards } from "@/data/bite-boards";
 import { allGearArticles, knotData, setupData, brandData, fishRequirementData } from "@/data/gear";
 import { starterTips } from "@/data/tips";
 
@@ -96,6 +96,7 @@ export async function ensureSeed(db: Db) {
     .onConflictDoNothing();
 
   await db.insert(biteBoards).values(starterBiteBoards).onConflictDoNothing();
+  await db.insert(biteBoards).values(seaBiteBoards).onConflictDoNothing();
   await db.update(biteBoards).set({ active: true }).where(inArray(biteBoards.slug, starterBiteBoardSlugs));
   await db.update(biteBoards).set({ active: false }).where(inArray(biteBoards.slug, retiredStarterBiteBoardSlugs));
 

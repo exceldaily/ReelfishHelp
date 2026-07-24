@@ -1,0 +1,1 @@
+ALTER TABLE "bite_boards" ADD COLUMN "region" text DEFAULT 'us' NOT NULL;
