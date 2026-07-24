@@ -7,6 +7,8 @@ import { saveLocation, saveManualLocation, completeOnboarding } from "@/lib/acti
 import { Button, Card, Input, Label, Select, FieldError, Spinner } from "@/components/ui";
 import { US_STATES } from "@/data/regulations";
 import { REGION_LIST, type Region } from "@/lib/regions";
+import { RegionFlag } from "@/components/region-flag";
+import { LANGUAGES, type LanguageCode } from "@/lib/languages";
 import type { LocationMode, WaterPref } from "@/db/schema";
 
 const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"];
@@ -15,6 +17,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [region, setRegion] = useState<Region>("us");
+  const [language, setLanguage] = useState<LanguageCode>("en");
   const [locLabel, setLocLabel] = useState<string | null>(null);
   const [locBusy, setLocBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,6 +95,7 @@ export default function OnboardingPage() {
     startTransition(async () => {
       await completeOnboarding({
         region,
+        language,
         waterPref,
         experience,
         fishingStyles: styles,
@@ -130,12 +134,22 @@ export default function OnboardingPage() {
                     }`}
                   >
                     <span className="flex items-center gap-1.5 font-bold text-ink-900">
-                      <span aria-hidden>{r.flag}</span> {r.name}
+                      <RegionFlag region={r.id} className="h-3.5 w-[26px]" /> {r.name}
                     </span>
                     <span className="text-xs text-ink-500">{r.blurb}</span>
                   </button>
                 );
               })}
+            </div>
+            <div className="mt-3">
+              <Label htmlFor="language">Language</Label>
+              <Select id="language" value={language} onChange={(e) => setLanguage(e.target.value as LanguageCode)}>
+                {LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>
+                    {l.native}{l.code !== "en" ? ` (${l.label})` : ""}
+                  </option>
+                ))}
+              </Select>
             </div>
           </div>
 

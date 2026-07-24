@@ -10,6 +10,8 @@ import { ImageInput } from "@/components/image-input";
 import { US_STATES } from "@/data/regulations";
 import { brandList } from "@/lib/favorite-brands";
 import { REGION_LIST, type Region } from "@/lib/regions";
+import { RegionFlag } from "@/components/region-flag";
+import { LANGUAGES, type LanguageCode } from "@/lib/languages";
 
 const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"];
 
@@ -22,6 +24,7 @@ export function SettingsForm({
     username: string;
     bio: string | null;
     region: Region;
+    language: LanguageCode;
     homeState: string | null;
     waterPref: string;
     experience: string;
@@ -121,12 +124,22 @@ export function SettingsForm({
                 <input type="radio" name="region" value={r.id} defaultChecked={profile.region === r.id} className="mt-1 size-4 accent-tide-600" />
                 <span className="min-w-0">
                   <span className="flex items-center gap-1.5 font-bold text-ink-900">
-                    <span aria-hidden>{r.flag}</span> {r.name}
+                    <RegionFlag region={r.id} className="h-3.5 w-[26px]" /> {r.name}
                   </span>
                   <span className="block text-xs text-ink-500">{r.blurb}</span>
                 </span>
               </label>
             ))}
+          </div>
+          <div className="mt-3 max-w-56">
+            <Label htmlFor="language">Language</Label>
+            <Select id="language" name="language" defaultValue={profile.language}>
+              {LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.native}{l.code !== "en" ? ` (${l.label})` : ""}
+                </option>
+              ))}
+            </Select>
           </div>
         </div>
 

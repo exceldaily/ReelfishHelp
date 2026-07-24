@@ -6,6 +6,8 @@ import { getDb } from "@/db";
 import { biteBoards, forumQuestions } from "@/db/schema";
 import { createForumQuestion } from "@/lib/actions/forum-actions";
 import { FORUM_TOPICS, forumTopicLabel, isForumTopic } from "@/data/forum-topics";
+import { getProfile } from "@/lib/auth-helpers";
+import { toRegion } from "@/lib/regions";
 import { Badge, Button, Card, EmptyState, Input, Label, PageHeader, Select, Textarea } from "@/components/ui";
 
 export const metadata = { title: "Forum" };
@@ -20,10 +22,14 @@ export default async function ForumPage({
   searchParams: Promise<{ error?: string; topic?: string; board?: string }>;
 }) {
   const [{ error, topic, board }, session, db] = await Promise.all([searchParams, auth(), getDb()]);
+  // US and SEA communities are separate — the viewer only ever sees their region's forum
+  const profile = session?.user ? await getProfile(session.user.id) : null;
+  const region = toRegion(profile?.region);
   const activeTopic = isForumTopic(topic) ? topic! : null;
-  const activeBoardId = typeof board === "string" && board.length > 0 ? board : null;
+  const activeBoardId = region === "us" && typeof board === "string" && board.length > 0 ? board : null;
 
   const filters = [
+    eq(forumQuestions.region, region),
     activeTopic ? eq(forumQuestions.topic, activeTopic) : null,
     activeBoardId ? eq(forumQuestions.boardId, activeBoardId) : null,
   ].filter(Boolean) as ReturnType<typeof eq>[];
@@ -44,7 +50,11 @@ export default async function ForumPage({
     <div>
       <PageHeader
         title="Forum"
-        subtitle="Ask fishing questions and compare notes with the community, by state and by topic."
+        subtitle={
+          region === "us"
+            ? "Ask fishing questions and compare notes with the community, by state and by topic."
+            : "Ask fishing questions and compare notes with the Southeast Asia community, by topic."
+        }
       />
 
       {/* topic sections */}
@@ -145,17 +155,19 @@ export default async function ForumPage({
                     ))}
                   </Select>
                 </div>
-                <div>
-                  <Label htmlFor="boardId">State board</Label>
-                  <Select id="boardId" name="boardId" defaultValue={activeBoardId ?? ""}>
-                    <option value="">No board</option>
-                    {boards.map((board) => (
-                      <option key={board.id} value={board.id}>
-                        {board.name}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
+                {region === "us" && (
+                  <div>
+                    <Label htmlFor="boardId">State board</Label>
+                    <Select id="boardId" name="boardId" defaultValue={activeBoardId ?? ""}>
+                      <option value="">No board</option>
+                      {boards.map((board) => (
+                        <option key={board.id} value={board.id}>
+                          {board.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
                 <div>
                   <Label htmlFor="body">Details</Label>
                   <Textarea id="body" name="body" required className="min-h-32" placeholder="Water, season, target species, gear, what you have already tried..." />

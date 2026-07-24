@@ -265,7 +265,11 @@ export function TopNav({
                 <Menu className="size-4 text-slate-300 sm:hidden" />
               </button>
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-60 rounded-xl bg-white shadow-lift border border-sand-200 py-2 animate-fade-up">
+                <div className="absolute right-0 mt-2 w-60 rounded-xl bg-white shadow-lift border border-sand-200 py-2 animate-fade-up max-h-[calc(100dvh-6.5rem)] overflow-y-auto overscroll-contain">
+                  {/* phones: the menu is long, so the region toggle leads to stay visible */}
+                  <div className="lg:hidden border-b border-sand-100 pb-1 mb-1">
+                    <RegionSwitcher current={user.region} />
+                  </div>
                   {/* below lg: primary nav lives in the top bar on desktop, but is
                       hidden on phones/tablets — surface it here so everything stays reachable */}
                   <div className="lg:hidden border-b border-sand-100 pb-2 mb-2">
@@ -297,7 +301,7 @@ export function TopNav({
                       <Icon className="size-4 text-ink-500" /> {label}
                     </Link>
                   ))}
-                  <div className="border-t border-sand-100 mt-1 pt-1">
+                  <div className="hidden lg:block border-t border-sand-100 mt-1 pt-1">
                     <RegionSwitcher current={user.region} />
                   </div>
                   {user.role === "admin" && (

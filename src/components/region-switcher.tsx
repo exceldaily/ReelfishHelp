@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, Globe } from "lucide-react";
 import { setRegion } from "@/lib/actions/profile-actions";
 import { REGION_LIST, type Region } from "@/lib/regions";
+import { RegionFlag } from "@/components/region-flag";
 
 /**
  * Compact region toggle for the nav avatar menu. Switches the whole app between
@@ -43,7 +44,7 @@ export function RegionSwitcher({ current }: { current: Region }) {
                   : "border-sand-200 bg-white text-ink-500 hover:border-sand-300"
               }`}
             >
-              <span aria-hidden>{r.flag}</span>
+              <RegionFlag region={r.id} className="h-3 w-[22px]" />
               {r.short}
               {active && <Check className="size-3 text-tide-600" />}
             </button>

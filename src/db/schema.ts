@@ -49,6 +49,8 @@ export const profiles = pgTable("profiles", {
   bio: text("bio"),
   // App region/version the user browses in: "us" (default) or "sea".
   region: text("region").notNull().default("us"),
+  // Display-language preference; every pre-existing account defaults to English.
+  language: text("language").notNull().default("en"),
   homeState: text("home_state"),
   waterPref: text("water_pref").$type<WaterPref>().notNull().default("both"),
   experience: text("experience", {
@@ -380,6 +382,8 @@ export const forumQuestions = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     boardId: text("board_id").references(() => biteBoards.id, { onDelete: "set null" }),
+    // Author's app region at posting time — US and SEA communities are separate.
+    region: text("region").notNull().default("us"),
     title: text("title").notNull(),
     body: text("body").notNull(),
     tags: jsonb("tags").$type<string[]>().notNull().default([]),

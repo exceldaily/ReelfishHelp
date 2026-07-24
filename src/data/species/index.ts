@@ -8,6 +8,7 @@ import { saltwaterSnapperGrouper } from "./saltwater-4";
 import { speciesAdditions1 } from "./additions-1";
 import { seaSpecies1 } from "./sea-1";
 import { seaSpecies2 } from "./sea-2";
+import { seaSpecies3 } from "./sea-3";
 import { speciesImages } from "./images";
 
 /** Species seed entries use their slug as a stable primary key. */
@@ -23,6 +24,7 @@ export const allSpecies: SpeciesSeed[] = [
   ...speciesAdditions1,
   ...seaSpecies1,
   ...seaSpecies2,
+  ...seaSpecies3,
 ].map((s) => ({
   ...s,
   imageUrl: speciesImages[s.slug]?.url ?? s.imageUrl ?? null,

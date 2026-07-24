@@ -9,6 +9,8 @@ import { getDb } from "@/db";
 import { forumAnswers, forumQuestions } from "@/db/schema";
 import { createForumAnswer, deleteForumAnswer, toggleAnswerHelpful } from "@/lib/actions/forum-actions";
 import { forumTopicLabel } from "@/data/forum-topics";
+import { getProfile } from "@/lib/auth-helpers";
+import { toRegion } from "@/lib/regions";
 import { Badge, Button, ButtonLink, Card, EmptyState, Label, PageHeader, Textarea } from "@/components/ui";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -35,6 +37,10 @@ export default async function ForumQuestionPage({
     with: { board: true, user: { with: { profile: true } } },
   });
   if (!question) notFound();
+
+  // US and SEA forums are separate communities — cross-region links 404
+  const viewerProfile = session?.user ? await getProfile(session.user.id) : null;
+  if (question.region !== toRegion(viewerProfile?.region)) notFound();
 
   // plain conversation order — replies post instantly for everyone
   const answers = await db.query.forumAnswers.findMany({

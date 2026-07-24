@@ -8,6 +8,7 @@ import { requireUser } from "@/lib/auth-helpers";
 import { approximate, reverseGeocode } from "@/lib/geo";
 import { storeMediaUrl } from "@/lib/media";
 import { isRegion, type Region } from "@/lib/regions";
+import { toLanguage, type LanguageCode } from "@/lib/languages";
 
 /** Switch the user's app region (USA vs Southeast Asia). Reversible anytime. */
 export async function setRegion(region: Region): Promise<{ ok: true } | { error: string }> {
@@ -80,6 +81,7 @@ export async function saveManualLocation(input: {
 
 const onboardingSchema = z.object({
   region: z.enum(["us", "sea"]),
+  language: z.enum(["en", "th", "ms", "zh", "lo", "fil"]),
   waterPref: z.enum(["freshwater", "saltwater", "both"]),
   experience: z.enum(["new", "casual", "regular", "serious"]),
   fishingStyles: z.array(z.string()).max(10),
@@ -88,6 +90,7 @@ const onboardingSchema = z.object({
 
 export async function completeOnboarding(input: {
   region: Region;
+  language: LanguageCode;
   waterPref: WaterPref;
   experience: "new" | "casual" | "regular" | "serious";
   fishingStyles: string[];
@@ -114,6 +117,7 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
   const bio = String(formData.get("bio") ?? "").slice(0, 500);
   const regionRaw = String(formData.get("region") ?? "us");
   const region: Region = isRegion(regionRaw) ? regionRaw : "us";
+  const language = toLanguage(String(formData.get("language") ?? "en"));
   const homeState = String(formData.get("homeState") ?? "") || null;
   const waterPref = String(formData.get("waterPref") ?? "both") as WaterPref;
   const experience = String(formData.get("experience") ?? "casual") as
@@ -160,6 +164,7 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
       displayName,
       bio,
       region,
+      language,
       homeState,
       waterPref,
       experience,

@@ -6,9 +6,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getDb } from "@/db";
 import { biteBoards, forumAnswers, forumAnswerVotes, forumQuestions, profiles } from "@/db/schema";
-import { requireAdmin, requireUser } from "@/lib/auth-helpers";
+import { requireAdmin, requireUser, getProfile } from "@/lib/auth-helpers";
 import { notify, notifyBadges } from "@/lib/notify";
 import { DEFAULT_FORUM_TOPIC, isForumTopic } from "@/data/forum-topics";
+import { toRegion } from "@/lib/regions";
 
 function cleanText(value: FormDataEntryValue | null, max: number) {
   return String(value ?? "").trim().replace(/\s+/g, " ").slice(0, max);
@@ -34,7 +35,11 @@ export async function createForumQuestion(formData: FormData) {
   if (title.length < 8) forumError("Add a clearer question title.");
   if (body.length < 20) forumError("Add a little more detail so people can help.");
 
-  const boardId = cleanText(formData.get("boardId"), 80) || null;
+  // questions live in the author's region — US and SEA forums never mix
+  const region = toRegion((await getProfile(user.id))?.region);
+
+  // state boards are a US concept; SEA questions never attach to one
+  const boardId = region === "us" ? cleanText(formData.get("boardId"), 80) || null : null;
   const board = boardId
     ? await db.query.biteBoards.findFirst({ where: and(eq(biteBoards.id, boardId), eq(biteBoards.active, true)) })
     : null;
@@ -47,6 +52,7 @@ export async function createForumQuestion(formData: FormData) {
     id: questionId,
     userId: user.id,
     boardId: board?.id ?? null,
+    region,
     topic,
     title,
     body,

@@ -9,6 +9,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { species } from "../src/db/schema";
 import { seaSpecies1 } from "../src/data/species/sea-1";
 import { seaSpecies2 } from "../src/data/species/sea-2";
+import { seaSpecies3 } from "../src/data/species/sea-3";
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -16,7 +17,7 @@ async function main() {
   const pool = new Pool({ connectionString: url, max: 2 });
   const db = drizzle(pool);
 
-  const all = [...seaSpecies1, ...seaSpecies2];
+  const all = [...seaSpecies1, ...seaSpecies2, ...seaSpecies3];
   let inserted = 0;
   for (const s of all) {
     const res = await db.insert(species).values(s).onConflictDoNothing();

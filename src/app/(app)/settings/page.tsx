@@ -7,6 +7,7 @@ import { getDb, species } from "@/db";
 import { getUsage } from "@/lib/media";
 import { formatBytes } from "@/lib/storage-admin";
 import { toRegion } from "@/lib/regions";
+import { toLanguage } from "@/lib/languages";
 import { PageHeader, Card } from "@/components/ui";
 import { SettingsForm } from "@/components/settings-form";
 import { AccountDeletion } from "@/components/account-deletion";
@@ -75,6 +76,7 @@ export default async function SettingsPage() {
           username: profile.username,
           bio: profile.bio,
           region: toRegion(profile.region),
+          language: toLanguage(profile.language),
           homeState: profile.homeState,
           waterPref: profile.waterPref,
           experience: profile.experience,
