@@ -7,7 +7,7 @@ export type Db = NodePgDatabase<typeof schema> | PgliteDatabase<typeof schema>;
 
 /**
  * Dual-driver database client.
- * - DATABASE_URL set  → Neon / any Postgres (production)
+ * - DATABASE_URL set  → Supabase / any Postgres (production)
  * - DATABASE_URL unset → embedded PGlite in .data/pglite (local development).
  *   Local mode auto-runs migrations and seeds the species database so the
  *   whole app works with zero configuration. The UI shows a "local dev

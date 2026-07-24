@@ -23,9 +23,9 @@ A production-ready fishing help platform for US freshwater and saltwater anglers
 ## Stack
 
 - **Next.js 16** (App Router) + Tailwind CSS 4 + TypeScript
-- **Postgres** via Drizzle ORM — Neon in production, **embedded PGlite locally (zero setup)**
+- **Postgres** via Drizzle ORM — Supabase Postgres in production, **embedded PGlite locally (zero setup)**
 - **Auth.js v5** email/password auth with roles
-- **Cloudflare R2** (private bucket) for photos — EXIF/GPS stripped, WebP variants, Neon stores metadata only; falls back to Vercel Blob / local disk
+- **Cloudflare R2** (private bucket) for photos — EXIF/GPS stripped, WebP variants, the database stores metadata only; falls back to Vercel Blob / local disk
 - **Claude API** (`claude-opus-4-8`) for photo fish identification
 - Free live data: Open-Meteo (weather), NOAA CO-OPS (tides), OpenStreetMap (maps), Wikipedia (species photos), BigDataCloud (reverse geocoding) — **no API keys needed**
 
@@ -49,7 +49,7 @@ ANTHROPIC_API_KEY=sk-ant-...   # console.anthropic.com
 ## Deploying to Vercel (free tier)
 
 1. **Import the repo** into Vercel.
-2. **Add Neon Postgres**: Vercel → Storage → Create → Neon. This sets `DATABASE_URL` automatically.
+2. **Add Postgres**: create a Supabase project (or any hosted Postgres) and set `DATABASE_URL` to its pooled connection string.
 3. **Add Cloudflare R2** for photos (see below). Fallback: Vercel Blob (`BLOB_READ_WRITE_TOKEN`), else local disk in dev.
 4. **Set env vars** (Project → Settings → Environment Variables):
    - `AUTH_SECRET` — generate with `npx auth secret` or `openssl rand -base64 32`
@@ -58,7 +58,7 @@ ANTHROPIC_API_KEY=sk-ant-...   # console.anthropic.com
    - `ANTHROPIC_API_KEY` — for photo identification (optional)
 5. **Migrate + seed the production database** from your machine:
    ```bash
-   DATABASE_URL="postgres://...neon connection string..." npm run db:setup
+   DATABASE_URL="postgres://...production connection string..." npm run db:setup
    ```
 6. Deploy. Create/admin users intentionally; production signups do not become admin automatically.
 
@@ -78,7 +78,7 @@ Recommended Cloudflare setup:
 
 ## Cloudflare R2 photo storage
 
-Photos never touch the Neon database as binaries — Neon stores only metadata
+Photos never touch the Postgres database as binaries — it stores only metadata
 (`media_assets`, `media_variants`, `user_storage_usage`). The bytes live in a
 **private** R2 bucket and are served through the authenticated `/api/media/*`
 route, which enforces ownership + visibility before returning anything.

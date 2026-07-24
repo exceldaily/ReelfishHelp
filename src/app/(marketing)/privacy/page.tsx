@@ -42,7 +42,7 @@ const sections: { h: string; b: React.ReactNode }[] = [
   },
   {
     h: "Services we rely on",
-    b: "We use trusted infrastructure providers to operate the app — hosting (Vercel), the database (Neon), and photo storage (Cloudflare R2) — and free public data APIs for weather, tides, geocoding, and species reference imagery. These providers process data on our behalf to deliver the service; we share only what's needed for that purpose.",
+    b: "We use trusted infrastructure providers to operate the app — hosting (Vercel), the database (Supabase), and photo storage (Cloudflare R2) — and free public data APIs for weather, tides, geocoding, and species reference imagery. These providers process data on our behalf to deliver the service; we share only what's needed for that purpose.",
   },
   {
     h: "Cookies",

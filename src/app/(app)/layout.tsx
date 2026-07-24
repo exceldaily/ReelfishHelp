@@ -34,7 +34,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <TopNav user={user} fishId={fishId} unread={unread} unreadNotifications={unreadNotifs} />
       {localDb && (
         <div className="bg-bait-100 text-bait-700 text-center text-xs font-semibold py-1.5 px-4">
-          Local development database (PGlite) — set DATABASE_URL to connect Neon Postgres for production.
+          Local development database (PGlite) — set DATABASE_URL to connect hosted Postgres for production.
         </div>
       )}
       <main className="flex-1 w-full mx-auto max-w-6xl px-4 py-6 pb-24 lg:pb-10">{children}</main>
