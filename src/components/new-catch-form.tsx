@@ -6,6 +6,7 @@ import { createCatch, type CatchFormResult } from "@/lib/actions/catch-actions";
 import { Button, Card, Input, Label, Select, Textarea, FieldError } from "@/components/ui";
 import { ImageInput } from "@/components/image-input";
 import { WATER_TYPES, CATCH_METHODS } from "@/lib/constants";
+import type { UnitSystem } from "@/lib/units";
 
 export function NewCatchForm({
   speciesOptions,
@@ -13,13 +14,16 @@ export function NewCatchForm({
   customName,
   existingPhotoUrl,
   tripId,
+  units = "imperial",
 }: {
   speciesOptions: { id: string; slug: string; name: string }[];
   preselectedId: string | null;
   customName: string | null;
   existingPhotoUrl: string | null;
   tripId: string | null;
+  units?: UnitSystem;
 }) {
+  const metric = units === "metric";
   const [state, action, pending] = useActionState<CatchFormResult, FormData>(createCatch, undefined);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [locBusy, setLocBusy] = useState(false);
@@ -45,6 +49,7 @@ export function NewCatchForm({
       <form action={action} className="space-y-5">
         {tripId && <input type="hidden" name="tripId" value={tripId} />}
         {existingPhotoUrl && <input type="hidden" name="existingPhotoUrl" value={existingPhotoUrl} />}
+        <input type="hidden" name="unitSystem" value={units} />
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
@@ -128,12 +133,12 @@ export function NewCatchForm({
             </Select>
           </div>
           <div>
-            <Label htmlFor="lengthIn">Length (in)</Label>
-            <Input id="lengthIn" name="lengthIn" type="number" step="0.25" min="0" placeholder="18.5" />
+            <Label htmlFor="lengthIn">Length ({metric ? "cm" : "in"})</Label>
+            <Input id="lengthIn" name="lengthIn" type="number" step={metric ? "0.5" : "0.25"} min="0" placeholder={metric ? "47" : "18.5"} />
           </div>
           <div>
-            <Label htmlFor="weightLb">Weight (lb)</Label>
-            <Input id="weightLb" name="weightLb" type="number" step="0.1" min="0" placeholder="3.2" />
+            <Label htmlFor="weightLb">Weight ({metric ? "kg" : "lb"})</Label>
+            <Input id="weightLb" name="weightLb" type="number" step={metric ? "0.05" : "0.1"} min="0" placeholder={metric ? "1.5" : "3.2"} />
           </div>
         </div>
 

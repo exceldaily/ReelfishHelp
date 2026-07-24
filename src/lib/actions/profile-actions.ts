@@ -7,6 +7,20 @@ import { getDb, profiles, type LocationMode, type Visibility, type WaterPref } f
 import { requireUser } from "@/lib/auth-helpers";
 import { approximate, reverseGeocode } from "@/lib/geo";
 import { storeMediaUrl } from "@/lib/media";
+import { isRegion, type Region } from "@/lib/regions";
+
+/** Switch the user's app region (USA vs Southeast Asia). Reversible anytime. */
+export async function setRegion(region: Region): Promise<{ ok: true } | { error: string }> {
+  if (!isRegion(region)) return { error: "Unknown region" };
+  const user = await requireUser();
+  const db = await getDb();
+  await db.update(profiles).set({ region }).where(eq(profiles.userId, user.id));
+  revalidatePath("/home");
+  revalidatePath("/fish");
+  revalidatePath("/conditions");
+  revalidatePath("/settings");
+  return { ok: true };
+}
 
 /** Stores the user's location — always rounded to ~1km before it touches the database. */
 export async function saveLocation(input: {
@@ -65,6 +79,7 @@ export async function saveManualLocation(input: {
 }
 
 const onboardingSchema = z.object({
+  region: z.enum(["us", "sea"]),
   waterPref: z.enum(["freshwater", "saltwater", "both"]),
   experience: z.enum(["new", "casual", "regular", "serious"]),
   fishingStyles: z.array(z.string()).max(10),
@@ -72,6 +87,7 @@ const onboardingSchema = z.object({
 });
 
 export async function completeOnboarding(input: {
+  region: Region;
   waterPref: WaterPref;
   experience: "new" | "casual" | "regular" | "serious";
   fishingStyles: string[];
@@ -96,6 +112,8 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
   const displayName = String(formData.get("displayName") ?? "").trim();
   if (!displayName) return { error: "Display name is required" };
   const bio = String(formData.get("bio") ?? "").slice(0, 500);
+  const regionRaw = String(formData.get("region") ?? "us");
+  const region: Region = isRegion(regionRaw) ? regionRaw : "us";
   const homeState = String(formData.get("homeState") ?? "") || null;
   const waterPref = String(formData.get("waterPref") ?? "both") as WaterPref;
   const experience = String(formData.get("experience") ?? "casual") as
@@ -141,6 +159,7 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
     .set({
       displayName,
       bio,
+      region,
       homeState,
       waterPref,
       experience,
@@ -154,5 +173,7 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
     .where(eq(profiles.userId, user.id));
   revalidatePath("/settings");
   revalidatePath("/home");
+  revalidatePath("/fish");
+  revalidatePath("/conditions");
   return { ok: true };
 }

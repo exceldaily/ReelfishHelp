@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { and, desc, eq } from "drizzle-orm";
 import { UsersRound, Lock, MapPin, Settings, Trash2, UserCircle2 } from "lucide-react";
 import { getDb, crews, crewPosts, catches, type Crew } from "@/db";
-import { currentUser } from "@/lib/auth-helpers";
+import { currentUser, getViewerUnits } from "@/lib/auth-helpers";
 import { crewRole, canModerate } from "@/lib/crews";
 import { US_STATES } from "@/data/regulations";
 import { PageHeader, Card, Badge, Button, ButtonLink, SectionTitle, EmptyState } from "@/components/ui";
@@ -53,6 +53,7 @@ export default async function CrewDetailPage({ params }: { params: Promise<{ slu
   const { slug } = await params;
   const db = await getDb();
   const user = await currentUser();
+  const units = await getViewerUnits();
 
   const crew = await db.query.crews.findFirst({
     where: eq(crews.slug, slug),
@@ -203,6 +204,7 @@ export default async function CrewDetailPage({ params }: { params: Promise<{ slu
                     {p.catch && (
                       <div className="mt-3">
                         <CatchCard
+                          units={units}
                           c={{
                             id: p.catch.id,
                             speciesName: p.catch.species?.commonName ?? p.catch.customSpeciesName ?? "Catch",

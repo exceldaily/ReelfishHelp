@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 import { Trophy } from "lucide-react";
 import { getDb, catches } from "@/db";
-import { requireUser } from "@/lib/auth-helpers";
+import { requireUser, getViewerUnits } from "@/lib/auth-helpers";
 import { PageHeader, ButtonLink, EmptyState } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
 
@@ -9,6 +9,7 @@ export const metadata = { title: "My Catches" };
 
 export default async function MyCatchesPage() {
   const user = await requireUser();
+  const units = await getViewerUnits();
   const db = await getDb();
   const rows = await db.query.catches.findMany({
     where: eq(catches.userId, user.id),
@@ -35,6 +36,7 @@ export default async function MyCatchesPage() {
           {rows.map((c) => (
             <CatchCard
               key={c.id}
+              units={units}
               c={{
                 id: c.id,
                 speciesName: c.species?.commonName ?? c.customSpeciesName ?? "Unknown species",

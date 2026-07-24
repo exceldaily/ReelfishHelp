@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { and, eq, inArray } from "drizzle-orm";
 import { MapPin, CloudSun, Waves, Sunrise, Sunset, Fish } from "lucide-react";
 import { getDb, trips, species, catches } from "@/db";
-import { requireUser } from "@/lib/auth-helpers";
+import { requireUser, getViewerUnits } from "@/lib/auth-helpers";
 import { getConditions } from "@/lib/conditions";
 import { Card, Badge, PageHeader, Stat, WaterBadge } from "@/components/ui";
 import { TripChecklist, TripActions } from "@/components/trip-checklist";
@@ -12,6 +12,7 @@ import { CatchCard } from "@/components/catch-card";
 export default async function TripDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await requireUser();
+  const units = await getViewerUnits();
   const db = await getDb();
   const trip = await db.query.trips.findFirst({ where: and(eq(trips.id, id), eq(trips.userId, user.id)) });
   if (!trip) notFound();
@@ -158,6 +159,7 @@ export default async function TripDetailPage({ params }: { params: Promise<{ id:
               {tripCatches.map((c) => (
                 <CatchCard
                   key={c.id}
+                  units={units}
                   c={{
                     id: c.id,
                     speciesName: c.species?.commonName ?? c.customSpeciesName ?? "Unknown",

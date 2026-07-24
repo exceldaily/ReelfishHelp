@@ -6,6 +6,8 @@ import { and, eq } from "drizzle-orm";
 import { MapPin, Ruler, Weight, Trash2 } from "lucide-react";
 import { getDb, catches, follows, likes as likesTable, savedPosts } from "@/db";
 import { auth } from "@/auth";
+import { getViewerUnits } from "@/lib/auth-helpers";
+import { formatLength, formatWeight } from "@/lib/units";
 import { Card, Badge, WaterBadge, ButtonLink } from "@/components/ui";
 import { CatchSocialBar, CommentSection } from "@/components/catch-social";
 import { deleteCatch } from "@/lib/actions/catch-actions";
@@ -29,6 +31,7 @@ export default async function CatchDetailPage({ params }: { params: Promise<{ id
   const viewerId = session?.user?.id ?? null;
   const isOwner = viewerId === c.userId;
   const isAdmin = session?.user?.role === "admin";
+  const units = await getViewerUnits();
 
   // visibility enforcement
   if (!isOwner && !isAdmin) {
@@ -104,12 +107,12 @@ export default async function CatchDetailPage({ params }: { params: Promise<{ id
         <div className="mt-4 flex flex-wrap gap-2.5">
           {c.lengthIn != null && (
             <span className="inline-flex items-center gap-1.5 rounded-xl bg-sand-100 px-3.5 py-2 text-sm font-bold">
-              <Ruler className="size-4 text-tide-600" /> {c.lengthIn}&quot;
+              <Ruler className="size-4 text-tide-600" /> {formatLength(c.lengthIn, units)}
             </span>
           )}
           {c.weightLb != null && (
             <span className="inline-flex items-center gap-1.5 rounded-xl bg-sand-100 px-3.5 py-2 text-sm font-bold">
-              <Weight className="size-4 text-tide-600" /> {c.weightLb} lb
+              <Weight className="size-4 text-tide-600" /> {formatWeight(c.weightLb, units)}
             </span>
           )}
           {showLocation && c.locationLabel && (

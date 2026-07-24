@@ -9,6 +9,7 @@ import { Button, Card, Input, Label, Select, Textarea, FieldError } from "@/comp
 import { ImageInput } from "@/components/image-input";
 import { US_STATES } from "@/data/regulations";
 import { brandList } from "@/lib/favorite-brands";
+import { REGION_LIST, type Region } from "@/lib/regions";
 
 const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"];
 
@@ -20,6 +21,7 @@ export function SettingsForm({
     displayName: string;
     username: string;
     bio: string | null;
+    region: Region;
     homeState: string | null;
     waterPref: string;
     experience: string;
@@ -105,6 +107,27 @@ export function SettingsForm({
         <div>
           <Label htmlFor="bio">Bio</Label>
           <Textarea id="bio" name="bio" defaultValue={profile.bio ?? ""} maxLength={500} className="min-h-20" placeholder="Weekend wade fisherman chasing gator trout…" />
+        </div>
+
+        <div>
+          <Label>Region</Label>
+          <p className="mb-2 -mt-0.5 text-xs text-ink-300">Sets which fish, units, and local info you see across the app.</p>
+          <div className="grid grid-cols-2 gap-2.5">
+            {REGION_LIST.map((r) => (
+              <label
+                key={r.id}
+                className="flex cursor-pointer items-start gap-2.5 rounded-xl border-2 border-sand-200 bg-white p-3 transition-colors has-checked:border-tide-500 has-checked:bg-tide-50"
+              >
+                <input type="radio" name="region" value={r.id} defaultChecked={profile.region === r.id} className="mt-1 size-4 accent-tide-600" />
+                <span className="min-w-0">
+                  <span className="flex items-center gap-1.5 font-bold text-ink-900">
+                    <span aria-hidden>{r.flag}</span> {r.name}
+                  </span>
+                  <span className="block text-xs text-ink-500">{r.blurb}</span>
+                </span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

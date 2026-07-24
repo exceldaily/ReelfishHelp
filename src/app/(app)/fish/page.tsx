@@ -7,6 +7,7 @@ import { getProfile } from "@/lib/auth-helpers";
 import { resolveManyImages } from "@/lib/wiki-images";
 import { regionsForState, seasonForMonth } from "@/lib/suggestions";
 import { US_STATES } from "@/data/regulations";
+import { toRegion, regionMeta } from "@/lib/regions";
 import { FishImage } from "@/components/fish-image";
 import { PageHeader, WaterBadge, Badge, DifficultyDots, EmptyState, ButtonLink } from "@/components/ui";
 
@@ -61,11 +62,14 @@ export default async function FishFinderPage({
   const f = await searchParams;
   const session = await auth();
   const profile = session?.user ? await getProfile(session.user.id) : null;
-  const userState = profile?.manualState ?? profile?.homeState ?? null;
+  const region = toRegion(profile?.region);
+  const meta = regionMeta(region);
+  const userState = region === "us" ? profile?.manualState ?? profile?.homeState ?? null : null;
 
   const db = await getDb();
   const all = await db.query.species.findMany({ where: eq(species.active, true) });
   const results = all
+    .filter((s) => s.region === region)
     .filter((s) => matchesFilters(s, f, userState))
     .sort((a, b) => a.commonName.localeCompare(b.commonName));
 
@@ -82,7 +86,11 @@ export default async function FishFinderPage({
     <div>
       <PageHeader
         title="Fish Finder"
-        subtitle="Search 40+ US fresh and saltwater species and open the full catch guide for any of them."
+        subtitle={
+          region === "us"
+            ? "Search US fresh and saltwater species and open the full catch guide for any of them."
+            : `Search ${meta.name} species and open the full catch guide for any of them.`
+        }
       />
 
       {/* filters */}
@@ -100,12 +108,14 @@ export default async function FishFinderPage({
             <option value="freshwater">Freshwater</option>
             <option value="saltwater">Saltwater</option>
           </select>
-          <select name="state" aria-label="State" defaultValue={f.state ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white">
-            <option value="">Any state</option>
-            {US_STATES.map((s) => (
-              <option key={s.code} value={s.code}>{s.name}</option>
-            ))}
-          </select>
+          {region === "us" && (
+            <select name="state" aria-label="State" defaultValue={f.state ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white">
+              <option value="">Any state</option>
+              {US_STATES.map((s) => (
+                <option key={s.code} value={s.code}>{s.name}</option>
+              ))}
+            </select>
+          )}
           <select name="env" aria-label="Environment" defaultValue={f.env ?? ""} className="rounded-xl border border-sand-300 px-3 py-2.5 min-h-11 text-[15px] bg-white capitalize">
             <option value="">Any water type</option>
             {ENV_OPTIONS.map((e) => (

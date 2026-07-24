@@ -6,6 +6,8 @@ import { saltwaterNearshoreOffshore } from "./saltwater-2";
 import { saltwaterTunaAndReef } from "./saltwater-3";
 import { saltwaterSnapperGrouper } from "./saltwater-4";
 import { speciesAdditions1 } from "./additions-1";
+import { seaSpecies1 } from "./sea-1";
+import { seaSpecies2 } from "./sea-2";
 import { speciesImages } from "./images";
 
 /** Species seed entries use their slug as a stable primary key. */
@@ -19,6 +21,8 @@ export const allSpecies: SpeciesSeed[] = [
   ...saltwaterTunaAndReef,
   ...saltwaterSnapperGrouper,
   ...speciesAdditions1,
+  ...seaSpecies1,
+  ...seaSpecies2,
 ].map((s) => ({
   ...s,
   imageUrl: speciesImages[s.slug]?.url ?? s.imageUrl ?? null,

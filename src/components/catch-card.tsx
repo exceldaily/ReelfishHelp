@@ -3,6 +3,7 @@ import { VerifiedTitleBadge } from "@/components/verified-badge";
 import Image from "next/image";
 import { Fish, Heart, MessageCircle, MapPin, Ruler, Weight } from "lucide-react";
 import { Badge } from "@/components/ui";
+import { formatLength, formatWeight, type UnitSystem } from "@/lib/units";
 
 export type CatchCardData = {
   id: string;
@@ -22,7 +23,7 @@ export type CatchCardData = {
   commentCount?: number;
 };
 
-export function CatchCard({ c }: { c: CatchCardData }) {
+export function CatchCard({ c, units = "imperial" }: { c: CatchCardData; units?: UnitSystem }) {
   return (
     <Link
       href={`/catch/${c.id}`}
@@ -66,10 +67,10 @@ export function CatchCard({ c }: { c: CatchCardData }) {
         )}
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-500">
           {c.lengthIn != null && (
-            <span className="inline-flex items-center gap-1"><Ruler className="size-3.5" />{c.lengthIn}&quot;</span>
+            <span className="inline-flex items-center gap-1"><Ruler className="size-3.5" />{formatLength(c.lengthIn, units)}</span>
           )}
           {c.weightLb != null && (
-            <span className="inline-flex items-center gap-1"><Weight className="size-3.5" />{c.weightLb} lb</span>
+            <span className="inline-flex items-center gap-1"><Weight className="size-3.5" />{formatWeight(c.weightLb, units)}</span>
           )}
           {c.showLocation && c.locationLabel && (
             <span className="inline-flex items-center gap-1"><MapPin className="size-3.5" />{c.locationLabel}</span>

@@ -18,6 +18,7 @@ import { requireUser } from "@/lib/auth-helpers";
 import { notify, notifyBadges } from "@/lib/notify";
 import { storeMedia, assertUnderQuota, deleteMediaByRelation } from "@/lib/media";
 import { approximate } from "@/lib/geo";
+import { lengthToInches, weightToPounds, type UnitSystem } from "@/lib/units";
 
 export type CatchFormResult = { error?: string } | undefined;
 type ShareDelay = "now" | "12h" | "24h" | "never";
@@ -46,6 +47,12 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
     const n = parseFloat(v);
     return Number.isNaN(n) || n < 0 || n > 10000 ? null : n;
   };
+
+  // Length/weight are entered in the user's units but stored canonically in
+  // inches/pounds. Convert here so metric-region catches round-trip correctly.
+  const unitSystem: UnitSystem = String(formData.get("unitSystem") ?? "imperial") === "metric" ? "metric" : "imperial";
+  const lengthIn = lengthToInches(num("lengthIn"), unitSystem);
+  const weightLb = weightToPounds(num("weightLb"), unitSystem);
 
   // location is always approximated before storage
   const latRaw = num("lat");
@@ -78,8 +85,8 @@ export async function createCatch(_prev: CatchFormResult, formData: FormData): P
       caughtAt,
       waterType: String(formData.get("waterType") ?? "") || null,
       method: String(formData.get("method") ?? "") || null,
-      lengthIn: num("lengthIn"),
-      weightLb: num("weightLb"),
+      lengthIn,
+      weightLb,
       bait: String(formData.get("bait") ?? "").slice(0, 200) || null,
       gearNotes: String(formData.get("gearNotes") ?? "").slice(0, 400) || null,
       weatherNotes: String(formData.get("weatherNotes") ?? "").slice(0, 400) || null,

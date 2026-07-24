@@ -6,6 +6,7 @@ import { MapPin, ShieldCheck, EyeOff, Navigation, Check } from "lucide-react";
 import { saveLocation, saveManualLocation, completeOnboarding } from "@/lib/actions/profile-actions";
 import { Button, Card, Input, Label, Select, FieldError, Spinner } from "@/components/ui";
 import { US_STATES } from "@/data/regulations";
+import { REGION_LIST, type Region } from "@/lib/regions";
 import type { LocationMode, WaterPref } from "@/db/schema";
 
 const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"];
@@ -13,6 +14,7 @@ const STYLES = ["Shore", "Kayak", "Boat", "Pier", "Surf", "Wading", "Fly", "Ice"
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
+  const [region, setRegion] = useState<Region>("us");
   const [locLabel, setLocLabel] = useState<string | null>(null);
   const [locBusy, setLocBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +62,7 @@ export default function OnboardingPage() {
 
   async function submitManual() {
     setError(null);
-    if (!manualState) {
+    if (region === "us" && !manualState) {
       setError("Pick your state first.");
       return;
     }
@@ -89,10 +91,11 @@ export default function OnboardingPage() {
   function finish() {
     startTransition(async () => {
       await completeOnboarding({
+        region,
         waterPref,
         experience,
         fishingStyles: styles,
-        homeState: manualState || null,
+        homeState: region === "us" ? manualState || null : null,
       });
       router.push("/home");
       router.refresh();
@@ -109,10 +112,37 @@ export default function OnboardingPage() {
 
       {step === 1 && (
         <Card className="p-6 sm:p-8">
+          <div className="mb-6">
+            <Label>Which region do you fish?</Label>
+            <p className="mb-2.5 -mt-0.5 text-xs text-ink-300">
+              Sets your fish, units, and local info. You can switch anytime.
+            </p>
+            <div className="grid grid-cols-2 gap-2.5">
+              {REGION_LIST.map((r) => {
+                const on = region === r.id;
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setRegion(r.id)}
+                    className={`flex flex-col items-start gap-0.5 rounded-2xl border-2 p-3.5 text-left transition-colors ${
+                      on ? "border-tide-600 bg-tide-50" : "border-sand-200 bg-white hover:border-sand-300"
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5 font-bold text-ink-900">
+                      <span aria-hidden>{r.flag}</span> {r.name}
+                    </span>
+                    <span className="text-xs text-ink-500">{r.blurb}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <MapPin className="size-8 text-tide-600" />
           <h1 className="mt-3 font-display text-2xl font-bold">Where do you fish?</h1>
           <p className="mt-1.5 text-ink-500 text-sm leading-relaxed">
-            Your location powers local conditions, tides, and species suggestions. We only ever
+            Your location powers local conditions{region === "us" ? ", tides," : ""} and species suggestions. We only ever
             store an <strong>approximate</strong> area (about a 1-mile grid) — never your exact
             position, and it's never shown publicly.
           </p>
@@ -155,15 +185,17 @@ export default function OnboardingPage() {
 
           {manual && (
             <div className="mt-5 rounded-2xl bg-sand-100 p-4 space-y-3">
-              <div>
-                <Label htmlFor="state">State</Label>
-                <Select id="state" value={manualState} onChange={(e) => setManualState(e.target.value)}>
-                  <option value="">Choose your state…</option>
-                  {US_STATES.map((s) => (
-                    <option key={s.code} value={s.code}>{s.name}</option>
-                  ))}
-                </Select>
-              </div>
+              {region === "us" && (
+                <div>
+                  <Label htmlFor="state">State</Label>
+                  <Select id="state" value={manualState} onChange={(e) => setManualState(e.target.value)}>
+                    <option value="">Choose your state…</option>
+                    {US_STATES.map((s) => (
+                      <option key={s.code} value={s.code}>{s.name}</option>
+                    ))}
+                  </Select>
+                </div>
+              )}
               <div>
                 <Label htmlFor="city">City or area (optional — improves conditions accuracy)</Label>
                 <Input

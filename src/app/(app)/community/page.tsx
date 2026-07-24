@@ -6,6 +6,7 @@ import { catches, userBlocks } from "@/db/schema";
 import { auth } from "@/auth";
 import { PageHeader, EmptyState, ButtonLink } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
+import { getViewerUnits } from "@/lib/auth-helpers";
 
 export const metadata = { title: "Community" };
 
@@ -16,6 +17,7 @@ export default async function CommunityPage({
 }) {
   const { water } = await searchParams;
   const session = await auth(); // session not required — public catches are public
+  const units = await getViewerUnits();
   const db = await getDb();
   const blockedRows = session?.user
     ? await db
@@ -88,6 +90,7 @@ export default async function CommunityPage({
           {filtered.map((c) => (
             <CatchCard
               key={c.id}
+              units={units}
               c={{
                 id: c.id,
                 speciesName: c.species?.commonName ?? c.customSpeciesName ?? "Unknown species",

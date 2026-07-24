@@ -2,6 +2,8 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { getDb, profiles, type Profile } from "@/db";
+import { unitSystemForRegion } from "@/lib/regions";
+import type { UnitSystem } from "@/lib/units";
 
 export async function currentUser() {
   const session = await auth();
@@ -24,4 +26,12 @@ export async function requireAdmin() {
 export async function getProfile(userId: string): Promise<Profile | null> {
   const db = await getDb();
   return (await db.query.profiles.findFirst({ where: eq(profiles.userId, userId) })) ?? null;
+}
+
+/** The unit system the current viewer sees (metric for SEA, imperial for USA / signed-out). */
+export async function getViewerUnits(): Promise<UnitSystem> {
+  const session = await auth();
+  if (!session?.user) return "imperial";
+  const profile = await getProfile(session.user.id);
+  return unitSystemForRegion(profile?.region);
 }

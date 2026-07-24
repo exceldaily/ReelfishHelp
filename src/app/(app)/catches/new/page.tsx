@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { getDb, species } from "@/db";
-import { requireUser } from "@/lib/auth-helpers";
+import { requireUser, getProfile } from "@/lib/auth-helpers";
+import { toRegion, unitSystemForRegion } from "@/lib/regions";
 import { PageHeader } from "@/components/ui";
 import { NewCatchForm } from "@/components/new-catch-form";
 
@@ -11,11 +12,14 @@ export default async function NewCatchPage({
 }: {
   searchParams: Promise<{ species?: string; custom?: string; photo?: string; trip?: string }>;
 }) {
-  await requireUser();
+  const user = await requireUser();
+  const profile = await getProfile(user.id);
+  const region = toRegion(profile?.region);
   const params = await searchParams;
   const db = await getDb();
   const all = await db.query.species.findMany({ where: eq(species.active, true) });
   const options = all
+    .filter((s) => s.region === region)
     .map((s) => ({ id: s.id, slug: s.slug, name: s.commonName }))
     .sort((a, b) => a.name.localeCompare(b.name));
   const preselected = params.species ? options.find((o) => o.slug === params.species) ?? null : null;
@@ -29,6 +33,7 @@ export default async function NewCatchPage({
         customName={params.custom ?? null}
         existingPhotoUrl={params.photo ?? null}
         tripId={params.trip ?? null}
+        units={unitSystemForRegion(region)}
       />
     </div>
   );

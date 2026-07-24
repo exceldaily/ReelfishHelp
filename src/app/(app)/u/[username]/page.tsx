@@ -6,6 +6,7 @@ import { UserCircle2, MapPin, Award, Fish, Backpack, Star, Waves } from "lucide-
 import { BRAND_CATEGORIES, brandList } from "@/lib/favorite-brands";
 import { getDb, profiles, catches, follows, gearItems, spots, savedGuides } from "@/db";
 import { auth } from "@/auth";
+import { getViewerUnits } from "@/lib/auth-helpers";
 import { Card, Badge, EmptyState, ButtonLink } from "@/components/ui";
 import { CatchCard } from "@/components/catch-card";
 import { FollowButton } from "@/components/follow-button";
@@ -30,6 +31,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
 
   const session = await auth();
   const viewerId = session?.user?.id ?? null;
+  const units = await getViewerUnits();
   const isOwner = viewerId === profile.userId;
 
   const isFollowing = viewerId
@@ -298,6 +300,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
               {visibleCatches.slice(0, 9).map((c) => (
                 <CatchCard
                   key={c.id}
+                  units={units}
                   c={{
                     id: c.id,
                     speciesName: c.species?.commonName ?? c.customSpeciesName ?? "Unknown",

@@ -434,10 +434,18 @@ export default async function CatchGuidePage({
         {/* regulations */}
         <Section id="regulations" icon={Scale} title="Local Regulations">
           <p className="text-sm text-ink-700 leading-relaxed">
-            Size limits, bag limits, seasons, and gear rules change every year and differ by state
-            (and often by individual water). Always verify with the official source before keeping fish.
+            Size limits, bag limits, seasons, and gear rules change every year and differ by
+            {s.region === "us" ? " state" : " country and province"} (and often by individual water).
+            Always verify with the official source before keeping fish.
           </p>
-          {userReg && (
+          {s.region !== "us" && (
+            <div className="mt-4 rounded-2xl border border-sand-300 bg-sand-50 p-4 text-sm text-ink-700">
+              Regulations vary widely across Southeast Asia and many waters are privately managed or
+              permit-based. Check the local fisheries department or the venue operator before you keep
+              or target this species. Region-specific regulation links are coming to ReelFishHelp.
+            </div>
+          )}
+          {s.region === "us" && userReg && (
             <a
               href={userReg.url}
               target="_blank"
@@ -454,28 +462,30 @@ export default async function CatchGuidePage({
               <span className="text-tide-700 font-bold text-sm whitespace-nowrap">Open →</span>
             </a>
           )}
-          <details className="mt-4 group">
-            <summary className="flex items-center gap-2 cursor-pointer text-sm font-bold text-ink-700 select-none">
-              <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              All state sources for this species
-            </summary>
-            <div className="mt-3 grid sm:grid-cols-2 gap-2">
-              {regs
-                .filter((r) => relevantStates.includes(r.state))
-                .map((r) => (
-                  <a
-                    key={r.state}
-                    href={r.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 rounded-xl border border-sand-200 px-3.5 py-2.5 text-sm hover:bg-sand-100"
-                  >
-                    <span className="font-bold text-tide-700 w-8">{r.state}</span>
-                    <span className="text-ink-700 truncate">{r.agency}</span>
-                  </a>
-                ))}
-            </div>
-          </details>
+          {s.region === "us" && (
+            <details className="mt-4 group">
+              <summary className="flex items-center gap-2 cursor-pointer text-sm font-bold text-ink-700 select-none">
+                <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+                All state sources for this species
+              </summary>
+              <div className="mt-3 grid sm:grid-cols-2 gap-2">
+                {regs
+                  .filter((r) => relevantStates.includes(r.state))
+                  .map((r) => (
+                    <a
+                      key={r.state}
+                      href={r.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-xl border border-sand-200 px-3.5 py-2.5 text-sm hover:bg-sand-100"
+                    >
+                      <span className="font-bold text-tide-700 w-8">{r.state}</span>
+                      <span className="text-ink-700 truncate">{r.agency}</span>
+                    </a>
+                  ))}
+              </div>
+            </details>
+          )}
         </Section>
       </div>
 

@@ -120,6 +120,13 @@
       "when": 1784817472994,
       "tag": "0016_sudden_synch",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1784888109738,
+      "tag": "0017_panoramic_killer_shrike",
+      "breakpoints": true
     }
   ]
 }

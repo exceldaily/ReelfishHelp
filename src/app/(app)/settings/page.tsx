@@ -6,6 +6,7 @@ import { requireUser, getProfile } from "@/lib/auth-helpers";
 import { getDb, species } from "@/db";
 import { getUsage } from "@/lib/media";
 import { formatBytes } from "@/lib/storage-admin";
+import { toRegion } from "@/lib/regions";
 import { PageHeader, Card } from "@/components/ui";
 import { SettingsForm } from "@/components/settings-form";
 import { AccountDeletion } from "@/components/account-deletion";
@@ -73,6 +74,7 @@ export default async function SettingsPage() {
           displayName: profile.displayName,
           username: profile.username,
           bio: profile.bio,
+          region: toRegion(profile.region),
           homeState: profile.homeState,
           waterPref: profile.waterPref,
           experience: profile.experience,

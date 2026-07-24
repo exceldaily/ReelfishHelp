@@ -27,7 +27,9 @@ import {
 } from "lucide-react";
 import { Logo } from "./logo";
 import { NotificationBell } from "./notification-bell";
+import { RegionSwitcher } from "./region-switcher";
 import { signOutAction } from "@/lib/actions/signout";
+import type { Region } from "@/lib/regions";
 
 export type NavUser = {
   id: string;
@@ -35,6 +37,7 @@ export type NavUser = {
   username: string | null;
   role: "user" | "admin";
   avatarUrl: string | null;
+  region: Region;
 } | null;
 
 type NavItemDef = {
@@ -294,6 +297,9 @@ export function TopNav({
                       <Icon className="size-4 text-ink-500" /> {label}
                     </Link>
                   ))}
+                  <div className="border-t border-sand-100 mt-1 pt-1">
+                    <RegionSwitcher current={user.region} />
+                  </div>
                   {user.role === "admin" && (
                     <Link
                       href="/admin"

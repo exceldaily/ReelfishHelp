@@ -9,6 +9,7 @@ import { getDb } from "@/db";
 import { biteBoards, biteReports, catches, userBlocks } from "@/db/schema";
 import { BiteReportCard } from "@/components/bite-report-card";
 import { CatchCard } from "@/components/catch-card";
+import { getViewerUnits } from "@/lib/auth-helpers";
 import { FORUM_TOPICS } from "@/data/forum-topics";
 import { Badge, ButtonLink, Card, EmptyState, PageHeader } from "@/components/ui";
 
@@ -44,6 +45,7 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
   if (!board) notFound();
 
   const session = await auth();
+  const units = await getViewerUnits();
   const blockedRows = session?.user
     ? await db
         .select()
@@ -184,6 +186,7 @@ export default async function BoardPage({ params }: { params: Promise<{ slug: st
                 {boardCatches.slice(0, 8).map((c) => (
                   <CatchCard
                     key={c.id}
+                    units={units}
                     c={{
                       id: c.id,
                       speciesName: c.species?.commonName ?? c.customSpeciesName ?? "Unknown species",

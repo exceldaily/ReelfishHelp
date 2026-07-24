@@ -30,6 +30,7 @@ import {
   species,
 } from "@/db";
 import { requireUser, getProfile } from "@/lib/auth-helpers";
+import { unitSystemForRegion } from "@/lib/regions";
 import { getConditions, type ConditionsBundle } from "@/lib/conditions";
 import { fishIdEnabled } from "@/lib/flags";
 import { Card, Badge, ButtonLink, SectionTitle, WaterBadge } from "@/components/ui";
@@ -53,6 +54,7 @@ export default async function HomePage() {
   const profile = await getProfile(user.id);
   if (!profile) redirect("/onboarding");
   if (!profile.onboarded) redirect("/onboarding");
+  const units = unitSystemForRegion(profile.region);
 
   const db = await getDb();
 
@@ -266,6 +268,7 @@ export default async function HomePage() {
                 {myCatches.map((c) => (
                   <CatchCard
                     key={c.id}
+                    units={units}
                     c={{
                       id: c.id,
                       speciesName: c.species?.commonName ?? c.customSpeciesName ?? "Unknown",
@@ -298,6 +301,7 @@ export default async function HomePage() {
                 {friendActivity.map((c) => (
                   <CatchCard
                     key={c.id}
+                    units={units}
                     c={{
                       id: c.id,
                       speciesName: c.species?.commonName ?? c.customSpeciesName ?? "Unknown",

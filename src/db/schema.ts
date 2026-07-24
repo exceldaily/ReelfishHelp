@@ -47,6 +47,8 @@ export const profiles = pgTable("profiles", {
   displayName: text("display_name").notNull(),
   avatarUrl: text("avatar_url"),
   bio: text("bio"),
+  // App region/version the user browses in: "us" (default) or "sea".
+  region: text("region").notNull().default("us"),
   homeState: text("home_state"),
   waterPref: text("water_pref").$type<WaterPref>().notNull().default("both"),
   experience: text("experience", {
@@ -154,6 +156,8 @@ export const species = pgTable(
     description: text("description").notNull(),
     avgSize: text("avg_size").notNull(),
     trophySize: text("trophy_size").notNull(),
+    // App market this species belongs to: "us" (default) or "sea" (Southeast Asia).
+    region: text("region").notNull().default("us"),
     regions: jsonb("regions").$type<string[]>().notNull().default([]), // US regions
     states: jsonb("states").$type<string[]>().notNull().default([]), // 2-letter, empty = widespread
     environments: jsonb("environments").$type<string[]>().notNull().default([]), // lake,river,pond,beach,pier,surf,marsh,flats,reef,bridge,dock,canal,open water,inshore,offshore
